@@ -3,21 +3,28 @@ import { getProduct } from '@/lib/shopify';
 import { ProductDetails } from '@/components/ProductDetails';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     handle: string;
-  };
+  }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProduct(params.handle);
+  try {
+    // In Next.js 15+, params is a Promise and needs to be awaited
+    const { handle } = await params;
+    const product = await getProduct(handle);
 
-  if (!product) {
+    if (!product) {
+      notFound();
+    }
+
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <ProductDetails product={product} />
+      </div>
+    );
+  } catch (error) {
+    console.error('Error loading product:', error);
     notFound();
   }
-
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <ProductDetails product={product} />
-    </div>
-  );
 }
