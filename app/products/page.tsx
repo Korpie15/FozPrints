@@ -10,7 +10,7 @@ export default async function ProductsPage() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">All Parts</h1>
         <p className="text-lg text-gray-600">
-          Browse our complete catalog of Subaru Forester parts
+          Browse our complete catalog of Subaru Forester prints
         </p>
       </div>
 

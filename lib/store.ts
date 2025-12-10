@@ -19,7 +19,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ cartId: null, itemCount: 0 }),
     }),
     {
-      name: 'foresterhub-cart',
+      name: 'fozprints-cart',
     }
   )
 );

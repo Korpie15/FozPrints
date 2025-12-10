@@ -5,11 +5,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center mb-4">
-              <span className="text-xl font-bold text-primary-600">Forester</span>
-              <span className="text-xl font-bold text-gray-900">Hub</span>
+              <span className="text-xl font-bold text-primary-600">Foz</span>
+              <span className="text-xl font-bold text-gray-900">Prints</span>
             </div>
             <p className="text-sm text-gray-600 max-w-md">
-              Your trusted source for genuine Subaru Forester parts. Quality parts, 
+              Your trusted source for Subaru Forester prints and merchandise. Quality products, 
               competitive prices, and fast shipping.
             </p>
           </div>
@@ -69,7 +69,7 @@ export function Footer() {
 
         <div className="border-t mt-8 pt-8 text-center">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()} ForesterHub. All rights reserved.
+            © {new Date().getFullYear()} Foz Prints. All rights reserved.
           </p>
         </div>
       </div>

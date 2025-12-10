@@ -96,7 +96,7 @@ export default async function HomePage() {
             Can't Find What You're Looking For?
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Our team can help you locate the exact part you need for your Subaru Forester.
+            Our team can help you find the perfect print for your Subaru Forester.
           </p>
           <a 
             href="#"

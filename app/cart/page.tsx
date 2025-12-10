@@ -96,7 +96,7 @@ export default function CartPage() {
           <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h1>
           <p className="text-gray-600 mb-8">
-            Start adding some Subaru Forester parts to your cart!
+            Start adding some Subaru Forester prints to your cart!
           </p>
           <Link
             href="/products"

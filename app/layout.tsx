@@ -7,8 +7,8 @@ import { Footer } from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ForesterHub - Subaru Forester Parts',
-  description: 'Your trusted source for genuine Subaru Forester parts. Quality parts, competitive prices, and fast shipping.',
+  title: 'Foz Prints - Subaru Forester Prints & Merchandise',
+  description: 'Your trusted source for Subaru Forester prints and merchandise. Quality products, competitive prices, and fast shipping.',
 };
 
 export default function RootLayout({

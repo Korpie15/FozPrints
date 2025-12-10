@@ -1,6 +1,6 @@
-# ForesterHub 🚗
+# Foz Prints 🚗
 
-A modern, headless e-commerce platform for selling Subaru Forester parts, built with Next.js 14+ and Shopify Storefront API.
+A modern, headless e-commerce platform for selling Subaru Forester prints and merchandise, built with Next.js 14+ and Shopify Storefront API.
 
 ## Features
 
@@ -45,7 +45,7 @@ npm install
 2. **Create a Storefront API Access Token**:
    - In your Shopify admin, go to: **Settings** → **Apps and sales channels** → **Develop apps**
    - Click **"Create an app"**
-   - Name it "ForesterHub" or similar
+   - Name it "Foz Prints" or similar
    - Go to **Configuration** tab
    - Under **Storefront API**, click **Configure**
    - Enable all read permissions (Product listings, Cart, etc.)
@@ -54,7 +54,7 @@ npm install
    - Copy the **Storefront API access token**
 
 3. **Add Products to Your Store**:
-   - Add Subaru Forester parts in your Shopify admin
+   - Add your products in your Shopify admin
    - Include good images, descriptions, and prices
 
 ### 3. Environment Variables
@@ -84,7 +84,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Project Structure
 
 ```
-foresterhub/
+fozprints/
 ├── app/                      # Next.js App Router pages
 │   ├── cart/                 # Shopping cart page
 │   ├── products/             # Product listing and detail pages

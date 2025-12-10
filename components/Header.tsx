@@ -8,8 +8,8 @@ export function Header() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center space-x-2">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-primary-600">Forester</span>
-              <span className="text-2xl font-bold text-gray-900">Hub</span>
+              <span className="text-2xl font-bold text-primary-600">Foz</span>
+              <span className="text-2xl font-bold text-gray-900">Prints</span>
             </div>
           </Link>
           
