@@ -2,6 +2,13 @@
   background-color: #111827;
   color: white;
   margin-top: auto;
+  transition: background-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .footer {
+    background-color: #030712;
+  }
 }
 
 .footer-container {

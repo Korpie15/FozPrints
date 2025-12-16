@@ -12,8 +12,21 @@
   background-color: #f3f4f6;
 }
 
+@media (prefers-color-scheme: dark) {
+  .cart-button:hover {
+    background-color: #374151;
+  }
+}
+
 .cart-button-icon {
   color: #374151;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-button-icon {
+    color: #d1d5db;
+  }
 }
 
 .cart-badge {
@@ -30,4 +43,11 @@
   color: white;
   background-color: #0284c7;
   border-radius: 9999px;
+  transition: background-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-badge {
+    background-color: #0ea5e9;
+  }
 }

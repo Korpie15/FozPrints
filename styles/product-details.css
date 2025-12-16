@@ -23,6 +23,13 @@
   overflow: hidden;
   border-radius: 0.5rem;
   background-color: #f3f4f6;
+  transition: background-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-main-image {
+    background-color: #374151;
+  }
 }
 
 .product-main-image img {
@@ -48,6 +55,13 @@
   opacity: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  .product-image-nav {
+    background-color: #1f2937;
+    color: #e5e7eb;
+  }
+}
+
 .product-main-image:hover .product-image-nav {
   opacity: 1;
 }
@@ -56,6 +70,12 @@
   background-color: #0284c7;
   color: white;
   transform: translateY(-50%) scale(1.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-image-nav:hover {
+    background-color: #0ea5e9;
+  }
 }
 
 .product-image-nav-prev {
@@ -92,6 +112,12 @@
   transition: all 0.2s;
 }
 
+@media (prefers-color-scheme: dark) {
+  .product-thumbnail {
+    background-color: #374151;
+  }
+}
+
 .product-thumbnail:hover {
   opacity: 0.75;
 }
@@ -99,6 +125,12 @@
 .product-thumbnail-active {
   border-color: #0284c7;
   opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-thumbnail-active {
+    border-color: #0ea5e9;
+  }
 }
 
 .product-thumbnail-active:hover {
@@ -119,6 +151,13 @@
   font-weight: 700;
   color: #111827;
   margin-bottom: 1rem;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-title {
+    color: #f9fafb;
+  }
 }
 
 .product-price-container {
@@ -129,6 +168,13 @@
   font-size: 1.875rem;
   font-weight: 700;
   color: #0284c7;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-price {
+    color: #0ea5e9;
+  }
 }
 
 .product-description {
@@ -138,6 +184,13 @@
 .product-description-content {
   color: #374151;
   line-height: 1.75;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-description-content {
+    color: #d1d5db;
+  }
 }
 
 .product-description-content h1,

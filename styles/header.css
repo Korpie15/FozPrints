@@ -6,6 +6,14 @@
   border-bottom: 1px solid #e5e7eb;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .header {
+    border-bottom-color: #374151;
+    background-color: rgba(17, 24, 39, 0.95);
+  }
 }
 
 .header-container {
@@ -39,6 +47,13 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo-text-secondary {
+    color: #f9fafb;
+  }
 }
 
 .header-nav {
@@ -61,6 +76,16 @@
 
 .nav-link:hover {
   color: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-link {
+    color: #d1d5db;
+  }
+
+  .nav-link:hover {
+    color: #0ea5e9;
+  }
 }
 
 .header-right {

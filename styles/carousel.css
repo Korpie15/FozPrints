@@ -28,6 +28,20 @@
   color: white;
 }
 
+@media (prefers-color-scheme: dark) {
+  .carousel-button {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+  }
+
+  .carousel-button:hover {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+    color: white;
+  }
+}
+
 .carousel-button-prev {
   left: 0;
 }
@@ -101,6 +115,20 @@
   background-color: #0284c7;
   width: 2rem;
   border-radius: 0.375rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .carousel-dot {
+    background-color: #4b5563;
+  }
+
+  .carousel-dot:hover {
+    background-color: #6b7280;
+  }
+
+  .carousel-dot-active {
+    background-color: #0ea5e9;
+  }
 }
 
 /* Responsive adjustments */

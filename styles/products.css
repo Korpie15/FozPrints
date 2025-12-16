@@ -12,11 +12,25 @@
   font-weight: 700;
   color: #111827;
   margin-bottom: 0.5rem;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .products-header h1 {
+    color: #f9fafb;
+  }
 }
 
 .products-header p {
   font-size: 1.125rem;
   color: #6b7280;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .products-header p {
+    color: #9ca3af;
+  }
 }
 
 .products-grid {
