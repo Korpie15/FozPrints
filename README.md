@@ -5,7 +5,6 @@ A modern, headless e-commerce platform for selling Subaru Forester prints and me
 ## Features
 
 - 🛒 **Full E-commerce Functionality**: Product listings, cart, checkout
-- 🎨 **Modern UI**: Built with Tailwind CSS and Lucide icons
 - ⚡ **Performance**: Server-side rendering with Next.js App Router
 - 🔄 **Real-time Cart**: Zustand state management with localStorage persistence
 - 📱 **Responsive Design**: Mobile-first approach
