@@ -16,7 +16,7 @@ A modern, headless e-commerce platform for selling Subaru Forester prints and me
 
 - **Framework**: Next.js 14+ (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**:  CSS
 - **E-commerce**: Shopify Storefront API (GraphQL)
 - **State Management**: Zustand
 - **Icons**: Lucide React
@@ -109,7 +109,6 @@ fozprints/
 ├── .gitignore                # Git ignore rules
 ├── next.config.js            # Next.js configuration
 ├── package.json              # Dependencies
-├── tailwind.config.ts        # Tailwind CSS configuration
 └── tsconfig.json             # TypeScript configuration
 ```
 
@@ -165,7 +164,6 @@ This Next.js app can be deployed to any platform that supports Node.js:
 ## Customization
 
 ### Styling
-- Edit `tailwind.config.ts` to customize colors and design tokens
 - Primary color scheme is defined in the config
 - Modify `app/globals.css` for global styles
 
