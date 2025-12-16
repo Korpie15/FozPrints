@@ -17,6 +17,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node);
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
   const { cartId, setCartId, setItemCount } = useCartStore();
 
@@ -59,21 +60,54 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
   };
 
-  const image = product.images.edges[0]?.node;
+  const selectedImage = product.images.edges[selectedImageIndex]?.node;
+  const totalImages = product.images.edges.length;
+
+  const goToPreviousImage = () => {
+    setSelectedImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+  };
+
+  const goToNextImage = () => {
+    setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="product-details">
       {/* Product Images */}
       <div className="product-images">
         <div className="product-main-image">
-          {image ? (
-            <Image
-              src={image.url}
-              alt={image.altText || product.title}
-              fill
-              style={{ objectFit: 'cover' }}
-              priority
-            />
+          {selectedImage ? (
+            <>
+              <Image
+                src={selectedImage.url}
+                alt={selectedImage.altText || product.title}
+                fill
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+              {totalImages > 1 && (
+                <>
+                  <button
+                    onClick={goToPreviousImage}
+                    className="product-image-nav product-image-nav-prev"
+                    aria-label="Previous image"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={goToNextImage}
+                    className="product-image-nav product-image-nav-next"
+                    aria-label="Next image"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </>
+              )}
+            </>
           ) : (
             <div className="product-no-image">
               No image available
@@ -82,18 +116,25 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
         
         {/* Additional images */}
-        <div className="product-thumbnails">
-          {product.images.edges.slice(1, 5).map((edge, index) => (
-            <div key={index} className="product-thumbnail">
-              <Image
-                src={edge.node.url}
-                alt={edge.node.altText || `${product.title} ${index + 2}`}
-                fill
-                style={{ objectFit: 'cover' }}
-              />
-            </div>
-          ))}
-        </div>
+        {product.images.edges.length > 1 && (
+          <div className="product-thumbnails">
+            {product.images.edges.map((edge, index) => (
+              <div 
+                key={index} 
+                className={`product-thumbnail ${index === selectedImageIndex ? 'product-thumbnail-active' : ''}`}
+                onClick={() => setSelectedImageIndex(index)}
+                style={{ cursor: 'pointer' }}
+              >
+                <Image
+                  src={edge.node.url}
+                  alt={edge.node.altText || `${product.title} ${index + 1}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Product Info */}
