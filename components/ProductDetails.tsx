@@ -111,9 +111,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
 
         <div className="mb-6">
-          <p className="text-gray-700 leading-relaxed">
-            {product.description}
-          </p>
+          <div 
+            className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+          />
         </div>
 
         {/* Variants */}

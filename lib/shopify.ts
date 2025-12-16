@@ -47,6 +47,7 @@ const PRODUCT_FRAGMENT = `
     id
     title
     description
+    descriptionHtml
     handle
     priceRange {
       minVariantPrice {
