@@ -97,7 +97,7 @@ export default function CartPage() {
           <ShoppingCart size={64} style={{ margin: '0 auto 1rem', color: '#9ca3af' }} />
           <h2>Your cart is empty</h2>
           <p>
-            Start adding some Subaru Forester prints to your cart!
+            Start adding some FozPrints products to your cart!
           </p>
           <Link href="/products" className="btn btn-primary">
             Browse Products
@@ -214,13 +214,13 @@ export default function CartPage() {
             </span>
           </div>
 
+          <Link href="/products" className="cart-continue-shopping">
+            Continue Shopping
+          </Link>
+
           <a href={cart.checkoutUrl} className="cart-checkout-button">
             Proceed to Checkout
           </a>
-
-          <Link href="/products" style={{ display: 'block', textAlign: 'center', color: '#0284c7', padding: '0.75rem', fontWeight: 500, marginTop: '1rem' }}>
-            Continue Shopping
-          </Link>
         </div>
       </div>
     </div>

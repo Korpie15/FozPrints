@@ -7,6 +7,7 @@ import { ShopifyProduct } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { createCart, addToCart } from '@/lib/shopify';
+import { Toast } from './Toast';
 import '../styles/product-details.css';
 
 interface ProductDetailsProps {
@@ -18,6 +19,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node);
   const [isAdding, setIsAdding] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showToast, setShowToast] = useState(false);
   
   const { cartId, setCartId, setItemCount } = useCartStore();
 
@@ -51,10 +53,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       );
       setItemCount(totalItems);
 
-      alert('Added to cart!');
+      // Show success toast
+      setShowToast(true);
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add to cart. Please try again.');
+      // Could add error toast here in the future
     } finally {
       setIsAdding(false);
     }
@@ -72,9 +75,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   return (
-    <div className="product-details">
-      {/* Product Images */}
-      <div className="product-images">
+    <>
+      {showToast && (
+        <Toast
+          message="Item added to cart!"
+          onClose={() => setShowToast(false)}
+        />
+      )}
+      <div className="product-details">
+        {/* Product Images */}
+        <div className="product-images">
         <div className="product-main-image">
           {selectedImage ? (
             <>
@@ -221,5 +231,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
