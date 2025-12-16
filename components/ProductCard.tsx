@@ -1,7 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShopifyProduct } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
+import '../styles/product-card.css';
 
 interface ProductCardProps {
   product: ShopifyProduct;
@@ -12,38 +14,34 @@ export function ProductCard({ product }: ProductCardProps) {
   const price = product.priceRange.minVariantPrice;
 
   return (
-    <Link 
-      href={`/products/${product.handle}`}
-      className="group block overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md"
-    >
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
+    <Link href={`/products/${product.handle}`} className="product-card">
+      <div className="product-card-image">
         {image ? (
           <Image
             src={image.url}
             alt={image.altText || product.title}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-gray-400">
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
             No image
           </div>
         )}
       </div>
-      
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">
-          {product.title}
-        </h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-          {product.description}
-        </p>
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-primary-600">
+
+      <div className="product-card-content">
+        <h3 className="product-card-title">{product.title}</h3>
+        <p className="product-card-description">{product.description}</p>
+
+        <div className="product-card-footer">
+          <span className="product-card-price">
             {formatPrice(price.amount, price.currencyCode)}
           </span>
-          <span className="text-sm text-gray-500">View Details</span>
+          <button className="product-card-button">
+            View
+            <ArrowRight size={16} />
+          </button>
         </div>
       </div>
     </Link>

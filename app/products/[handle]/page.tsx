@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     }
 
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="container" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
         <ProductDetails product={product} />
       </div>
     );

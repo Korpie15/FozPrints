@@ -1,47 +1,36 @@
 import Link from 'next/link';
 import { CartButton } from '@/components/CartButton';
+import '../styles/header.css';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-primary-600">Foz</span>
-              <span className="text-2xl font-bold text-gray-900">Prints</span>
-            </div>
+    <header className="header">
+      <div className="header-container">
+        <div className="header-left">
+          <Link href="/" className="header-logo">
+            <span className="logo-text-primary">Foz</span>
+            <span className="logo-text-secondary">Prints</span>
           </Link>
           
-          <nav className="hidden md:flex gap-6">
-            <Link 
-              href="/products" 
-              className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              All Parts
+          <nav className="header-nav">
+            <Link href="/products" className="nav-link">
+              All Products
             </Link>
-            <Link 
-              href="/products?category=engine" 
-              className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              Engine
+            <Link href="/products?category=prints" className="nav-link">
+              Prints
             </Link>
-            <Link 
-              href="/products?category=exterior" 
-              className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              Exterior
+            <Link href="/products?category=apparel" className="nav-link">
+              Apparel
             </Link>
-            <Link 
-              href="/products?category=interior" 
-              className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              Interior
+            <Link href="/products?category=accessories" className="nav-link">
+              Accessories
             </Link>
           </nav>
         </div>
 
-        <CartButton />
+        <div className="header-right">
+          <CartButton />
+        </div>
       </div>
     </header>
   );

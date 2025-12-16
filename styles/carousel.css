@@ -1,0 +1,137 @@
+.carousel-container {
+  position: relative;
+  width: 100%;
+  padding: 0 3rem;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-button:hover {
+  background-color: #0284c7;
+  border-color: #0284c7;
+  color: white;
+}
+
+.carousel-button-prev {
+  left: 0;
+}
+
+.carousel-button-next {
+  right: 0;
+}
+
+.carousel-content {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+
+.carousel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  animation: fadeIn 0.5s ease-in-out;
+  align-items: stretch;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.carousel-item {
+  flex: 0 0 calc((100% - 4.5rem) / 4);
+  margin-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.carousel-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.carousel-dot:hover {
+  background-color: #9ca3af;
+}
+
+.carousel-dot-active {
+  background-color: #0284c7;
+  width: 2rem;
+  border-radius: 0.375rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .carousel-item {
+    flex: 0 0 calc((100% - 3rem) / 3);
+  }
+}
+
+@media (max-width: 1024px) {
+  .carousel-item {
+    flex: 0 0 calc((100% - 1.5rem) / 2);
+  }
+  
+  .carousel-container {
+    padding: 0 2.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-item {
+    flex: 0 0 100%;
+    margin-right: 0;
+  }
+  
+  .carousel-container {
+    padding: 0 2rem;
+  }
+  
+  .carousel-button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

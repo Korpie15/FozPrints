@@ -8,6 +8,7 @@ import { useCartStore } from '@/lib/store';
 import { getCart, updateCartLines, removeFromCart } from '@/lib/shopify';
 import { ShopifyCart } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
+import '../../styles/cart.css';
 
 export default function CartPage() {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
@@ -81,9 +82,9 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex justify-center">
-          <div className="text-lg text-gray-600">Loading cart...</div>
+      <div className="cart-page">
+        <div className="cart-empty">
+          <p>Loading cart...</p>
         </div>
       </div>
     );
@@ -91,18 +92,15 @@ export default function CartPage() {
 
   if (!cart || cart.lines.edges.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto text-center">
-          <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">
+      <div className="cart-page">
+        <div className="cart-empty">
+          <ShoppingCart size={64} style={{ margin: '0 auto 1rem', color: '#9ca3af' }} />
+          <h2>Your cart is empty</h2>
+          <p>
             Start adding some Subaru Forester prints to your cart!
           </p>
-          <Link
-            href="/products"
-            className="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-          >
-            Browse Parts
+          <Link href="/products" className="btn btn-primary">
+            Browse Products
           </Link>
         </div>
       </div>
@@ -110,78 +108,77 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+    <div className="cart-page">
+      <h1 className="cart-title">Shopping Cart</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="cart-container">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="cart-items">
           {cart.lines.edges.map(({ node: line }) => {
             const image = line.merchandise.product.images.edges[0]?.node;
             
             return (
-              <div key={line.id} className="flex gap-4 bg-white p-4 rounded-lg border">
-                <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
+              <div key={line.id} className="cart-item">
+                <div className="cart-item-image">
                   {image ? (
                     <Image
                       src={image.url}
                       alt={image.altText || line.merchandise.product.title}
                       fill
-                      className="object-cover"
+                      style={{ objectFit: 'cover' }}
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-gray-400 text-xs">
+                    <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.75rem' }}>
                       No image
                     </div>
                   )}
                 </div>
 
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <Link 
-                      href={`/products/${line.merchandise.product.handle}`}
-                      className="font-semibold text-gray-900 hover:text-primary-600"
-                    >
-                      {line.merchandise.product.title}
-                    </Link>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {line.merchandise.title !== 'Default Title' && line.merchandise.title}
+                <div className="cart-item-details">
+                  <Link 
+                    href={`/products/${line.merchandise.product.handle}`}
+                    className="cart-item-title"
+                  >
+                    {line.merchandise.product.title}
+                  </Link>
+                  {line.merchandise.title !== 'Default Title' && (
+                    <p className="cart-item-variant">
+                      {line.merchandise.title}
                     </p>
-                  </div>
+                  )}
 
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center border border-gray-300 rounded-md">
+                  <div className="cart-item-actions">
+                    <div className="cart-item-quantity">
                       <button
                         onClick={() => handleUpdateQuantity(line.id, Math.max(1, line.quantity - 1))}
-                        className="p-1 hover:bg-gray-100"
+                        className="cart-quantity-button"
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus size={16} />
                       </button>
-                      <span className="px-3 py-1 min-w-[2rem] text-center text-sm">
+                      <span className="cart-quantity-value">
                         {line.quantity}
                       </span>
                       <button
                         onClick={() => handleUpdateQuantity(line.id, line.quantity + 1)}
-                        className="p-1 hover:bg-gray-100"
+                        className="cart-quantity-button"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus size={16} />
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <span className="font-semibold text-gray-900">
-                        {formatPrice(
-                          (parseFloat(line.merchandise.price.amount) * line.quantity).toString(),
-                          line.merchandise.price.currencyCode
-                        )}
-                      </span>
-                      <button
-                        onClick={() => handleRemoveItem(line.id)}
-                        className="text-red-600 hover:text-red-700 p-1"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
+                    <span className="cart-item-price">
+                      {formatPrice(
+                        (parseFloat(line.merchandise.price.amount) * line.quantity).toString(),
+                        line.merchandise.price.currencyCode
+                      )}
+                    </span>
+
+                    <button
+                      onClick={() => handleRemoveItem(line.id)}
+                      className="cart-item-remove"
+                    >
+                      <Trash2 size={20} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -190,52 +187,40 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-gray-50 rounded-lg p-6 border sticky top-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between text-gray-600">
-                <span>Subtotal</span>
-                <span className="font-medium">
-                  {formatPrice(
-                    cart.cost.subtotalAmount.amount,
-                    cart.cost.subtotalAmount.currencyCode
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className="font-medium">Calculated at checkout</span>
-              </div>
-            </div>
-
-            <div className="border-t pt-3 mb-6">
-              <div className="flex justify-between text-lg font-bold text-gray-900">
-                <span>Total</span>
-                <span>
-                  {formatPrice(
-                    cart.cost.totalAmount.amount,
-                    cart.cost.totalAmount.currencyCode
-                  )}
-                </span>
-              </div>
-            </div>
-
-            <a
-              href={cart.checkoutUrl}
-              className="block w-full bg-primary-600 text-white text-center py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-            >
-              Proceed to Checkout
-            </a>
-
-            <Link
-              href="/products"
-              className="block w-full text-center text-primary-600 hover:text-primary-700 py-3 font-medium mt-4"
-            >
-              Continue Shopping
-            </Link>
+        <div className="cart-summary">
+          <h2>Order Summary</h2>
+          
+          <div className="cart-summary-row">
+            <span>Subtotal</span>
+            <span>
+              {formatPrice(
+                cart.cost.subtotalAmount.amount,
+                cart.cost.subtotalAmount.currencyCode
+              )}
+            </span>
           </div>
+          <div className="cart-summary-row">
+            <span>Shipping</span>
+            <span>Calculated at checkout</span>
+          </div>
+
+          <div className="cart-summary-row">
+            <span>Total</span>
+            <span>
+              {formatPrice(
+                cart.cost.totalAmount.amount,
+                cart.cost.totalAmount.currencyCode
+              )}
+            </span>
+          </div>
+
+          <a href={cart.checkoutUrl} className="cart-checkout-button">
+            Proceed to Checkout
+          </a>
+
+          <Link href="/products" style={{ display: 'block', textAlign: 'center', color: '#0284c7', padding: '0.75rem', fontWeight: 500, marginTop: '1rem' }}>
+            Continue Shopping
+          </Link>
         </div>
       </div>
     </div>

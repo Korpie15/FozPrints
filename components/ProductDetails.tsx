@@ -7,6 +7,7 @@ import { ShopifyProduct } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { createCart, addToCart } from '@/lib/shopify';
+import '../styles/product-details.css';
 
 interface ProductDetailsProps {
   product: ShopifyProduct;
@@ -61,34 +62,34 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const image = product.images.edges[0]?.node;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="product-details">
       {/* Product Images */}
-      <div className="space-y-4">
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+      <div className="product-images">
+        <div className="product-main-image">
           {image ? (
             <Image
               src={image.url}
               alt={image.altText || product.title}
               fill
-              className="object-cover"
+              style={{ objectFit: 'cover' }}
               priority
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-400">
+            <div className="product-no-image">
               No image available
             </div>
           )}
         </div>
         
-        {/* Additional images could go here */}
-        <div className="grid grid-cols-4 gap-4">
+        {/* Additional images */}
+        <div className="product-thumbnails">
           {product.images.edges.slice(1, 5).map((edge, index) => (
-            <div key={index} className="relative aspect-square overflow-hidden rounded-md bg-gray-100 cursor-pointer hover:opacity-75">
+            <div key={index} className="product-thumbnail">
               <Image
                 src={edge.node.url}
                 alt={edge.node.altText || `${product.title} ${index + 2}`}
                 fill
-                className="object-cover"
+                style={{ objectFit: 'cover' }}
               />
             </div>
           ))}
@@ -96,13 +97,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       {/* Product Info */}
-      <div className="flex flex-col">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+      <div className="product-info">
+        <h1 className="product-title">
           {product.title}
         </h1>
         
-        <div className="mb-6">
-          <span className="text-3xl font-bold text-primary-600">
+        <div className="product-price-container">
+          <span className="product-price">
             {formatPrice(
               selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount,
               selectedVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode
@@ -110,21 +111,18 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </span>
         </div>
 
-        <div className="mb-6">
+        <div className="product-description">
           <div 
-            className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+            className="product-description-content"
             dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
           />
         </div>
 
         {/* Variants */}
         {product.variants.edges.length > 1 && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Options
-            </label>
+          <div className="product-variants">
+            <label>Options</label>
             <select
-              className="w-full border border-gray-300 rounded-md px-4 py-2"
               onChange={(e) => {
                 const variant = product.variants.edges.find(
                   (edge) => edge.node.id === e.target.value
@@ -145,28 +143,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         )}
 
         {/* Quantity */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-900 mb-2">
-            Quantity
-          </label>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center border border-gray-300 rounded-md">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2 hover:bg-gray-100"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-              <span className="px-4 py-2 min-w-[3rem] text-center">
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="p-2 hover:bg-gray-100"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
+        <div className="product-quantity">
+          <label>Quantity</label>
+          <div className="quantity-controls">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="quantity-button"
+            >
+              <Minus size={16} />
+            </button>
+            <span className="quantity-value">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="quantity-button"
+            >
+              <Plus size={16} />
+            </button>
           </div>
         </div>
 
@@ -174,24 +168,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <button
           onClick={handleAddToCart}
           disabled={isAdding || !selectedVariant?.availableForSale}
-          className="w-full bg-primary-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="product-add-to-cart"
         >
-          <ShoppingCart className="h-5 w-5" />
+          <ShoppingCart size={20} />
           {isAdding ? 'Adding...' : selectedVariant?.availableForSale ? 'Add to Cart' : 'Out of Stock'}
         </button>
 
-        {/* Additional Info */}
-        <div className="mt-8 space-y-4 border-t pt-8">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">SKU:</span>
-            <span className="font-medium">{selectedVariant?.id.split('/').pop()}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Availability:</span>
-            <span className="font-medium text-green-600">
-              {selectedVariant?.availableForSale ? 'In Stock' : 'Out of Stock'}
-            </span>
-          </div>
+        {/* Availability */}
+        <div className={`product-availability ${selectedVariant?.availableForSale ? 'product-in-stock' : 'product-out-of-stock'}`}>
+          {selectedVariant?.availableForSale ? '✓ In Stock' : '✕ Out of Stock'}
         </div>
       </div>
     </div>
