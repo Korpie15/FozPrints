@@ -180,6 +180,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 )?.node;
                 if (variant) {
                   setSelectedVariant(variant);
+                  
+                  // Switch to variant's image if it has one
+                  if (variant.image) {
+                    const imageIndex = product.images.edges.findIndex(
+                      (edge) => edge.node.url === variant.image?.url
+                    );
+                    if (imageIndex !== -1) {
+                      setSelectedImageIndex(imageIndex);
+                    }
+                  }
                 }
               }}
               value={selectedVariant?.id}

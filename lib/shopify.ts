@@ -55,7 +55,7 @@ const PRODUCT_FRAGMENT = `
         currencyCode
       }
     }
-    images(first: 5) {
+    images(first: 15) {
       edges {
         node {
           url
@@ -76,6 +76,10 @@ const PRODUCT_FRAGMENT = `
           selectedOptions {
             name
             value
+          }
+          image {
+            url
+            altText
           }
         }
       }
@@ -166,6 +170,15 @@ export async function getProduct(handle: string) {
   });
   
   return data.product;
+}
+
+// Get multiple products by handles
+export async function getProductsByHandles(handles: string[]) {
+  const products = await Promise.all(
+    handles.map(handle => getProduct(handle))
+  );
+  // Filter out any null results (if a handle doesn't exist)
+  return products.filter(product => product !== null);
 }
 
 // Create a cart

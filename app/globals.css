@@ -23,6 +23,8 @@ body {
   display: flex;
   flex-direction: column;
   transition: background-color 0.3s, color 0.3s;
+  overflow-y: auto;
+  position: relative;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,6 +36,8 @@ body {
 
 main {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 a {

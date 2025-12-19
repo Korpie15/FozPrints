@@ -1,18 +1,19 @@
 .header {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
   width: 100%;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #1f2937;
+  background-color: #111827;
   backdrop-filter: blur(10px);
   transition: background-color 0.3s, border-color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   .header {
-    border-bottom-color: #374151;
-    background-color: rgba(17, 24, 39, 0.95);
+    border-bottom-color: #1f2937;
+    background-color: #030712;
   }
 }
 
@@ -40,19 +41,19 @@
 .logo-text-primary {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0284c7;
+  color: #0ea5e9;
 }
 
 .logo-text-secondary {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #e0f2fe;
   transition: color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   .logo-text-secondary {
-    color: #f9fafb;
+    color: #e0f2fe;
   }
 }
 
@@ -70,21 +71,21 @@
 .nav-link {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: #ffffff;
   transition: color 0.2s;
 }
 
 .nav-link:hover {
-  color: #0284c7;
+  color: #e0f2fe;
 }
 
 @media (prefers-color-scheme: dark) {
   .nav-link {
-    color: #d1d5db;
+    color: #ffffff;
   }
 
   .nav-link:hover {
-    color: #0ea5e9;
+    color: #e0f2fe;
   }
 }
 

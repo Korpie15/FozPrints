@@ -26,7 +26,7 @@ export function Footer() {
 
           <div className="footer-section">
             <h3>Support</h3>
-            <a href="#">Contact Us</a>
+            <a href="/about#contact">Contact Us</a>
             <a href="#">Shipping Info</a>
             <a href="#">Returns</a>
             <a href="#">FAQ</a>
@@ -34,7 +34,7 @@ export function Footer() {
 
           <div className="footer-section">
             <h3>Company</h3>
-            <a href="#">About Us</a>
+            <a href="/about">About Us</a>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
           </div>

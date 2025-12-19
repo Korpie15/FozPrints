@@ -9,23 +9,23 @@
 }
 
 .cart-button:hover {
-  background-color: #f3f4f6;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
   .cart-button:hover {
-    background-color: #374151;
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 .cart-button-icon {
-  color: #374151;
+  color: #ffffff;
   transition: color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   .cart-button-icon {
-    color: #d1d5db;
+    color: #ffffff;
   }
 }
 
@@ -40,14 +40,15 @@
   height: 1.25rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: white;
-  background-color: #0284c7;
+  color: #0284c7;
+  background-color: #ffffff;
   border-radius: 9999px;
   transition: background-color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   .cart-badge {
-    background-color: #0ea5e9;
+    color: #0369a1;
+    background-color: #ffffff;
   }
 }
