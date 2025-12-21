@@ -1,6 +1,15 @@
+import { getShopPolicies } from '@/lib/shopify';
 import '../styles/footer.css';
 
-export function Footer() {
+export async function Footer() {
+  let policies = null;
+  
+  try {
+    policies = await getShopPolicies();
+  } catch (error) {
+    console.error('Error fetching shop policies:', error);
+  }
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -19,24 +28,37 @@ export function Footer() {
           <div className="footer-section">
             <h3>Shop</h3>
             <a href="/products">All Products</a>
-            <a href="/products?category=prints">Prints</a>
-            <a href="/products?category=apparel">Apparel</a>
-            <a href="/products?category=accessories">Accessories</a>
           </div>
 
           <div className="footer-section">
             <h3>Support</h3>
             <a href="/about#contact">Contact Us</a>
-            <a href="#">Shipping Info</a>
-            <a href="#">Returns</a>
-            <a href="#">FAQ</a>
+            {policies?.shippingPolicy && (
+              <a href="/policies/shipping-policy">
+                {policies.shippingPolicy.title}
+              </a>
+            )}
+            {policies?.refundPolicy && (
+              <a href="/policies/refund-policy">
+                {policies.refundPolicy.title}
+              </a>
+            )}
+            <a href="/about#faq">FAQ</a>
           </div>
 
           <div className="footer-section">
             <h3>Company</h3>
             <a href="/about">About Us</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            {policies?.privacyPolicy && (
+              <a href="/policies/privacy-policy">
+                {policies.privacyPolicy.title}
+              </a>
+            )}
+            {policies?.termsOfService && (
+              <a href="/policies/terms-of-service">
+                {policies.termsOfService.title}
+              </a>
+            )}
           </div>
         </div>
 

@@ -1,10 +1,12 @@
 'use client';
 
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, ChevronDown } from 'lucide-react';
 import '../../styles/about.css';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
 export default function AboutPage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -43,6 +45,113 @@ export default function AboutPage() {
               to a Subaru enthusiast, we've got you covered. Our prints are printed on demand 
               to reduce waste and ensure the freshest product for every order.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="faq-section">
+        <div className="container">
+          <h2>Frequently Asked Questions</h2>
+          <p className="faq-intro">
+            Find answers to common questions about our products and services.
+          </p>
+
+          <div className="faq-list">
+            <div className="faq-item">
+              <button 
+                className={`faq-question ${openFaq === 1 ? 'faq-question-active' : ''}`}
+                onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+              >
+                <span>What materials are your prints made from?</span>
+                <ChevronDown className={`faq-icon ${openFaq === 1 ? 'faq-icon-active' : ''}`} size={20} />
+              </button>
+              {openFaq === 1 && (
+                <div className="faq-answer">
+                  <p>
+                    Our prints are made using premium quality materials including high-grade paper stock 
+                    and archival inks that ensure vibrant colors and long-lasting durability. Each print 
+                    is carefully inspected before shipping to guarantee the highest quality standards.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button 
+                className={`faq-question ${openFaq === 2 ? 'faq-question-active' : ''}`}
+                onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
+              >
+                <span>How long does shipping take?</span>
+                <ChevronDown className={`faq-icon ${openFaq === 2 ? 'faq-icon-active' : ''}`} size={20} />
+              </button>
+              {openFaq === 2 && (
+                <div className="faq-answer">
+                  <p>
+                    Standard shipping typically takes 5-7 business days within Australia. Express shipping 
+                    options are available at checkout for faster delivery. You'll receive a tracking number 
+                    once your order ships so you can monitor its progress.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button 
+                className={`faq-question ${openFaq === 3 ? 'faq-question-active' : ''}`}
+                onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
+              >
+                <span>Do you offer custom designs?</span>
+                <ChevronDown className={`faq-icon ${openFaq === 3 ? 'faq-icon-active' : ''}`} size={20} />
+              </button>
+              {openFaq === 3 && (
+                <div className="faq-answer">
+                  <p>
+                    Yes! We love working with customers on custom designs. Whether you want a specific 
+                    model year, color, or have a unique idea in mind, get in touch with us through the 
+                    contact form below and we'll discuss how we can bring your vision to life.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button 
+                className={`faq-question ${openFaq === 4 ? 'faq-question-active' : ''}`}
+                onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
+              >
+                <span>What is your return policy?</span>
+                <ChevronDown className={`faq-icon ${openFaq === 4 ? 'faq-icon-active' : ''}`} size={20} />
+              </button>
+              {openFaq === 4 && (
+                <div className="faq-answer">
+                  <p>
+                    We want you to be completely satisfied with your purchase. If you're not happy with 
+                    your order, you can return it within 30 days of delivery for a full refund or exchange. 
+                    Items must be in their original condition and packaging. Contact us to initiate a return.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="faq-item">
+              <button 
+                className={`faq-question ${openFaq === 5 ? 'faq-question-active' : ''}`}
+                onClick={() => setOpenFaq(openFaq === 5 ? null : 5)}
+              >
+                <span>Are frames included with the prints?</span>
+                <ChevronDown className={`faq-icon ${openFaq === 5 ? 'faq-icon-active' : ''}`} size={20} />
+              </button>
+              {openFaq === 5 && (
+                <div className="faq-answer">
+                  <p>
+                    Prints are sold unframed by default to keep costs down and allow you to choose the 
+                    perfect frame for your space. However, we do offer framed options for select prints. 
+                    Check the product page for framing availability, or contact us for recommendations.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

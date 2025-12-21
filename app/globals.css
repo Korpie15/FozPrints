@@ -38,6 +38,7 @@ main {
   flex: 1;
   position: relative;
   z-index: 1;
+  padding-top: 4rem; /* Height of fixed header */
 }
 
 a {

@@ -279,3 +279,40 @@ export async function getCart(cartId: string) {
 
   return data.cart;
 }
+
+// Get shop policies
+export async function getShopPolicies() {
+  const query = `
+    query GetShopPolicies {
+      shop {
+        privacyPolicy {
+          handle
+          title
+          url
+          body
+        }
+        refundPolicy {
+          handle
+          title
+          url
+          body
+        }
+        shippingPolicy {
+          handle
+          title
+          url
+          body
+        }
+        termsOfService {
+          handle
+          title
+          url
+          body
+        }
+      }
+    }
+  `;
+
+  const { data } = await shopifyFetch<any>({ query });
+  return data.shop;
+}
