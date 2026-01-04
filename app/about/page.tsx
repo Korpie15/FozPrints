@@ -54,100 +54,101 @@ export default function AboutPage() {
         <div className="container">
           <h2>Frequently Asked Questions</h2>
           <p className="faq-intro">
-            Find answers to common questions about our products and services.
+            Common questions about our 3D printed automotive parts.
           </p>
 
           <div className="faq-list">
+            {/* Q1: Material / Heat Resistance */}
             <div className="faq-item">
               <button 
                 className={`faq-question ${openFaq === 1 ? 'faq-question-active' : ''}`}
                 onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
               >
-                <span>What materials are your prints made from?</span>
+                <span>Will these parts melt in the Australian sun?</span>
                 <ChevronDown className={`faq-icon ${openFaq === 1 ? 'faq-icon-active' : ''}`} size={20} />
               </button>
               {openFaq === 1 && (
                 <div className="faq-answer">
                   <p>
-                    Our prints are made using premium quality materials including high-grade paper stock 
-                    and archival inks that ensure vibrant colors and long-lasting durability. Each print 
-                    is carefully inspected before shipping to guarantee the highest quality standards.
+                    No. Unlike cheap PLA prints that warp in the heat, we use <strong>ASA (Acrylonitrile Styrene Acrylate)</strong>. 
+                    This is an engineering-grade material specifically designed for outdoor and automotive use. 
+                    It is UV resistant and heat resistant up to approximately 95°C, making it perfect for Australian summers.
                   </p>
                 </div>
               )}
             </div>
 
+            {/* Q2: Smooth vs Textured */}
             <div className="faq-item">
               <button 
                 className={`faq-question ${openFaq === 2 ? 'faq-question-active' : ''}`}
                 onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
               >
-                <span>How long does shipping take?</span>
+                <span>What is the difference between Smooth and Textured?</span>
                 <ChevronDown className={`faq-icon ${openFaq === 2 ? 'faq-icon-active' : ''}`} size={20} />
               </button>
               {openFaq === 2 && (
                 <div className="faq-answer">
                   <p>
-                    Standard shipping typically takes 5-7 business days within Australia. Express shipping 
-                    options are available at checkout for faster delivery. You'll receive a tracking number 
-                    once your order ships so you can monitor its progress.
+                    <strong>Textured:</strong> Printed using a "fuzzy skin" technique that mimics the grain of the OEM Subaru dashboard. This creates a matte, factory-style look that blends in seamlessly with your interior.
+                    <br /><br />
+                    <strong>Smooth:</strong> A standard, clean 3D printed finish. This option has a uniform surface for a simpler look without the added grain texture. Both options are finished products and ready to install.
                   </p>
                 </div>
               )}
             </div>
 
+            {/* Q3: Installation Instructions */}
             <div className="faq-item">
               <button 
                 className={`faq-question ${openFaq === 3 ? 'faq-question-active' : ''}`}
                 onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
               >
-                <span>Do you offer custom designs?</span>
+                <span>How do I install the kit?</span>
                 <ChevronDown className={`faq-icon ${openFaq === 3 ? 'faq-icon-active' : ''}`} size={20} />
               </button>
               {openFaq === 3 && (
                 <div className="faq-answer">
                   <p>
-                    Yes! We love working with customers on custom designs. Whether you want a specific 
-                    model year, color, or have a unique idea in mind, get in touch with us through the 
-                    contact form below and we'll discuss how we can bring your vision to life.
+                    We save trees by going digital! After you place your order, you will receive an email containing a PDF Installation Guide and a link to a YouTube video tutorial walking you through the process step-by-step.
                   </p>
                 </div>
               )}
             </div>
 
+            {/* Q4: Shipping */}
             <div className="faq-item">
               <button 
                 className={`faq-question ${openFaq === 4 ? 'faq-question-active' : ''}`}
                 onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
               >
-                <span>What is your return policy?</span>
+                <span>How long does shipping take?</span>
                 <ChevronDown className={`faq-icon ${openFaq === 4 ? 'faq-icon-active' : ''}`} size={20} />
               </button>
               {openFaq === 4 && (
                 <div className="faq-answer">
                   <p>
-                    We want you to be completely satisfied with your purchase. If you're not happy with 
-                    your order, you can return it within 30 days of delivery for a full refund or exchange. 
-                    Items must be in their original condition and packaging. Contact us to initiate a return.
+                    All parts are printed to order. Please allow a <strong>1-5 business day lead time</strong> for us to manufacture your items before they are dispatched.
+                    For delivery estimates, please view our full <a href="/policies/shipping-policy" className="text-green-600 hover:underline">Shipping Policy</a>.
                   </p>
                 </div>
               )}
             </div>
 
+            {/* Q5: Returns */}
             <div className="faq-item">
               <button 
                 className={`faq-question ${openFaq === 5 ? 'faq-question-active' : ''}`}
                 onClick={() => setOpenFaq(openFaq === 5 ? null : 5)}
               >
-                <span>Are frames included with the prints?</span>
+                <span>What is your return policy?</span>
                 <ChevronDown className={`faq-icon ${openFaq === 5 ? 'faq-icon-active' : ''}`} size={20} />
               </button>
               {openFaq === 5 && (
                 <div className="faq-answer">
                   <p>
-                    Prints are sold unframed by default to keep costs down and allow you to choose the 
-                    perfect frame for your space. However, we do offer framed options for select prints. 
-                    Check the product page for framing availability, or contact us for recommendations.
+                    Because our items are manufactured to order, all sales are final. However, if your item arrives damaged or defective, we will absolutely make it right. 
+                    Please review the full details on our <a href="/policies/refund-policy" className="text-green-600 hover:underline">Refund Policy</a> page.
                   </p>
                 </div>
               )}
