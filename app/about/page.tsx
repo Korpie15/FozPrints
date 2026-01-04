@@ -49,6 +49,10 @@ export default function AboutPage() {
         </div>
       </section>
 
+Here is the updated code. I have changed the links to be blue and underlined (text-blue-600 underline) so they stand out clearly.
+
+JavaScript
+
       {/* FAQ Section */}
       <section id="faq" className="faq-section">
         <div className="container">
@@ -129,7 +133,7 @@ export default function AboutPage() {
                 <div className="faq-answer">
                   <p>
                     All parts are printed to order. Please allow a <strong>1-5 business day lead time</strong> for us to manufacture your items before they are dispatched.
-                    For delivery estimates, please view our full <a href="/policies/shipping-policy" className="text-green-600 hover:underline">Shipping Policy</a>.
+                    For delivery estimates, please view our full <a href="/policies/shipping-policy" className="text-blue-600 underline hover:text-blue-800">Shipping Policy</a>.
                   </p>
                 </div>
               )}
@@ -148,7 +152,7 @@ export default function AboutPage() {
                 <div className="faq-answer">
                   <p>
                     Because our items are manufactured to order, all sales are final. However, if your item arrives damaged or defective, we will absolutely make it right. 
-                    Please review the full details on our <a href="/policies/refund-policy" className="text-green-600 hover:underline">Refund Policy</a> page.
+                    Please review the full details on our <a href="/policies/refund-policy" className="text-blue-600 underline hover:text-blue-800">Refund Policy</a> page.
                   </p>
                 </div>
               )}
