@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: 'Foz Prints <onboarding@resend.dev>',
+      from: 'noreply@fozprints.com.au',
       to: ['info@fozprints.com.au'], 
       replyTo: email,
       subject: `Contact Form: ${subject}`,
