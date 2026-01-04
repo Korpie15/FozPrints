@@ -20,8 +20,7 @@ export async function Footer() {
               <span style={{ fontSize: '1.25rem', fontWeight: 700 }}>Prints</span>
             </div>
             <p>
-              Your trusted source for Subaru Forester prints and merchandise. Quality products, 
-              competitive prices, and fast shipping.
+              Premium 3D printed automotive parts. Designed and built in Australia specifically for the SG Subaru Forester using UV-resistant, engineering-grade materials.
             </p>
           </div>
 

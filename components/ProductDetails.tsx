@@ -162,13 +162,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </span>
         </div>
 
-        <div className="product-description">
-          <div 
-            className="product-description-content"
-            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-          />
-        </div>
-
         {/* Variants */}
         {product.variants.edges.length > 1 && (
           <div className="product-variants">
@@ -202,6 +195,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </select>
           </div>
         )}
+
+        <div className="product-description">
+          <div 
+            className="product-description-content"
+            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+          />
+        </div>
 
         {/* Quantity */}
         <div className="product-quantity">
