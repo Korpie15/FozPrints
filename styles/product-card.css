@@ -86,6 +86,11 @@
   justify-content: space-between;
 }
 
+.product-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .product-card-price {
   font-size: 1.25rem;
   font-weight: 700;
@@ -116,6 +121,20 @@
 
 .product-card-button:hover {
   background-color: #0369a1;
+}
+
+.product-card-button-cart {
+  padding: 0.5rem;
+  background-color: #a8a8a8;
+}
+
+.product-card-button-cart:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.product-card-button-cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (prefers-color-scheme: dark) {

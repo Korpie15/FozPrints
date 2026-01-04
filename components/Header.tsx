@@ -19,6 +19,9 @@ export function Header() {
             <Link href="/about" className="nav-link">
               About
             </Link>
+            <Link href="/about#contact" className="nav-link">
+              Contact
+            </Link>
           </nav>
         </div>
 

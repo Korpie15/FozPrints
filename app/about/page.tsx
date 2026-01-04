@@ -3,27 +3,56 @@
 import { Mail, MapPin, Phone, ChevronDown } from 'lucide-react';
 import '../../styles/about.css';
 import { FormEvent, useState } from 'react';
+import { Toast } from '../../components/Toast';
 
 export default function AboutPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
   
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const name = formData.get('name');
     const email = formData.get('email');
     const subject = formData.get('subject');
     const message = formData.get('message');
     
-    // Create mailto link with form data
-    const mailtoLink = `mailto:info@fozprints.com.au?subject=${encodeURIComponent(subject as string)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
+    try {
+      const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        subject,
+        message,
+      }),
+      });
+
+      if (response.ok) {
+      setShowToast(true);
+      form.reset();
+      } else {
+      alert('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('An error occurred. Please try again later.');
+    }
   };
   return (
-    <div className="about-page">
+    <>
+      {showToast && (
+        <Toast
+          message="Message sent successfully!"
+          onClose={() => setShowToast(false)}
+        />
+      )}
+      <div className="about-page">
       {/* About Section */}
       <section className="about-section">
         <div className="container">
@@ -48,10 +77,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-Here is the updated code. I have changed the links to be blue and underlined (text-blue-600 underline) so they stand out clearly.
-
-JavaScript
 
       {/* FAQ Section */}
       <section id="faq" className="faq-section">
@@ -133,7 +158,7 @@ JavaScript
                 <div className="faq-answer">
                   <p>
                     All parts are printed to order. Please allow a <strong>1-5 business day lead time</strong> for us to manufacture your items before they are dispatched.
-                    For delivery estimates, please view our full <a href="/policies/shipping-policy" className="text-blue-600 underline hover:text-blue-800">Shipping Policy</a>.
+                    For delivery estimates, please view our full <a href="/policies/shipping-policy" className="faq-link">Shipping Policy</a>.
                   </p>
                 </div>
               )}
@@ -151,8 +176,7 @@ JavaScript
               {openFaq === 5 && (
                 <div className="faq-answer">
                   <p>
-                    Because our items are manufactured to order, all sales are final. However, if your item arrives damaged or defective, we will absolutely make it right. 
-                    Please review the full details on our <a href="/policies/refund-policy" className="text-blue-600 underline hover:text-blue-800">Refund Policy</a> page.
+                    Because our items are manufactured to order, all sales are final. However, if your item arrives damaged or defective, we will absolutely make it right <a href="/policies/refund-policy" className="faq-link">Refund Policy</a> page.
                   </p>
                 </div>
               )}
@@ -200,5 +224,6 @@ JavaScript
         </div>
       </section>
     </div>
+    </>
   );
 }

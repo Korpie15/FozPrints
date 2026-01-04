@@ -190,6 +190,26 @@
   }
 }
 
+.faq-link {
+  color: #2563eb;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.faq-link:hover {
+  color: #1e40af;
+}
+
+@media (prefers-color-scheme: dark) {
+  .faq-link {
+    color: #60a5fa;
+  }
+
+  .faq-link:hover {
+    color: #0ea5e9;
+  }
+}
+
 /* Contact Section */
 .contact-section {
   padding: 4rem 1rem;
