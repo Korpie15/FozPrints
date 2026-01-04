@@ -217,7 +217,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               {quantity}
             </span>
             <button
-              onClick={() => setQuantity(quantity + 1)}
+              onClick={() => {
+                const maxQuantity = selectedVariant?.quantityAvailable ?? 999;
+                setQuantity(Math.min(maxQuantity, quantity + 1));
+              }}
+              disabled={selectedVariant?.quantityAvailable !== undefined && quantity >= selectedVariant.quantityAvailable}
               className="quantity-button"
             >
               <Plus size={16} />

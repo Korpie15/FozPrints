@@ -73,6 +73,7 @@ const PRODUCT_FRAGMENT = `
             currencyCode
           }
           availableForSale
+          quantityAvailable
           selectedOptions {
             name
             value
