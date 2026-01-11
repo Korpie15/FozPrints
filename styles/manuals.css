@@ -1,0 +1,228 @@
+.manuals-page {
+  min-height: 100vh;
+  padding: 4rem 1rem;
+  background-color: #f9fafb;
+  transition: background-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manuals-page {
+    background-color: #0f172a;
+  }
+}
+
+.manuals-page h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manuals-page h1 {
+    color: #f9fafb;
+  }
+}
+
+.manuals-intro {
+  text-align: center;
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 3rem;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manuals-intro {
+    color: #9ca3af;
+  }
+}
+
+.manuals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.manual-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.manual-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.manual-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .manual-card {
+    background-color: #1f2937;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .manual-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.manual-icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manual-icon {
+    background-color: #1e3a8a;
+    color: #60a5fa;
+  }
+}
+
+.manual-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manual-card h2 {
+    color: #f9fafb;
+  }
+}
+
+.manual-description {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  transition: color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .manual-description {
+    color: #9ca3af;
+  }
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: #0284c7;
+  border: none;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.download-button:hover {
+  background-color: #0369a1;
+  transform: scale(1.05);
+}
+
+.manual-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.download-button-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.download-button-small:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: #0284c7;
+  border: none;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .download-button {
+    background-color: #0ea5e9;
+  }
+
+  .download-button:hover {
+    background-color: #0284c7;
+  }
+}
+
+@media (max-width: 640px) {
+  .manuals-page {
+    padding: 3rem 1rem;
+  }
+
+  .manuals-page h1 {
+    font-size: 2rem;
+  }
+
+  .manuals-intro {
+    font-size: 1rem;
+  }
+}
