@@ -8,10 +8,6 @@ import '../../../styles/manual-detail.css';
 
 export default function DoubleDinPodUpgradeKitManual() {
   const [openTroubleshooting, setOpenTroubleshooting] = useState<number | null>(null);
-  
-  const handleDownloadPDF = () => {
-    window.print();
-  };
 
   return (
     <div className="manual-detail-page">
@@ -28,13 +24,15 @@ export default function DoubleDinPodUpgradeKitManual() {
           <h1>Double DIN Pod Upgrade Kit Installation Guide</h1>
           <p className="manual-subtitle">For Subaru Forester SG (2003-2008), USDM Spec</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button 
-              onClick={handleDownloadPDF}
+            <a
+              href="/manuals/double-din-pod-upgrade-kit-guide.pdf"
+              download
               className="download-pdf-button"
+              style={{ textDecoration: 'none' }}
             >
               <Download size={20} />
               Download PDF Version
-            </button>
+            </a>
             <a
               href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
               target="_blank"
@@ -70,7 +68,7 @@ export default function DoubleDinPodUpgradeKitManual() {
             <br />
             <h4>Not Included:</h4>
             <ul className="tools-list">
-              <li>Headunit</li>
+              <li>Head unit</li>
             </ul>
           </div>
           <div className="manual-section-image">
@@ -211,15 +209,15 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Attach the Left and Right Brackets</h3>
               <p>
-                Attach the left and right radio mount brackets to your headunit by aligning the holes 
-                in the brackets with the holes in the sides of your headunit. Use the 4 screws provided 
-                to securely fasten the brackets to the headunit, use 2 screws per side.
+                Attach the left and right radio mount brackets to your head unit by aligning the holes 
+                in the brackets with the holes in the sides of your head unit. Use the 4 screws provided 
+                to securely fasten the brackets to the head unit, use 2 screws per side.
               </p>
               <div className="step-images two-images">
               <div className="step-image">
                 <Image
                   src="/images/step5-image1.jpg"
-                  alt="Attaching and lining up brackets to headunit"
+                  alt="Attaching and lining up brackets to head unit"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -228,7 +226,7 @@ export default function DoubleDinPodUpgradeKitManual() {
               <div className="step-image">
                 <Image
                   src="/images/step5-image2.jpg"
-                  alt="Front on view of headunit with brackets attached"
+                  alt="Front on view of head unit with brackets attached"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -257,7 +255,7 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Connect wiring</h3>
               <p>
-                Plug all necessary wiring into the rear of your headunit now before installing it
+                Plug all necessary wiring into the rear of your head unit now before installing it
                 into the nav pod.
               </p>
             </div>
@@ -267,16 +265,16 @@ export default function DoubleDinPodUpgradeKitManual() {
           <div className="installation-step">
             <div className="step-number">8</div>
             <div className="step-content">
-              <h3>Align the headunit</h3>
+              <h3>Align the head unit</h3>
               <p>
-                Place in the headunit with the brackets in the empty gap where the previous storage compartment was.
+                Place in the head unit with the brackets in the empty gap where the previous storage compartment was.
                 Ensure you align the holes on the left and right brackets with the holes in the car.
               </p>
               <div className="step-images two-images">
               <div className="step-image">
                 <Image
                   src="/images/step8-image1.jpg"
-                  alt="Red circles showing where to align headunit brackets to car mounting points"
+                  alt="Red circles showing where to align head unit brackets to car mounting points"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -285,7 +283,7 @@ export default function DoubleDinPodUpgradeKitManual() {
               <div className="step-image">
                 <Image
                   src="/images/step8-image2.jpg"
-                  alt="Headunit with brackets aligned to car mounting points"
+                  alt="Head unit with brackets aligned to car mounting points"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -299,9 +297,9 @@ export default function DoubleDinPodUpgradeKitManual() {
           <div className="installation-step">
             <div className="step-number">9</div>
             <div className="step-content">
-              <h3>Secure and install your headunit</h3>
+              <h3>Secure and install your head unit</h3>
               <p>
-                Screw in the headunit with 4 screws loosely to allow for minor adjustments later on.
+                Screw in the head unit with 4 screws loosely to allow for minor adjustments later on.
                 <strong> Caution:</strong> Ensure screws are handled carefully during installation to prevent them from
                 falling into the dashboard assembly.
               </p>
@@ -309,7 +307,7 @@ export default function DoubleDinPodUpgradeKitManual() {
               <div className="step-image panoramic">
                 <Image
                   src="/images/step9-image.jpg"
-                  alt="Screwing in headunit with brackets into car mounting points"
+                  alt="Screwing in head unit with brackets into car mounting points"
                   width={600}
                   height={400}
                   style={{ width: '100%', height: 'auto' }}
@@ -326,14 +324,14 @@ export default function DoubleDinPodUpgradeKitManual() {
               <h3>Install the front cover</h3>
               <p>
                 Place in the front cover and screw in the two screws on either side using the two screws you put aside in step 4. 
-                You might notice a gap forming underneath the headunit to the front cover. Simply flex and adjust the
+                You might notice a gap forming underneath the head unit to the front cover. Simply flex and adjust the
                 positions and angles of the mounts and screws until you are happy with the fitment.
               </p>
               <div className="step-images single-image">
               <div className="step-image">
                 <Image
                   src="/images/step10-image1.jpg"
-                  alt="Image shhowing gap between headunit and front cover"
+                  alt="Image shhowing gap between head unit and front cover"
                   width={600}
                   height={400}
                   style={{ width: '100%', height: 'auto' }}
@@ -362,7 +360,7 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Tighten all screws</h3>
               <p>
-                Once you are happy with the positioning of the headunit and front cover, go ahead and tighten all screws securely.
+                Once you are happy with the positioning of the head unit and front cover, go ahead and tighten all screws securely.
               </p>
             </div>
           </div>
@@ -380,7 +378,7 @@ export default function DoubleDinPodUpgradeKitManual() {
               <div className="step-image">
                 <Image
                   src="/images/step12-image1.jpg"
-                  alt="Navpod loosely placed on top of headunit"
+                  alt="Navpod loosely placed on top of head unit"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -389,7 +387,7 @@ export default function DoubleDinPodUpgradeKitManual() {
               <div className="step-image">
                 <Image
                   src="/images/step12-image2.jpg"
-                  alt="Navpod fully installed on top of headunit"
+                  alt="Navpod fully installed on top of head unit"
                   width={400}
                   height={300}
                   style={{ width: '100%', height: 'auto' }}
@@ -417,7 +415,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                   <p>
                     Make sure the clock wiring harness is tucked as low as possible after 
                     disconnecting. You may need to push it further down with your fingers to 
-                    create enough clearance for the headunit.
+                    create enough clearance for the head unit.
                   </p>
                 </div>
               )}
@@ -435,7 +433,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                 <div className="troubleshooting-answer">
                   <p>
                     Double-check you have the correct model kit for your Forester year (SG 2003-2008 USDM). 
-                    Ensure the brackets are attached to the correct sides of the headunit. Try loosening 
+                    Ensure the brackets are attached to the correct sides of the head unit. Try loosening 
                     the bracket screws slightly to allow for minor adjustments.
                   </p>
                 </div>
@@ -447,14 +445,14 @@ export default function DoubleDinPodUpgradeKitManual() {
                 className={`troubleshooting-question ${openTroubleshooting === 3 ? 'troubleshooting-question-active' : ''}`}
                 onClick={() => setOpenTroubleshooting(openTroubleshooting === 3 ? null : 3)}
               >
-                <span>Gap between headunit and front cover</span>
+                <span>Gap between head unit and front cover</span>
                 <ChevronDown className={`troubleshooting-icon ${openTroubleshooting === 3 ? 'troubleshooting-icon-active' : ''}`} size={20} />
               </button>
               {openTroubleshooting === 3 && (
                 <div className="troubleshooting-answer">
                   <p>
                     This is normal initially. Before tightening, flex and adjust the position of the 
-                    brackets and headunit. You may need to loosen all screws, reposition, and 
+                    brackets and head unit. You may need to loosen all screws, reposition, and 
                     gradually tighten them evenly to eliminate the gap.
                   </p>
                 </div>
@@ -504,14 +502,14 @@ export default function DoubleDinPodUpgradeKitManual() {
                 className={`troubleshooting-question ${openTroubleshooting === 6 ? 'troubleshooting-question-active' : ''}`}
                 onClick={() => setOpenTroubleshooting(openTroubleshooting === 6 ? null : 6)}
               >
-                <span>Headunit feels loose after installation</span>
+                <span>Head unit feels loose after installation</span>
                 <ChevronDown className={`troubleshooting-icon ${openTroubleshooting === 6 ? 'troubleshooting-icon-active' : ''}`} size={20} />
               </button>
               {openTroubleshooting === 6 && (
                 <div className="troubleshooting-answer">
                   <p>
-                    Check all 6 screws are properly tightened (4 for the headunit brackets and 2 for 
-                    the front cover). Ensure brackets are firmly attached to the headunit. The nav pod 
+                    Check all 6 screws are properly tightened (4 for the head unit brackets and 2 for 
+                    the front cover). Ensure brackets are firmly attached to the head unit. The nav pod 
                     pressing down on top also helps secure everything in place.
                   </p>
                 </div>
