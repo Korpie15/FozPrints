@@ -1,6 +1,7 @@
 'use client';
 
 import { Mail, MapPin, Phone, ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 import '../../styles/about.css';
 import { FormEvent, useState } from 'react';
 import { Toast } from '../../components/Toast';
@@ -57,23 +58,34 @@ export default function AboutPage() {
       <section className="about-section">
         <div className="container">
           <h1>About Foz Prints</h1>
-          <div className="about-content">
-            <p>
-              Welcome to Foz Prints, your premier destination for high-quality Subaru Forester 
-              prints and merchandise. We're passionate about the iconic Subaru Forester and 
-              dedicated to bringing unique, artistic designs to fellow enthusiasts.
-            </p>
-            <p>
-              Our collection features carefully curated prints that celebrate the spirit of 
-              adventure and reliability that the Subaru Forester represents. Each design is 
-              created with attention to detail and printed using premium materials to ensure 
-              lasting quality.
-            </p>
-            <p>
-              Whether you're looking to decorate your garage, office, or give the perfect gift 
-              to a Subaru enthusiast, we've got you covered. Our prints are printed on demand 
-              to reduce waste and ensure the freshest product for every order.
-            </p>
+          <div className="about-content-grid">
+            <div className="about-text">
+              <p>
+                Foz Prints was born out of necessity. As an SG Forester owner, 
+                I was tired of hunting for discontinued OEM parts or settling for brittle plastics that warped 
+                in the sun. I decided that if I couldn't buy the quality I wanted, I would engineer it.
+              </p>
+              <p>
+                What you see in this photo isn't just waste—it's the R&D process. It represents 
+                hundreds of hours of measuring, CAD modeling, and testing. We don't sell the first draft. 
+                We sell the version that finally met our standards after dozens of failed attempts.
+              </p>
+              <p>
+                We use advanced 3D printing techniques and heat-resistant ASA materials to create parts that 
+                blend seamlessly with your dashboard. Our goal is simple: to provide fellow enthusiasts with 
+                high-quality, functional upgrades that look and feel like factory equipment.
+              </p>
+            </div>
+            <div className="about-image">
+              <Image
+                src="/images/aboutUs.jpg"
+                alt="3D printed Subaru parts showing the R&D process"
+                width={600}
+                height={600}
+                style={{ objectFit: 'cover' }}
+                priority
+              />
+            </div>
           </div>
         </div>
       </section>
