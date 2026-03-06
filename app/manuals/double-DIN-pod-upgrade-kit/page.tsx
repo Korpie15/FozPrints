@@ -33,16 +33,6 @@ export default function DoubleDinPodUpgradeKitManual() {
               <Download size={20} />
               Download PDF Version
             </a>
-            <a
-              href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="download-pdf-button"
-              style={{ textDecoration: 'none' }}
-            >
-              <Video size={20} />
-              Watch Video Walkthrough
-            </a>
           </div>
         </div>
 
