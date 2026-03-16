@@ -125,16 +125,16 @@
 
 .product-card-button-cart {
   padding: 0.5rem;
-  background-color: #a8a8a8;
 }
 
-.product-card-button-cart:hover:not(:disabled) {
-  background-color: #4b5563;
-}
-
-.product-card-button-cart:disabled {
-  opacity: 0.5;
+.product-card-button-unavailable {
+  background-color: #a8a8a8 !important;
   cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.product-card-button-unavailable:hover {
+  background-color: #a8a8a8 !important;
 }
 
 @media (prefers-color-scheme: dark) {

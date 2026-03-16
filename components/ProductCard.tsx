@@ -20,13 +20,18 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const { cartId, setCartId, setItemCount } = useCartStore();
 
+  const firstVariant = product.variants.edges[0]?.node;
+  const isAvailable = firstVariant?.availableForSale ?? false;
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
+    if (!isAvailable) return;
+    
     setIsAdding(true);
     try {
-      const firstVariantId = product.variants.edges[0]?.node.id;
+      const firstVariantId = firstVariant?.id;
       if (!firstVariantId || !cartId) return;
 
       const updatedCart = await addToCart(cartId, [
@@ -74,8 +79,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="product-card-actions">
             <button 
               onClick={handleAddToCart}
-              disabled={isAdding}
-              className="product-card-button product-card-button-cart"
+              disabled={isAdding || !isAvailable}
+              className={`product-card-button product-card-button-cart ${!isAvailable ? 'product-card-button-unavailable' : ''}`}
+              title={isAvailable ? "Quick add to cart" : "Out of stock"}
             >
               <ShoppingCart size={16} />
             </button>
