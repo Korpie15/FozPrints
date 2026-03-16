@@ -6,7 +6,7 @@ import { ShopifyProduct } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
-import { addToCart } from '@/lib/shopify';
+import { addToCart, createCart } from '@/lib/shopify';
 import { useCartStore } from '@/lib/store';
 import '../styles/product-card.css';
 
@@ -18,10 +18,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const image = product.images.edges[0]?.node;
   const price = product.priceRange.minVariantPrice;
   const [isAdding, setIsAdding] = useState(false);
-  const { cartId, setCartId, setItemCount } = useCartStore();
+  const { cartId, setCartId, setItemCount, setItems, items } = useCartStore();
 
   const firstVariant = product.variants.edges[0]?.node;
-  const isAvailable = firstVariant?.availableForSale ?? false;
+  
+  // Check availability based on store's `items` map vs variant's `quantityAvailable`
+  const quantityInCart = firstVariant?.id ? (items[firstVariant.id] || 0) : 0;
+  const isAvailable = firstVariant?.availableForSale && (firstVariant?.quantityAvailable === undefined || quantityInCart < firstVariant.quantityAvailable);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,18 +35,33 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsAdding(true);
     try {
       const firstVariantId = firstVariant?.id;
-      if (!firstVariantId || !cartId) return;
+      if (!firstVariantId) return;
 
-      const updatedCart = await addToCart(cartId, [
+      let currentCartId = cartId;
+      if (!currentCartId) {
+        const newCart = await createCart();
+        currentCartId = newCart.id;
+        setCartId(newCart.id);
+      }
+
+      const updatedCart = await addToCart(currentCartId!, [
         { merchandiseId: firstVariantId, quantity: 1 },
       ]);
 
       setCartId(updatedCart.id);
+      
       const totalItems = updatedCart.lines.edges.reduce(
         (sum: number, edge: any) => sum + edge.node.quantity,
         0
       );
       setItemCount(totalItems);
+
+      const newItems: Record<string, number> = {};
+      updatedCart.lines.edges.forEach((edge: any) => {
+        const variantId = edge.node.merchandise.id;
+        newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
+      });
+      setItems(newItems);
     } catch (error) {
       console.error('Error adding to cart:', error);
     } finally {
@@ -81,7 +99,13 @@ export function ProductCard({ product }: ProductCardProps) {
               onClick={handleAddToCart}
               disabled={isAdding || !isAvailable}
               className={`product-card-button product-card-button-cart ${!isAvailable ? 'product-card-button-unavailable' : ''}`}
-              title={isAvailable ? "Quick add to cart" : "Out of stock"}
+              title={
+                !firstVariant?.availableForSale 
+                  ? "Out of stock" 
+                  : (firstVariant?.quantityAvailable !== undefined && quantityInCart >= firstVariant.quantityAvailable)
+                  ? "Sold out"
+                  : "Quick add to cart"
+              }
             >
               <ShoppingCart size={16} />
             </button>

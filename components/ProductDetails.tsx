@@ -21,7 +21,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showToast, setShowToast] = useState(false);
   
-  const { cartId, setCartId, setItemCount } = useCartStore();
+  const { cartId, setCartId, setItemCount, setItems, items } = useCartStore();
 
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
@@ -52,6 +52,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         0
       );
       setItemCount(totalItems);
+
+      const newItems: Record<string, number> = {};
+      updatedCart.lines.edges.forEach((edge: any) => {
+        const variantId = edge.node.merchandise.id;
+        newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
+      });
+      setItems(newItems);
 
       // Show success toast
       setShowToast(true);
@@ -218,10 +225,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
             <button
               onClick={() => {
-                const maxQuantity = selectedVariant?.quantityAvailable ?? 999;
+                const inCart = selectedVariant ? (items[selectedVariant.id] || 0) : 0;
+                const maxQuantity = selectedVariant?.quantityAvailable !== undefined 
+                  ? selectedVariant.quantityAvailable - inCart 
+                  : 999;
                 setQuantity(Math.min(maxQuantity, quantity + 1));
               }}
-              disabled={selectedVariant?.quantityAvailable !== undefined && quantity >= selectedVariant.quantityAvailable}
+              disabled={selectedVariant?.quantityAvailable !== undefined && quantity >= Math.max(0, selectedVariant.quantityAvailable - (items[selectedVariant?.id || ''] || 0))}
               className="quantity-button"
             >
               <Plus size={16} />
@@ -232,11 +242,22 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         {/* Add to Cart */}
         <button
           onClick={handleAddToCart}
-          disabled={isAdding || !selectedVariant?.availableForSale}
+          disabled={
+            isAdding || 
+            !selectedVariant?.availableForSale ||
+            (selectedVariant?.quantityAvailable !== undefined && 
+              quantity + (items[selectedVariant?.id || ''] || 0) > selectedVariant.quantityAvailable)
+          }
           className="product-add-to-cart"
         >
           <ShoppingCart size={20} />
-          {isAdding ? 'Adding...' : selectedVariant?.availableForSale ? 'Add to Cart' : 'Out of Stock'}
+          {isAdding
+            ? 'Adding...'
+            : !selectedVariant?.availableForSale
+            ? 'Out of Stock'
+            : selectedVariant?.quantityAvailable !== undefined && (items[selectedVariant?.id || ''] || 0) >= selectedVariant.quantityAvailable
+            ? 'Sold Out'
+            : 'Add to Cart'}
         </button>
 
         {/* Availability */}

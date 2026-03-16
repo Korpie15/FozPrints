@@ -13,7 +13,26 @@ import '../../styles/cart.css';
 export default function CartPage() {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { cartId, setItemCount, clearCart } = useCartStore();
+  const { cartId, setItemCount, setItems, clearCart } = useCartStore();
+
+  const updateStoreFromCart = (cartData: ShopifyCart | null) => {
+    if (!cartData) {
+      clearCart();
+      return;
+    }
+    const totalItems = cartData.lines.edges.reduce(
+      (sum: number, edge: any) => sum + edge.node.quantity,
+      0
+    );
+    setItemCount(totalItems);
+
+    const newItems: Record<string, number> = {};
+    cartData.lines.edges.forEach((edge: any) => {
+      const variantId = edge.node.merchandise.id;
+      newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
+    });
+    setItems(newItems);
+  };
 
   useEffect(() => {
     async function loadCart() {
@@ -26,19 +45,13 @@ export default function CartPage() {
         const cartData = await getCart(cartId);
         
         if (!cartData) {
-          clearCart();
+          updateStoreFromCart(null);
           setCart(null);
           return;
         }
 
         setCart(cartData);
-        
-        // Update item count
-        const totalItems = cartData.lines.edges.reduce(
-          (sum: number, edge: { node: { quantity: number } }) => sum + edge.node.quantity,
-          0
-        );
-        setItemCount(totalItems);
+        updateStoreFromCart(cartData);
       } catch (error) {
         console.error('Error loading cart:', error);
       } finally {
@@ -47,7 +60,7 @@ export default function CartPage() {
     }
 
     loadCart();
-  }, [cartId, setItemCount, clearCart]);
+  }, [cartId, setItemCount, setItems, clearCart]);
 
   const handleUpdateQuantity = async (lineId: string, quantity: number) => {
     if (!cartId || !cart) return;
@@ -57,13 +70,7 @@ export default function CartPage() {
         { id: lineId, quantity },
       ]);
       setCart(updatedCart);
-      
-      // Update item count
-      const totalItems = updatedCart.lines.edges.reduce(
-        (sum: number, edge: { node: { quantity: number } }) => sum + edge.node.quantity,
-        0
-      );
-      setItemCount(totalItems);
+      updateStoreFromCart(updatedCart);
     } catch (error) {
       console.error('Error updating cart:', error);
     }
@@ -75,13 +82,7 @@ export default function CartPage() {
     try {
       const updatedCart = await removeFromCart(cartId, [lineId]);
       setCart(updatedCart);
-      
-      // Update item count
-      const totalItems = updatedCart.lines.edges.reduce(
-        (sum: number, edge: { node: { quantity: number } }) => sum + edge.node.quantity,
-        0
-      );
-      setItemCount(totalItems);
+      updateStoreFromCart(updatedCart);
     } catch (error) {
       console.error('Error removing item:', error);
     }

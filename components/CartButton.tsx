@@ -8,7 +8,7 @@ import { getCart } from '@/lib/shopify';
 import '../styles/cart-button.css';
 
 export function CartButton() {
-  const { itemCount, cartId, setItemCount, clearCart } = useCartStore();
+  const { itemCount, cartId, setItemCount, setItems, clearCart } = useCartStore();
 
   useEffect(() => {
     async function syncCart() {
@@ -27,6 +27,14 @@ export function CartButton() {
           if (totalItems !== itemCount) {
             setItemCount(totalItems);
           }
+          
+          // Sync items map
+          const newItems: Record<string, number> = {};
+          cart.lines.edges.forEach((edge: any) => {
+            const variantId = edge.node.merchandise.id;
+            newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
+          });
+          setItems(newItems);
         }
       } catch (error) {
         console.error('Error syncing cart:', error);
@@ -34,7 +42,7 @@ export function CartButton() {
     }
     
     syncCart();
-  }, [cartId, clearCart, setItemCount, itemCount]);
+  }, [cartId, clearCart, setItemCount, setItems, itemCount]);
 
   return (
     <Link href="/cart" className="cart-button">
