@@ -13,7 +13,7 @@ import '../../styles/cart.css';
 export default function CartPage() {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { cartId, setItemCount } = useCartStore();
+  const { cartId, setItemCount, clearCart } = useCartStore();
 
   useEffect(() => {
     async function loadCart() {
@@ -24,6 +24,13 @@ export default function CartPage() {
 
       try {
         const cartData = await getCart(cartId);
+        
+        if (!cartData) {
+          clearCart();
+          setCart(null);
+          return;
+        }
+
         setCart(cartData);
         
         // Update item count
@@ -40,7 +47,7 @@ export default function CartPage() {
     }
 
     loadCart();
-  }, [cartId, setItemCount]);
+  }, [cartId, setItemCount, clearCart]);
 
   const handleUpdateQuantity = async (lineId: string, quantity: number) => {
     if (!cartId || !cart) return;
