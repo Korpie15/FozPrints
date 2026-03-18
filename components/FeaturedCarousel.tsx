@@ -34,7 +34,8 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Auto-advance carousel every 5 seconds (only on mobile)
+  // Auto-advance removed as requested
+  /*
   useEffect(() => {
     if (!isMounted || !isMobile) return;
     
@@ -47,6 +48,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
 
     return () => clearInterval(timer);
   }, [maxIndex, resetTimer, isMounted, isMobile]);
+  */
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => {
