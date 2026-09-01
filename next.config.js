@@ -4,6 +4,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'files.stripe.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.shopify.com',
       },
       {
@@ -12,6 +16,6 @@ const nextConfig = {
       },
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

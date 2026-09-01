@@ -1,20 +1,26 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { getProductsByHandles } from '@/lib/shopify';
+import { getProducts, getProductsByHandles } from '@/lib/stripe';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
-  // Manually select featured products by their handles
-  // Replace these handles with your actual product handles from Shopify
   const featuredHandles = [
     'sg-forester-pod-kit',
-    'subaru-forester-sg-2003-2008-double-din-lower-storage-cubby', 
+    'subaru-forester-sg-2003-2008-double-din-lower-storage-cubby',
     'rooftop-tent-anderson-plug-holder-t-slot-power-mount',
-    'rooftop-tent-cable-organiser-t-slot-wire-router'
+    'rooftop-tent-cable-organiser-t-slot-wire-router',
   ];
-  
-  const featuredProducts = await getProductsByHandles(featuredHandles);
+
+  let featuredProducts = await getProductsByHandles(featuredHandles);
+
+  // If handle matching returned fewer items, fallback to the top active products
+  if (featuredProducts.length === 0) {
+    const allProducts = await getProducts();
+    featuredProducts = allProducts.slice(0, 4);
+  }
 
   return (
     <div>
@@ -37,7 +43,7 @@ export default async function HomePage() {
       <section className="home-products">
         <div className="container">
           <h2>Featured Products</h2>
-          
+
           <FeaturedCarousel products={featuredProducts} />
 
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>

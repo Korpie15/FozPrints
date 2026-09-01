@@ -1,7 +1,9 @@
-import { getProducts } from '@/lib/shopify';
+import { getProducts } from '@/lib/stripe';
 import { ProductCard } from '@/components/ProductCard';
-import { ShopifyProduct } from '@/types/shopify';
-import '../../styles/products.css';
+import { Product } from '@/types/product';
+import '@/styles/products.css';
+
+export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
   const products = await getProducts();
@@ -19,12 +21,12 @@ export default async function ProductsPage() {
         {products.length === 0 ? (
           <div className="products-error">
             <p>
-              No products found. Please configure your Shopify store.
+              No products found. Please ensure your active products are created in Stripe.
             </p>
           </div>
         ) : (
           <div className="products-grid">
-            {products.map((product: ShopifyProduct) => (
+            {products.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

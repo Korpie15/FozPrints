@@ -1,33 +1,47 @@
 # Foz Prints 🚗
 
-A modern, headless e-commerce platform for selling Subaru Forester prints and merchandise, built with Next.js 14+ and Shopify Storefront API.
+A modern, headless e-commerce platform for selling Subaru Forester 3D printed parts and merchandise, built with Next.js and Stripe.
 
 ## Features
 
-- 🛒 **Full E-commerce Functionality**: Product listings, cart, checkout
-- ⚡ **Performance**: Server-side rendering with Next.js App Router
-- 🔄 **Real-time Cart**: Zustand state management with localStorage persistence
-- 📱 **Responsive Design**: Mobile-first approach
-- 🔐 **Secure Checkout**: Powered by Shopify's secure payment processing
-- 🎯 **SEO Optimized**: Server-side rendering for better search rankings
+- 🛒 **Full E-commerce Functionality**: Stripe-powered product catalog, cart, and hosted checkout
+- ⚡ **Performance**: Server-rendered product pages with Next.js App Router
+- 🔄 **Instant Local Cart**: Zustand state management with localStorage persistence
+- 📦 **Australia Post Shipping**: Configured domestic and international parcel options
+- 🔐 **Secure Checkout**: Powered by Stripe Checkout (Credit Card, Apple Pay, Google Pay, Link)
+- ✉️ **Automated Emails**: Customer receipts and workshop notifications via Resend
+- 📱 **Mobile First**: Responsive layout with carousel and quick-add actions
 
 ## Tech Stack
 
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js (App Router)
 - **Language**: TypeScript
-- **Styling**:  CSS
-- **E-commerce**: Shopify Storefront API (GraphQL)
+- **Payments & Catalog**: Stripe API & Stripe Checkout
 - **State Management**: Zustand
+- **Email Delivery**: Resend
 - **Icons**: Lucide React
-- **Deployment**: Vercel (recommended)
+- **Hosting**: Netlify
 
-## Prerequisites
+## Environment Variables
 
-- Node.js 18+ installed
-- A Shopify store (free trial available)
-- Shopify Storefront API access token
+Copy `.env.example` to `.env.local` and add your keys:
 
-## Setup Instructions
+```env
+# Stripe API Keys
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# Webhook Secret (from Stripe CLI for local dev, or Stripe Dashboard in production)
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Site URL
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Transactional Email (optional)
+RESEND_API_KEY=re_...
+```
+
+## Getting Started
 
 ### 1. Install Dependencies
 
@@ -35,44 +49,7 @@ A modern, headless e-commerce platform for selling Subaru Forester prints and me
 npm install
 ```
 
-### 2. Configure Shopify
-
-1. **Create a Shopify Store** (if you don't have one):
-   - Go to [Shopify](https://www.shopify.com)
-   - Sign up for a free trial
-
-2. **Create a Storefront API Access Token**:
-   - In your Shopify admin, go to: **Settings** → **Apps and sales channels** → **Develop apps**
-   - Click **"Create an app"**
-   - Name it "Foz Prints" or similar
-   - Go to **Configuration** tab
-   - Under **Storefront API**, click **Configure**
-   - Enable all read permissions (Product listings, Cart, etc.)
-   - Click **Save**
-   - Go to **API credentials** tab
-   - Copy the **Storefront API access token**
-
-3. **Add Products to Your Store**:
-   - Add your products in your Shopify admin
-   - Include good images, descriptions, and prices
-
-### 3. Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` with your Shopify credentials:
-
-```env
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store-name.myshopify.com
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-storefront-access-token
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
-
-### 4. Run the Development Server
+### 2. Run Development Server
 
 ```bash
 npm run dev
@@ -80,129 +57,44 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### 3. Local Webhook Testing (Optional)
+
+To test order completion webhooks and emails locally:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Copy the printed `whsec_...` secret to your `.env.local` as `STRIPE_WEBHOOK_SECRET`.
+
 ## Project Structure
 
 ```
 fozprints/
-├── app/                      # Next.js App Router pages
-│   ├── cart/                 # Shopping cart page
-│   ├── products/             # Product listing and detail pages
-│   │   └── [handle]/         # Dynamic product pages
-│   ├── layout.tsx            # Root layout with header/footer
-│   ├── page.tsx              # Homepage
-│   └── globals.css           # Global styles
-├── components/               # React components
-│   ├── CartButton.tsx        # Header cart button with count
-│   ├── Footer.tsx            # Site footer
-│   ├── Header.tsx            # Site header/navigation
-│   ├── ProductCard.tsx       # Product grid item
-│   └── ProductDetails.tsx    # Product detail page component
-├── lib/                      # Utility functions and API clients
-│   ├── shopify.ts            # Shopify Storefront API client
-│   ├── store.ts              # Zustand state management
-│   └── utils.ts              # Helper functions
-├── types/                    # TypeScript type definitions
-│   └── shopify.ts            # Shopify API types
-├── public/                   # Static assets
-├── .env.example              # Environment variables template
-├── .gitignore                # Git ignore rules
-├── next.config.js            # Next.js configuration
-├── package.json              # Dependencies
-└── tsconfig.json             # TypeScript configuration
+├── app/                      # Next.js App Router
+│   ├── api/
+│   │   ├── checkout/         # Stripe Checkout Session generator
+│   │   ├── contact/          # Contact form handler
+│   │   └── webhooks/stripe/  # Stripe fulfillment webhook
+│   ├── cart/                 # Cart page with Stripe checkout action
+│   ├── checkout/success/     # Order success screen
+│   ├── manuals/              # Installation guides
+│   ├── policies/[handle]/    # Static shop policies
+│   ├── products/             # Product catalog & dynamic detail pages
+│   ├── layout.tsx            # Root layout with Header and Footer
+│   └── page.tsx              # Homepage with featured carousel
+├── components/               # UI components
+│   ├── CartButton.tsx        # Cart badge with live item count
+│   ├── FeaturedCarousel.tsx  # Homepage product carousel
+│   ├── Footer.tsx            # Footer with static policies
+│   ├── Header.tsx            # Navigation header
+│   ├── ProductCard.tsx       # Product grid card with quick-add
+│   └── ProductDetails.tsx    # Product gallery & variant selector
+├── lib/
+│   ├── policies.ts           # Australian e-commerce shop policies
+│   ├── store.ts              # Zustand local cart store
+│   ├── stripe.ts             # Stripe server SDK client & fetchers
+│   └── utils.ts              # Price formatting utilities
+└── types/
+    └── product.ts            # Product, Variant, and CartItem types
 ```
-
-## Available Scripts
-
-- `npm run dev` - Start development server on port 3000
-- `npm run build` - Build production bundle
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint for code quality
-- `npm run type-check` - Check TypeScript types
-
-## Key Features Implementation
-
-### Shopping Cart
-- Persistent cart using Shopify Cart API
-- Stored cart ID in localStorage via Zustand
-- Add, update, remove cart items
-- Real-time cart count in header
-
-### Product Management
-- Server-side rendered product pages for SEO
-- Dynamic routing for individual products
-- Variant selection support
-- Real-time availability checking
-
-### Checkout
-- Seamless redirect to Shopify's secure checkout
-- All payment methods supported by Shopify
-- Order management through Shopify admin
-
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Go to [Vercel](https://vercel.com)
-3. Import your repository
-4. Add environment variables:
-   - `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN`
-   - `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN`
-   - `NEXT_PUBLIC_SITE_URL`
-5. Deploy!
-
-### Other Platforms
-
-This Next.js app can be deployed to any platform that supports Node.js:
-- Netlify
-- Railway
-- Render
-- AWS Amplify
-- DigitalOcean App Platform
-
-## Customization
-
-### Styling
-- Primary color scheme is defined in the config
-- Modify `app/globals.css` for global styles
-
-### Adding Features
-- **Search**: Add Shopify search API integration
-- **Filters**: Implement product filtering by category, price, etc.
-- **Reviews**: Use Shopify product metafields or third-party app
-- **Wishlist**: Extend Zustand store for wishlist functionality
-- **User Accounts**: Integrate Shopify Customer API
-
-## Troubleshooting
-
-### Products Not Loading
-- Verify your Shopify credentials in `.env.local`
-- Check that your Storefront API token has correct permissions
-- Ensure products are published to your "Online Store" sales channel
-
-### Cart Not Working
-- Check browser console for errors
-- Verify Shopify Cart API is enabled
-- Clear localStorage and try again
-
-### Build Errors
-- Run `npm run type-check` to find TypeScript issues
-- Ensure all dependencies are installed: `npm install`
-
-## Support
-
-For issues or questions:
-1. Check the [Next.js documentation](https://nextjs.org/docs)
-2. Review [Shopify Storefront API docs](https://shopify.dev/docs/api/storefront)
-3. Open an issue in this repository
-
-## License
-
-This project is open source and available under the MIT License.
-
----
-
-Built with ❤️ for Subaru Forester enthusiasts
-# FozPrints
-# FozPrints
-# FozPrints

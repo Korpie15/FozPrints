@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
-import { getProduct } from '@/lib/shopify';
+import { getProduct } from '@/lib/stripe';
 import { ProductDetails } from '@/components/ProductDetails';
+
+export const dynamic = 'force-dynamic';
 
 interface ProductPageProps {
   params: Promise<{
@@ -10,7 +12,6 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   try {
-    // In Next.js 15+, params is a Promise and needs to be awaited
     const { handle } = await params;
     const product = await getProduct(handle);
 

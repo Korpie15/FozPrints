@@ -1,9 +1,9 @@
-import { getShopPolicies } from '@/lib/shopify';
+import { getShopPolicies } from '@/lib/policies';
 import '../styles/footer.css';
 
 export async function Footer() {
   let policies = null;
-  
+
   try {
     policies = await getShopPolicies();
   } catch (error) {

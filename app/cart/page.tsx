@@ -3,92 +3,53 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
-import { getCart, updateCartLines, removeFromCart } from '@/lib/shopify';
-import { ShopifyCart } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
-import '../../styles/cart.css';
+import '@/styles/cart.css';
 
 export default function CartPage() {
-  const [cart, setCart] = useState<ShopifyCart | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { cartId, setItemCount, setItems, clearCart } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const updateStoreFromCart = (cartData: ShopifyCart | null) => {
-    if (!cartData) {
-      clearCart();
-      return;
-    }
-    const totalItems = cartData.lines.edges.reduce(
-      (sum: number, edge: any) => sum + edge.node.quantity,
-      0
-    );
-    setItemCount(totalItems);
-
-    const newItems: Record<string, number> = {};
-    cartData.lines.edges.forEach((edge: any) => {
-      const variantId = edge.node.merchandise.id;
-      newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
-    });
-    setItems(newItems);
-  };
+  const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
 
   useEffect(() => {
-    async function loadCart() {
-      if (!cartId) {
-        setIsLoading(false);
-        return;
-      }
+    setMounted(true);
+  }, []);
 
-      try {
-        const cartData = await getCart(cartId);
-        
-        if (!cartData) {
-          updateStoreFromCart(null);
-          setCart(null);
-          return;
-        }
-
-        setCart(cartData);
-        updateStoreFromCart(cartData);
-      } catch (error) {
-        console.error('Error loading cart:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadCart();
-  }, [cartId, setItemCount, setItems, clearCart]);
-
-  const handleUpdateQuantity = async (lineId: string, quantity: number) => {
-    if (!cartId || !cart) return;
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+    setIsCheckingOut(true);
+    setCheckoutError(null);
 
     try {
-      const updatedCart = await updateCartLines(cartId, [
-        { id: lineId, quantity },
-      ]);
-      setCart(updatedCart);
-      updateStoreFromCart(updatedCart);
-    } catch (error) {
-      console.error('Error updating cart:', error);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to initiate checkout.');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      setCheckoutError(err.message || 'Something went wrong. Please try again.');
+      setIsCheckingOut(false);
     }
   };
 
-  const handleRemoveItem = async (lineId: string) => {
-    if (!cartId || !cart) return;
-
-    try {
-      const updatedCart = await removeFromCart(cartId, [lineId]);
-      setCart(updatedCart);
-      updateStoreFromCart(updatedCart);
-    } catch (error) {
-      console.error('Error removing item:', error);
-    }
-  };
-
-  if (isLoading) {
+  if (!mounted) {
     return (
       <div className="cart-page">
         <div className="cart-empty">
@@ -98,7 +59,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.lines.edges.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="cart-page">
         <div className="cart-empty">
@@ -115,6 +76,9 @@ export default function CartPage() {
     );
   }
 
+  const subtotal = getSubtotal();
+  const currencyCode = items[0]?.currencyCode || 'AUD';
+
   return (
     <div className="cart-page">
       <h1 className="cart-title">Shopping Cart</h1>
@@ -122,113 +86,121 @@ export default function CartPage() {
       <div className="cart-container">
         {/* Cart Items */}
         <div className="cart-items">
-          {cart.lines.edges.map(({ node: line }) => {
-            const image = line.merchandise.product.images.edges[0]?.node;
-            
-            return (
-              <div key={line.id} className="cart-item">
-                <div className="cart-item-image">
-                  {image ? (
-                    <Image
-                      src={image.url}
-                      alt={image.altText || line.merchandise.product.title}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.75rem' }}>
-                      No image
-                    </div>
-                  )}
-                </div>
+          {items.map((item) => (
+            <div key={item.id} className="cart-item">
+              <div className="cart-item-image">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.75rem' }}>
+                    No image
+                  </div>
+                )}
+              </div>
 
-                <div className="cart-item-details">
-                  <Link 
-                    href={`/products/${line.merchandise.product.handle}`}
-                    className="cart-item-title"
-                  >
-                    {line.merchandise.product.title}
-                  </Link>
-                  {line.merchandise.title !== 'Default Title' && (
-                    <p className="cart-item-variant">
-                      {line.merchandise.title}
-                    </p>
-                  )}
+              <div className="cart-item-details">
+                <Link
+                  href={`/products/${item.handle}`}
+                  className="cart-item-title"
+                >
+                  {item.title}
+                </Link>
+                {item.variantTitle && item.variantTitle !== 'Default' && (
+                  <p className="cart-item-variant">
+                    {item.variantTitle}
+                  </p>
+                )}
 
-                  <div className="cart-item-actions">
-                    <div className="cart-item-quantity">
-                      <button
-                        onClick={() => handleUpdateQuantity(line.id, Math.max(1, line.quantity - 1))}
-                        className="cart-quantity-button"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="cart-quantity-value">
-                        {line.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleUpdateQuantity(line.id, line.quantity + 1)}
-                        className="cart-quantity-button"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-
-                    <span className="cart-item-price">
-                      {formatPrice(
-                        (parseFloat(line.merchandise.price.amount) * line.quantity).toString(),
-                        line.merchandise.price.currencyCode
-                      )}
-                    </span>
-
+                <div className="cart-item-actions">
+                  <div className="cart-item-quantity">
                     <button
-                      onClick={() => handleRemoveItem(line.id)}
-                      className="cart-item-remove"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="cart-quantity-button"
+                      aria-label="Decrease quantity"
                     >
-                      <Trash2 size={20} />
+                      <Minus size={16} />
+                    </button>
+                    <span className="cart-quantity-value">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="cart-quantity-button"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus size={16} />
                     </button>
                   </div>
+
+                  <span className="cart-item-price">
+                    {formatPrice((item.price * item.quantity).toString(), item.currencyCode)}
+                  </span>
+
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="cart-item-remove"
+                    aria-label="Remove item"
+                  >
+                    <Trash2 size={20} />
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {/* Order Summary */}
         <div className="cart-summary">
           <h2>Order Summary</h2>
-          
+
           <div className="cart-summary-row">
             <span>Subtotal</span>
             <span>
-              {formatPrice(
-                cart.cost.subtotalAmount.amount,
-                cart.cost.subtotalAmount.currencyCode
-              )}
+              {formatPrice(subtotal.toString(), currencyCode)}
             </span>
           </div>
           <div className="cart-summary-row">
             <span>Shipping</span>
-            <span>Calculated at checkout</span>
+            <span>Calculated at checkout (Australia Post)</span>
           </div>
 
           <div className="cart-summary-row">
             <span>Total</span>
             <span>
-              {formatPrice(
-                cart.cost.totalAmount.amount,
-                cart.cost.totalAmount.currencyCode
-              )}
+              {formatPrice(subtotal.toString(), currencyCode)}
             </span>
           </div>
+
+          {checkoutError && (
+            <div style={{ color: '#dc2626', fontSize: '0.875rem', marginTop: '0.5rem', textAlign: 'center' }}>
+              {checkoutError}
+            </div>
+          )}
 
           <Link href="/products" className="cart-continue-shopping">
             Continue Shopping
           </Link>
 
-          <a href={cart.checkoutUrl} className="cart-checkout-button">
-            Proceed to Checkout
-          </a>
+          <button
+            onClick={handleCheckout}
+            disabled={isCheckingOut}
+            className="cart-checkout-button"
+            style={{ width: '100%', cursor: isCheckingOut ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          >
+            {isCheckingOut ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Connecting to Stripe...
+              </>
+            ) : (
+              'Proceed to Checkout'
+            )}
+          </button>
         </div>
       </div>
     </div>

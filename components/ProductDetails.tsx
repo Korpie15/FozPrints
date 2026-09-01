@@ -3,75 +3,45 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import { ShopifyProduct } from '@/types/shopify';
+import { Product } from '@/types/product';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
-import { createCart, addToCart } from '@/lib/shopify';
 import { Toast } from './Toast';
 import '../styles/product-details.css';
 
 interface ProductDetailsProps {
-  product: ShopifyProduct;
+  product: Product;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node);
-  const [isAdding, setIsAdding] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showToast, setShowToast] = useState(false);
-  
-  const { cartId, setCartId, setItemCount, setItems, items } = useCartStore();
 
-  const handleAddToCart = async () => {
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = () => {
     if (!selectedVariant) return;
-    
-    setIsAdding(true);
-    
-    try {
-      let currentCartId = cartId;
-      
-      // Create cart if it doesn't exist
-      if (!currentCartId) {
-        const newCart = await createCart();
-        currentCartId = newCart.id;
-        setCartId(newCart.id);
-      }
 
-      // Add item to cart
-      const updatedCart = await addToCart(currentCartId!, [
-        {
-          merchandiseId: selectedVariant.id,
-          quantity,
-        },
-      ]);
+    addItem({
+      id: selectedVariant.id,
+      productId: product.id,
+      title: product.title,
+      variantTitle: selectedVariant.title,
+      price: parseFloat(selectedVariant.price.amount),
+      priceCents: selectedVariant.priceCents,
+      currencyCode: selectedVariant.price.currencyCode,
+      image: selectedVariant.image?.url || product.images[0]?.url,
+      handle: product.handle,
+      quantity,
+    });
 
-      // Update cart count
-      const totalItems = updatedCart.lines.edges.reduce(
-        (sum: number, edge: any) => sum + edge.node.quantity,
-        0
-      );
-      setItemCount(totalItems);
-
-      const newItems: Record<string, number> = {};
-      updatedCart.lines.edges.forEach((edge: any) => {
-        const variantId = edge.node.merchandise.id;
-        newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
-      });
-      setItems(newItems);
-
-      // Show success toast
-      setShowToast(true);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      // Could add error toast here in the future
-    } finally {
-      setIsAdding(false);
-    }
+    setShowToast(true);
   };
 
-  const selectedImage = product.images.edges[selectedImageIndex]?.node;
-  const totalImages = product.images.edges.length;
+  const selectedImage = product.images[selectedImageIndex];
+  const totalImages = product.images.length;
 
   const goToPreviousImage = () => {
     setSelectedImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
@@ -80,6 +50,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const goToNextImage = () => {
     setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
+
+  const isAvailable = selectedVariant ? selectedVariant.availableForSale : true;
 
   return (
     <>
@@ -92,180 +64,162 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       <div className="product-details">
         {/* Product Images */}
         <div className="product-images">
-        <div className="product-main-image">
-          {selectedImage ? (
-            <>
-              <Image
-                src={selectedImage.url}
-                alt={selectedImage.altText || product.title}
-                fill
-                style={{ objectFit: 'cover' }}
-                priority
-              />
-              {totalImages > 1 && (
-                <>
-                  <button
-                    onClick={goToPreviousImage}
-                    className="product-image-nav product-image-nav-prev"
-                    aria-label="Previous image"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={goToNextImage}
-                    className="product-image-nav product-image-nav-next"
-                    aria-label="Next image"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="product-no-image">
-              No image available
+          <div className="product-main-image">
+            {selectedImage ? (
+              <>
+                <Image
+                  src={selectedImage.url}
+                  alt={selectedImage.altText || product.title}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+                {totalImages > 1 && (
+                  <>
+                    <button
+                      onClick={goToPreviousImage}
+                      className="product-image-nav product-image-nav-prev"
+                      aria-label="Previous image"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={goToNextImage}
+                      className="product-image-nav product-image-nav-next"
+                      aria-label="Next image"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="product-no-image">
+                No image available
+              </div>
+            )}
+          </div>
+
+          {/* Thumbnails */}
+          {totalImages > 1 && (
+            <div className="product-thumbnails">
+              {product.images.map((img, index) => (
+                <div
+                  key={index}
+                  className={`product-thumbnail ${index === selectedImageIndex ? 'product-thumbnail-active' : ''}`}
+                  onClick={() => setSelectedImageIndex(index)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.altText || `${product.title} ${index + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </div>
-        
-        {/* Additional images */}
-        {product.images.edges.length > 1 && (
-          <div className="product-thumbnails">
-            {product.images.edges.map((edge, index) => (
-              <div 
-                key={index} 
-                className={`product-thumbnail ${index === selectedImageIndex ? 'product-thumbnail-active' : ''}`}
-                onClick={() => setSelectedImageIndex(index)}
-                style={{ cursor: 'pointer' }}
-              >
-                <Image
-                  src={edge.node.url}
-                  alt={edge.node.altText || `${product.title} ${index + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            ))}
+
+        {/* Product Info */}
+        <div className="product-info">
+          <h1 className="product-title">
+            {product.title}
+          </h1>
+
+          <div className="product-price-container">
+            <span className="product-price">
+              {formatPrice(
+                selectedVariant?.price.amount || product.price.toString(),
+                selectedVariant?.price.currencyCode || product.currencyCode
+              )}
+            </span>
           </div>
-        )}
-      </div>
 
-      {/* Product Info */}
-      <div className="product-info">
-        <h1 className="product-title">
-          {product.title}
-        </h1>
-        
-        <div className="product-price-container">
-          <span className="product-price">
-            {formatPrice(
-              selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount,
-              selectedVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode
-            )}
-          </span>
-        </div>
-
-        {/* Variants */}
-        {product.variants.edges.length > 1 && (
-          <div className="product-variants">
-            <label>Options</label>
-            <select
-              onChange={(e) => {
-                const variant = product.variants.edges.find(
-                  (edge) => edge.node.id === e.target.value
-                )?.node;
-                if (variant) {
-                  setSelectedVariant(variant);
-                  
-                  // Switch to variant's image if it has one
-                  if (variant.image) {
-                    const imageIndex = product.images.edges.findIndex(
-                      (edge) => edge.node.url === variant.image?.url
-                    );
-                    if (imageIndex !== -1) {
-                      setSelectedImageIndex(imageIndex);
+          {/* Variants Selector */}
+          {product.variants.length > 1 && (
+            <div className="product-variants">
+              <label>Options</label>
+              <select
+                onChange={(e) => {
+                  const variant = product.variants.find((v) => v.id === e.target.value);
+                  if (variant) {
+                    setSelectedVariant(variant);
+                    if (variant.image) {
+                      const imageIndex = product.images.findIndex((img) => img.url === variant.image?.url);
+                      if (imageIndex !== -1) {
+                        setSelectedImageIndex(imageIndex);
+                      }
                     }
                   }
-                }
-              }}
-              value={selectedVariant?.id}
-            >
-              {product.variants.edges.map((edge) => (
-                <option key={edge.node.id} value={edge.node.id}>
-                  {edge.node.title}
-                </option>
-              ))}
-            </select>
+                }}
+                value={selectedVariant?.id}
+              >
+                {product.variants.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="product-description">
+            {product.descriptionHtml ? (
+              <div
+                className="product-description-content"
+                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              />
+            ) : (
+              <p className="product-description-content">{product.description}</p>
+            )}
           </div>
-        )}
 
-        <div className="product-description">
-          <div 
-            className="product-description-content"
-            dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-          />
-        </div>
-
-        {/* Quantity */}
-        <div className="product-quantity">
-          <label>Quantity</label>
-          <div className="quantity-controls">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="quantity-button"
-            >
-              <Minus size={16} />
-            </button>
-            <span className="quantity-value">
-              {quantity}
-            </span>
-            <button
-              onClick={() => {
-                const inCart = selectedVariant ? (items[selectedVariant.id] || 0) : 0;
-                const maxQuantity = selectedVariant?.quantityAvailable !== undefined 
-                  ? selectedVariant.quantityAvailable - inCart 
-                  : 999;
-                setQuantity(Math.min(maxQuantity, quantity + 1));
-              }}
-              disabled={selectedVariant?.quantityAvailable !== undefined && quantity >= Math.max(0, selectedVariant.quantityAvailable - (items[selectedVariant?.id || ''] || 0))}
-              className="quantity-button"
-            >
-              <Plus size={16} />
-            </button>
+          {/* Quantity Controls */}
+          <div className="product-quantity">
+            <label>Quantity</label>
+            <div className="quantity-controls">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="quantity-button"
+                aria-label="Decrease quantity"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="quantity-value">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="quantity-button"
+                aria-label="Increase quantity"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Add to Cart */}
-        <button
-          onClick={handleAddToCart}
-          disabled={
-            isAdding || 
-            !selectedVariant?.availableForSale ||
-            (selectedVariant?.quantityAvailable !== undefined && 
-              quantity + (items[selectedVariant?.id || ''] || 0) > selectedVariant.quantityAvailable)
-          }
-          className="product-add-to-cart"
-        >
-          <ShoppingCart size={20} />
-          {isAdding
-            ? 'Adding...'
-            : !selectedVariant?.availableForSale
-            ? 'Out of Stock'
-            : selectedVariant?.quantityAvailable !== undefined && (items[selectedVariant?.id || ''] || 0) >= selectedVariant.quantityAvailable
-            ? 'Sold Out'
-            : 'Add to Cart'}
-        </button>
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!isAvailable}
+            className="product-add-to-cart"
+          >
+            <ShoppingCart size={20} />
+            {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
+          </button>
 
-        {/* Availability */}
-        <div className={`product-availability ${selectedVariant?.availableForSale ? 'product-in-stock' : 'product-out-of-stock'}`}>
-          {selectedVariant?.availableForSale ? '✓ In Stock' : '✕ Out of Stock'}
+          {/* Availability badge */}
+          <div className={`product-availability ${isAvailable ? 'product-in-stock' : 'product-out-of-stock'}`}>
+            {isAvailable ? '✓ In Stock' : '✕ Out of Stock'}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

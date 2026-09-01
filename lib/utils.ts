@@ -10,3 +10,16 @@ export function formatPrice(amount: string, currencyCode: string): string {
     currency: currencyCode,
   }).format(parseFloat(amount));
 }
+
+export function stripHtml(html: string): string {
+  if (!html) return '';
+  return html
+    .replace(/<[^>]*>?/gm, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+}
