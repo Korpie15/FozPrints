@@ -63,8 +63,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="product-card-wrapper" ref={dropdownRef}>
-      <Link href={`/products/${product.handle}`} className="product-card">
-        <div className="product-card-image">
+      <div className="product-card">
+        <Link href={`/products/${product.handle}`} className="product-card-image">
           {image ? (
             <Image
               src={image.url}
@@ -77,10 +77,12 @@ export function ProductCard({ product }: ProductCardProps) {
               No image
             </div>
           )}
-        </div>
+        </Link>
 
         <div className="product-card-content">
-          <h3 className="product-card-title">{product.title}</h3>
+          <Link href={`/products/${product.handle}`} style={{ textDecoration: 'none' }}>
+            <h3 className="product-card-title">{product.title}</h3>
+          </Link>
           <p className="product-card-description">{stripHtml(product.description)}</p>
 
           <div className="product-card-footer">
@@ -115,15 +117,15 @@ export function ProductCard({ product }: ProductCardProps) {
                   <ShoppingCart size={16} />
                 </button>
               )}
-              <button className="product-card-button">
+              <Link href={`/products/${product.handle}`} className="product-card-button" style={{ textDecoration: 'none' }}>
                 View
-              </button>
+              </Link>
             </div>
           </div>
         </div>
-      </Link>
+      </div>
 
-      {/* Dropdown rendered outside link */}
+      {/* Dropdown rendered outside card */}
       {hasMultipleVariants && isDropdownOpen && hasAnyAvailableVariant && (
         <div
           className="product-card-dropdown"

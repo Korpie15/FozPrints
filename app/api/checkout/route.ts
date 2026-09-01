@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { CartItem } from '@/types/product';
 import { getStripeServer } from '@/lib/stripe';
+import { getLiveShippingQuotes } from '@/lib/shipping';
 
 export async function POST(req: Request) {
   try {
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const items: CartItem[] = body.items || [];
+    const destinationPostcode = body.toPostcode || '2000';
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -53,6 +55,24 @@ export async function POST(req: Request) {
       };
     });
 
+    // Calculate live Australia Post quotes based on cart contents
+    const shippingQuotes = await getLiveShippingQuotes(items, destinationPostcode);
+
+    const shipping_options: Stripe.Checkout.SessionCreateParams.ShippingOption[] = shippingQuotes.map((quote) => ({
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: {
+          amount: quote.priceCents,
+          currency: 'aud',
+        },
+        display_name: quote.name,
+        delivery_estimate: {
+          minimum: { unit: quote.deliveryEstimate.unit, value: quote.deliveryEstimate.minimum },
+          maximum: { unit: quote.deliveryEstimate.unit, value: quote.deliveryEstimate.maximum },
+        },
+      },
+    }));
+
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -62,36 +82,7 @@ export async function POST(req: Request) {
       shipping_address_collection: {
         allowed_countries: ['AU', 'US', 'NZ', 'GB', 'CA', 'JP', 'DE'],
       },
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 1200, // $12.00 AUD
-              currency: 'aud',
-            },
-            display_name: 'Australia Post Standard',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 3 },
-              maximum: { unit: 'business_day', value: 7 },
-            },
-          },
-        },
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 1800, // $18.00 AUD
-              currency: 'aud',
-            },
-            display_name: 'Australia Post Express',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 1 },
-              maximum: { unit: 'business_day', value: 3 },
-            },
-          },
-        },
-      ],
+      shipping_options,
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
     });

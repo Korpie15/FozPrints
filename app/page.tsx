@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { getProducts, getProductsByHandles } from '@/lib/stripe';
+import { getProducts } from '@/lib/stripe';
+import { Product } from '@/types/product';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
 
@@ -8,18 +9,32 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const featuredHandles = [
+    'subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
     'sg-forester-pod-kit',
     'subaru-forester-sg-2003-2008-double-din-lower-storage-cubby',
     'rooftop-tent-anderson-plug-holder-t-slot-power-mount',
     'rooftop-tent-cable-organiser-t-slot-wire-router',
   ];
 
-  let featuredProducts = await getProductsByHandles(featuredHandles);
+  const allProducts = await getProducts();
 
-  // If handle matching returned fewer items, fallback to the top active products
-  if (featuredProducts.length === 0) {
-    const allProducts = await getProducts();
-    featuredProducts = allProducts.slice(0, 4);
+  // Find products matching preferred featured handles in order
+  const featuredProducts: Product[] = [];
+  for (const handle of featuredHandles) {
+    const found = allProducts.find(
+      (p) => p.handle.toLowerCase() === handle.toLowerCase() || p.id === handle
+    );
+    if (found && !featuredProducts.some((p) => p.id === found.id)) {
+      featuredProducts.push(found);
+    }
+  }
+
+  // Top up with any remaining active products if under 4
+  for (const prod of allProducts) {
+    if (featuredProducts.length >= 4) break;
+    if (!featuredProducts.some((p) => p.id === prod.id)) {
+      featuredProducts.push(prod);
+    }
   }
 
   return (
