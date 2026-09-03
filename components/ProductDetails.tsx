@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { Product } from '@/types/product';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { Toast } from './Toast';
 import '../styles/product-details.css';
@@ -170,14 +170,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           )}
 
           <div className="product-description">
-            {product.descriptionHtml ? (
-              <div
-                className="product-description-content"
-                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-              />
-            ) : (
-              <p className="product-description-content">{product.description}</p>
-            )}
+            <div
+              className="product-description-content"
+              dangerouslySetInnerHTML={{
+                __html: formatDescriptionToHtml(product.descriptionHtml || product.description),
+              }}
+            />
           </div>
 
           {/* Quantity Controls */}

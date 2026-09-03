@@ -1,11 +1,19 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import { getProducts } from '@/lib/stripe';
 import { Product } from '@/types/product';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
 
 export const dynamic = 'force-dynamic';
+
+// =========================================================================
+// HERO BACKGROUND IMAGE:
+// 1. Clean Installed Dash:   '/images/hero-bg-installed.png'
+// 2. Hand Installing Hood:  '/images/hero-bg-installing.png'
+// =========================================================================
+const HERO_BACKGROUND_IMAGE = '/images/hero-bg-installed.png';
 
 export default async function HomePage() {
   const featuredHandles = [
@@ -39,18 +47,41 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* Hero Section with Photo Backdrop */}
       <section className="home-hero">
+        <div className="home-hero-bg">
+          <Image
+            src={HERO_BACKGROUND_IMAGE}
+            alt="Subaru Forester Double DIN Pod Installed"
+            fill
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
+            priority
+          />
+        </div>
+        <div className="home-hero-overlay"></div>
+
         <div className="container">
-          <h1>Premium Subaru Forester Prints</h1>
-          <p>
-            Unique prints and merchandise for Subaru Forester enthusiasts. 
-            Quality products, fast shipping.
-          </p>
-          <Link href="/products" className="btn btn-primary btn-lg">
-            Shop All Products
-            <ArrowRight size={20} />
-          </Link>
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Precision 3D Printed Parts for the Subaru Forester
+            </h1>
+
+            <p className="hero-description">
+              Custom 3D printed parts, and accessories designed to meet your needs
+            </p>
+
+            {/* Action Buttons */}
+            <div className="hero-actions">
+              <Link href="/products" className="btn btn-primary btn-lg">
+                Shop All Products
+                <ArrowRight size={18} />
+              </Link>
+              <Link href="/manuals" className="btn btn-secondary btn-lg">
+                <BookOpen size={18} />
+                Install Manuals
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

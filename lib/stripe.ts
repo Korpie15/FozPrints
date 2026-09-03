@@ -98,11 +98,18 @@ export async function getProducts(): Promise<Product[]> {
         altText: prod.name,
       }));
 
+      const shortDescription =
+        prod.metadata?.short_description ||
+        prod.metadata?.shortDescription ||
+        prod.metadata?.summary ||
+        (prod.description ? prod.description.split(/\n/)[0] : '');
+
       return {
         id: prod.id,
         title: prod.name,
-        description: stripHtml(prod.description || ''),
-        descriptionHtml: prod.metadata?.descriptionHtml || (prod.description ? `<p>${prod.description}</p>` : ''),
+        description: prod.description || '',
+        shortDescription,
+        descriptionHtml: prod.metadata?.descriptionHtml || '',
         handle,
         price: minPrice,
         currencyCode,

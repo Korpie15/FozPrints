@@ -83,7 +83,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <Link href={`/products/${product.handle}`} style={{ textDecoration: 'none' }}>
             <h3 className="product-card-title">{product.title}</h3>
           </Link>
-          <p className="product-card-description">{stripHtml(product.description)}</p>
+          <p className="product-card-description">{product.shortDescription || stripHtml(product.description)}</p>
 
           <div className="product-card-footer">
             <span className="product-card-price">

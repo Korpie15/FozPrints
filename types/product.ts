@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   title: string;
   description: string;
+  shortDescription?: string;
   descriptionHtml?: string;
   handle: string;
   price: number;

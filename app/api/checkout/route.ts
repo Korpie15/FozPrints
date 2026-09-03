@@ -40,6 +40,11 @@ export async function POST(req: Request) {
       // Fallback to custom price_data
       const amountInCents = item.priceCents || Math.round(item.price * 100);
       const currency = (item.currencyCode || 'aud').toLowerCase();
+      const imageUrl = item.image
+        ? item.image.startsWith('http')
+          ? item.image
+          : `${origin}${item.image.startsWith('/') ? '' : '/'}${item.image}`
+        : null;
 
       return {
         price_data: {
@@ -47,7 +52,7 @@ export async function POST(req: Request) {
           product_data: {
             name: item.title,
             description: item.variantTitle && item.variantTitle !== 'Default' ? item.variantTitle : undefined,
-            images: item.image ? [item.image] : [],
+            images: imageUrl ? [imageUrl] : [],
           },
           unit_amount: amountInCents,
         },
