@@ -35,6 +35,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       image: selectedVariant.image?.url || product.images[0]?.url,
       handle: product.handle,
       quantity,
+      maxQuantity: selectedVariant.quantityAvailable,
     });
 
     setShowToast(true);
@@ -51,7 +52,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
 
-  const isAvailable = selectedVariant ? selectedVariant.availableForSale : true;
+  const isAvailable = Boolean(selectedVariant?.availableForSale);
+  const maxQuantity = selectedVariant?.quantityAvailable ?? 1;
 
   return (
     <>
@@ -150,6 +152,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   const variant = product.variants.find((v) => v.id === e.target.value);
                   if (variant) {
                     setSelectedVariant(variant);
+                    const stock = variant.quantityAvailable ?? 1;
+                    setQuantity((prev) => Math.min(Math.max(1, prev), Math.max(1, stock)));
                     if (variant.image) {
                       const imageIndex = product.images.findIndex((img) => img.url === variant.image?.url);
                       if (imageIndex !== -1) {
@@ -184,16 +188,18 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <div className="quantity-controls">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={!isAvailable || quantity <= 1}
                 className="quantity-button"
                 aria-label="Decrease quantity"
               >
                 <Minus size={16} />
               </button>
               <span className="quantity-value">
-                {quantity}
+                {isAvailable ? quantity : 0}
               </span>
               <button
-                onClick={() => setQuantity(quantity + 1)}
+                onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+                disabled={!isAvailable || quantity >= maxQuantity}
                 className="quantity-button"
                 aria-label="Increase quantity"
               >

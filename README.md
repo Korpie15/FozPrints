@@ -9,7 +9,6 @@ A modern, headless e-commerce platform for selling Subaru Forester 3D printed pa
 - 🔄 **Instant Local Cart**: Zustand state management with localStorage persistence
 - 📦 **Australia Post Shipping**: Configured domestic and international parcel options
 - 🔐 **Secure Checkout**: Powered by Stripe Checkout (Credit Card, Apple Pay, Google Pay, Link)
-- ✉️ **Automated Emails**: Customer receipts and workshop notifications via Resend
 - 📱 **Mobile First**: Responsive layout with carousel and quick-add actions
 
 ## Tech Stack
@@ -18,7 +17,6 @@ A modern, headless e-commerce platform for selling Subaru Forester 3D printed pa
 - **Language**: TypeScript
 - **Payments & Catalog**: Stripe API & Stripe Checkout
 - **State Management**: Zustand
-- **Email Delivery**: Resend
 - **Icons**: Lucide React
 - **Hosting**: Netlify
 
@@ -36,9 +34,6 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Site URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-# Transactional Email (optional)
-RESEND_API_KEY=re_...
 ```
 
 ## Getting Started

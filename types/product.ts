@@ -45,4 +45,5 @@ export interface CartItem {
   image?: string;
   handle: string;
   quantity: number;
+  maxQuantity?: number;
 }

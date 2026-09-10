@@ -36,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isDropdownOpen]);
 
-  const isAvailable = firstVariant ? firstVariant.availableForSale : true;
+  const isAvailable = Boolean(firstVariant?.availableForSale);
   const hasAnyAvailableVariant = variants.some((v) => v.availableForSale);
 
   const handleAddToCart = (e: React.MouseEvent, variant: ProductVariant) => {
@@ -56,6 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
       image: variant.image?.url || image?.url,
       handle: product.handle,
       quantity: 1,
+      maxQuantity: variant.quantityAvailable,
     });
 
     setIsDropdownOpen(false);

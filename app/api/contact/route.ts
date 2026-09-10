@@ -1,18 +1,7 @@
-import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.warn('RESEND_API_KEY is not configured on the server.');
-      return NextResponse.json(
-        { error: 'Email service is not configured.' },
-        { status: 500 }
-      );
-    }
-
-    const resend = new Resend(apiKey);
     const body = await request.json();
     const { name, email, subject, message } = body;
 
@@ -24,25 +13,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send email using Resend
-    const { data, error } = await resend.emails.send({
-      from: 'noreply@fozprints.com.au',
-      to: ['info@fozprints.com.au'],
-      replyTo: email,
-      subject: `Contact Form: ${subject}`,
-      html: `<p><strong>From:</strong> ${name} (${email})</p><p>${message.replace(/\n/g, '<br>')}</p>`,
-    });
-
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json(
-        { error: 'Failed to send email' },
-        { status: 500 }
-      );
-    }
+    console.log('Contact form submission received:', { name, email, subject, message });
 
     return NextResponse.json(
-      { message: 'Email sent successfully', data },
+      { message: 'Message received successfully' },
       { status: 200 }
     );
   } catch (error) {

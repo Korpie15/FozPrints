@@ -22,12 +22,16 @@ export const useCartStore = create<CartState>()(
         const currentItems = Array.isArray(rawItems) ? rawItems : [];
         const existingIndex = currentItems.findIndex((item) => item.id === newItem.id);
         const addQty = newItem.quantity || 1;
+        const maxStock = newItem.maxQuantity ?? Infinity;
 
         if (existingIndex > -1) {
           const updated = [...currentItems];
+          const currentQty = updated[existingIndex].quantity;
+          const newQty = Math.min(maxStock, currentQty + addQty);
           updated[existingIndex] = {
             ...updated[existingIndex],
-            quantity: updated[existingIndex].quantity + addQty,
+            quantity: newQty,
+            maxQuantity: newItem.maxQuantity ?? updated[existingIndex].maxQuantity,
           };
           set({ items: updated });
         } else {
@@ -36,7 +40,7 @@ export const useCartStore = create<CartState>()(
               ...currentItems,
               {
                 ...newItem,
-                quantity: addQty,
+                quantity: Math.min(maxStock, addQty),
               },
             ],
           });
@@ -58,9 +62,13 @@ export const useCartStore = create<CartState>()(
         }
         const rawItems = get().items;
         const currentItems = Array.isArray(rawItems) ? rawItems : [];
+        const existingItem = currentItems.find((item) => item.id === id);
+        const maxStock = existingItem?.maxQuantity ?? Infinity;
+        const cappedQty = Math.min(maxStock, quantity);
+
         set({
           items: currentItems.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.id === id ? { ...item, quantity: cappedQty } : item
           ),
         });
       },

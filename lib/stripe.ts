@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { Product, ProductVariant } from '@/types/product';
 import { stripHtml } from '@/lib/utils';
+import { getInventoryMap } from '@/lib/db';
 
 /**
  * Lazy initializer for Stripe server instance
@@ -32,12 +33,15 @@ export async function getProducts(): Promise<Product[]> {
   }
 
   try {
-    // 1. Fetch active products
-    const productsResponse = await stripe.products.list({
-      active: true,
-      limit: 100,
-      expand: ['data.default_price'],
-    });
+    // 1. Fetch active products and live inventory from Neon in parallel
+    const [productsResponse, inventoryMap] = await Promise.all([
+      stripe.products.list({
+        active: true,
+        limit: 100,
+        expand: ['data.default_price'],
+      }),
+      getInventoryMap(),
+    ]);
 
     // 2. Fetch all active prices so products with multiple variants are supported (if permission granted)
     const pricesByProductId: Record<string, Stripe.Price[]> = {};
@@ -58,7 +62,7 @@ export async function getProducts(): Promise<Product[]> {
       // If the restricted key doesn't have Prices Read permission, fall back to default_price
     }
 
-    // 3. Map Stripe products into clean Product structures
+    // 3. Map Stripe products into clean Product structures with live Neon inventory
     const products: Product[] = productsResponse.data.map((prod) => {
       const handle = prod.metadata?.handle || slugify(prod.name) || prod.id;
       const associatedPrices = pricesByProductId[prod.id] || [];
@@ -73,6 +77,8 @@ export async function getProducts(): Promise<Product[]> {
         const unitAmount = price.unit_amount || 0;
         const currency = (price.currency || 'aud').toUpperCase();
         const variantTitle = price.nickname || price.metadata?.title || 'Default';
+        const stockCount = inventoryMap[price.id] ?? 0;
+        const availableForSale = Boolean(price.active && prod.active && stockCount > 0);
 
         return {
           id: price.id,
@@ -82,7 +88,8 @@ export async function getProducts(): Promise<Product[]> {
             currencyCode: currency,
           },
           priceCents: unitAmount,
-          availableForSale: price.active && prod.active,
+          availableForSale,
+          quantityAvailable: stockCount,
           image: prod.images[0] ? { url: prod.images[0], altText: prod.name } : undefined,
         };
       });

@@ -169,6 +169,7 @@ export default function CartPage() {
                     </span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      disabled={item.maxQuantity !== undefined && item.quantity >= item.maxQuantity}
                       className="cart-quantity-button"
                       aria-label="Increase quantity"
                     >

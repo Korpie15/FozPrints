@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { CartItem } from '@/types/product';
 import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes } from '@/lib/shipping';
+import { getInventoryMap } from '@/lib/db';
 
 export async function POST(req: Request) {
   try {
@@ -23,6 +24,27 @@ export async function POST(req: Request) {
         { error: 'Cart is empty.' },
         { status: 400 }
       );
+    }
+
+    // Verify stock availability from Neon
+    const inventoryMap = await getInventoryMap();
+    for (const item of items) {
+      if (item.id && item.id.startsWith('price_')) {
+        const stock = inventoryMap[item.id];
+        if (stock !== undefined && item.quantity > stock) {
+          const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
+            ? `${item.title} (${item.variantTitle})`
+            : item.title;
+          return NextResponse.json(
+            {
+              error: stock <= 0
+                ? `"${itemLabel}" is out of stock.`
+                : `Only ${stock} units available for "${itemLabel}". Please update your cart.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
