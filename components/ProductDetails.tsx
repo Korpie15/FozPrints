@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
-import { Product } from '@/types/product';
+import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { Toast } from './Toast';
@@ -15,11 +15,98 @@ interface ProductDetailsProps {
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showToast, setShowToast] = useState(false);
 
   const { addItem } = useCartStore();
+
+  // Helper to find variant matching an image index
+  const findVariantForImage = (imageIndex: number): ProductVariant | undefined => {
+    const img = product.images[imageIndex];
+    if (!img || product.variants.length <= 1) return undefined;
+
+    // 1. Direct image URL match
+    const directMatch = product.variants.find((v) => v.image?.url === img.url);
+    if (directMatch) return directMatch;
+
+    // 2. Keyword match against alt text or image filename (e.g. textured vs smooth)
+    const altLower = (img.altText || '').toLowerCase();
+    const urlLower = img.url.toLowerCase();
+
+    const keywordMatch = product.variants.find((v) => {
+      const titleLower = v.title.toLowerCase();
+      return (
+        altLower.includes(titleLower) ||
+        urlLower.includes(titleLower) ||
+        ((altLower.includes('textured') || urlLower.includes('textured')) && titleLower.includes('textured')) ||
+        ((altLower.includes('smooth') || urlLower.includes('smooth')) && titleLower.includes('smooth'))
+      );
+    });
+    if (keywordMatch) return keywordMatch;
+
+    // 3. Positional fallback: variant at imageIndex if available
+    return product.variants[imageIndex] || undefined;
+  };
+
+  // Helper to find image index matching a variant
+  const findImageForVariant = (variant: ProductVariant): number => {
+    // 1. Check direct image URL match
+    if (variant.image?.url) {
+      const idx = product.images.findIndex((img) => img.url === variant.image?.url);
+      if (idx !== -1) return idx;
+    }
+
+    // 2. Keyword match by variant title (e.g. "textured", "smooth") against altText or filename
+    if (variant.title) {
+      const titleLower = variant.title.toLowerCase();
+      const idx = product.images.findIndex((img) => {
+        const altLower = (img.altText || '').toLowerCase();
+        const urlLower = img.url.toLowerCase();
+        return (
+          altLower.includes(titleLower) ||
+          urlLower.includes(titleLower) ||
+          (titleLower.includes('textured') && (altLower.includes('textured') || urlLower.includes('textured'))) ||
+          (titleLower.includes('smooth') && (altLower.includes('smooth') || urlLower.includes('smooth')))
+        );
+      });
+      if (idx !== -1) return idx;
+    }
+
+    // 3. Positional fallback: image at variantIndex
+    const variantIndex = product.variants.findIndex((v) => v.id === variant.id);
+    if (variantIndex !== -1 && product.images[variantIndex]) {
+      return variantIndex;
+    }
+
+    return -1;
+  };
+
+  // When user selects a different image (via thumbnail or nav arrow)
+  const handleImageSelect = (newIndex: number) => {
+    setSelectedImageIndex(newIndex);
+    const matchingVariant = findVariantForImage(newIndex);
+    if (matchingVariant && matchingVariant.id !== selectedVariant?.id) {
+      setSelectedVariant(matchingVariant);
+      const stock = matchingVariant.quantityAvailable ?? 1;
+      setQuantity((prev) => Math.min(Math.max(1, prev), Math.max(1, stock)));
+    }
+  };
+
+  // When user selects a different variant from dropdown
+  const handleVariantSelect = (variantId: string) => {
+    const variant = product.variants.find((v) => v.id === variantId);
+    if (!variant) return;
+
+    setSelectedVariant(variant);
+    const stock = variant.quantityAvailable ?? 1;
+    setQuantity((prev) => Math.min(Math.max(1, prev), Math.max(1, stock)));
+
+    const imageIndex = findImageForVariant(variant);
+    if (imageIndex !== -1) {
+      setSelectedImageIndex(imageIndex);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
@@ -32,7 +119,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       price: parseFloat(selectedVariant.price.amount),
       priceCents: selectedVariant.priceCents,
       currencyCode: selectedVariant.price.currencyCode,
-      image: selectedVariant.image?.url || product.images[0]?.url,
+      image: selectedVariant.image?.url || product.images[selectedImageIndex]?.url || product.images[0]?.url,
       handle: product.handle,
       quantity,
       maxQuantity: selectedVariant.quantityAvailable,
@@ -41,15 +128,17 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     setShowToast(true);
   };
 
-  const selectedImage = product.images[selectedImageIndex];
+  const selectedImage = product.images[selectedImageIndex] || product.images[0];
   const totalImages = product.images.length;
 
   const goToPreviousImage = () => {
-    setSelectedImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+    const prevIndex = selectedImageIndex === 0 ? totalImages - 1 : selectedImageIndex - 1;
+    handleImageSelect(prevIndex);
   };
 
   const goToNextImage = () => {
-    setSelectedImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+    const nextIndex = selectedImageIndex === totalImages - 1 ? 0 : selectedImageIndex + 1;
+    handleImageSelect(nextIndex);
   };
 
   const isAvailable = Boolean(selectedVariant?.availableForSale);
@@ -71,8 +160,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <>
                 <Image
                   src={selectedImage.url}
-                  alt={selectedImage.altText || product.title}
+                  alt={selectedImage.altText || `${product.title} - ${selectedVariant?.title || 'View'}`}
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{ objectFit: 'cover' }}
                   priority
                 />
@@ -113,13 +203,14 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div
                   key={index}
                   className={`product-thumbnail ${index === selectedImageIndex ? 'product-thumbnail-active' : ''}`}
-                  onClick={() => setSelectedImageIndex(index)}
+                  onClick={() => handleImageSelect(index)}
                   style={{ cursor: 'pointer' }}
                 >
                   <Image
                     src={img.url}
-                    alt={img.altText || `${product.title} ${index + 1}`}
+                    alt={img.altText || `${product.title} view ${index + 1}`}
                     fill
+                    sizes="100px"
                     style={{ objectFit: 'cover' }}
                   />
                 </div>
@@ -146,22 +237,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           {/* Variants Selector */}
           {product.variants.length > 1 && (
             <div className="product-variants">
-              <label>Options</label>
+              <label htmlFor="variant-select">Options</label>
               <select
-                onChange={(e) => {
-                  const variant = product.variants.find((v) => v.id === e.target.value);
-                  if (variant) {
-                    setSelectedVariant(variant);
-                    const stock = variant.quantityAvailable ?? 1;
-                    setQuantity((prev) => Math.min(Math.max(1, prev), Math.max(1, stock)));
-                    if (variant.image) {
-                      const imageIndex = product.images.findIndex((img) => img.url === variant.image?.url);
-                      if (imageIndex !== -1) {
-                        setSelectedImageIndex(imageIndex);
-                      }
-                    }
-                  }
-                }}
+                id="variant-select"
+                onChange={(e) => handleVariantSelect(e.target.value)}
                 value={selectedVariant?.id}
               >
                 {product.variants.map((v) => (

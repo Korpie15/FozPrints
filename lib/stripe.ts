@@ -43,7 +43,7 @@ export async function getProducts(): Promise<Product[]> {
       getInventoryMap(),
     ]);
 
-    // 2. Fetch all active prices so products with multiple variants are supported (if permission granted)
+    // 2. Fetch all active prices so products with multiple variants are supported
     const pricesByProductId: Record<string, Stripe.Price[]> = {};
     try {
       const pricesResponse = await stripe.prices.list({
@@ -59,26 +59,32 @@ export async function getProducts(): Promise<Product[]> {
         pricesByProductId[prodId].push(price);
       }
     } catch {
-      // If the restricted key doesn't have Prices Read permission, fall back to default_price
+      // Fallback if price list fails
     }
 
-    // 3. Map Stripe products into clean Product structures with live Neon inventory
+    // 3. Map Stripe products into clean Product structures
     const products: Product[] = productsResponse.data.map((prod) => {
       const handle = prod.metadata?.handle || slugify(prod.name) || prod.id;
       const associatedPrices = pricesByProductId[prod.id] || [];
 
-      // Fall back to default_price if no separate prices found in list
       if (associatedPrices.length === 0 && prod.default_price) {
         const defaultPriceObj = prod.default_price as Stripe.Price;
         associatedPrices.push(defaultPriceObj);
       }
 
-      const variants: ProductVariant[] = associatedPrices.map((price) => {
+      const variants: ProductVariant[] = associatedPrices.map((price, priceIndex) => {
         const unitAmount = price.unit_amount || 0;
         const currency = (price.currency || 'aud').toUpperCase();
-        const variantTitle = price.nickname || price.metadata?.title || 'Default';
+        const variantTitle = price.nickname || price.metadata?.title || (priceIndex === 0 ? 'Textured' : 'Smooth');
         const stockCount = inventoryMap[price.id] ?? 0;
         const availableForSale = Boolean(price.active && prod.active && stockCount > 0);
+
+        // Map variant image by metadata, image_index, priceIndex, or fallback
+        const variantImageUrl =
+          price.metadata?.image_url ||
+          (price.metadata?.image_index !== undefined ? prod.images[parseInt(price.metadata.image_index)] : undefined) ||
+          prod.images[priceIndex] ||
+          prod.images[0];
 
         return {
           id: price.id,
@@ -90,7 +96,7 @@ export async function getProducts(): Promise<Product[]> {
           priceCents: unitAmount,
           availableForSale,
           quantityAvailable: stockCount,
-          image: prod.images[0] ? { url: prod.images[0], altText: prod.name } : undefined,
+          image: variantImageUrl ? { url: variantImageUrl, altText: `${prod.name} - ${variantTitle}` } : undefined,
         };
       });
 
@@ -100,10 +106,16 @@ export async function getProducts(): Promise<Product[]> {
 
       const currencyCode = variants[0]?.price.currencyCode || 'AUD';
 
-      const images = prod.images.map((url) => ({
-        url,
-        altText: prod.name,
-      }));
+      const images = prod.images.map((url, i) => {
+        const matchingVariant = variants[i];
+        const altText = matchingVariant && matchingVariant.title !== 'Default'
+          ? `${prod.name} - ${matchingVariant.title}`
+          : prod.name;
+        return {
+          url,
+          altText,
+        };
+      });
 
       const shortDescription =
         prod.metadata?.short_description ||

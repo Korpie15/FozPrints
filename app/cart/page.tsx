@@ -17,6 +17,7 @@ export default function CartPage() {
   // Australia Post estimation state
   const [postcode, setPostcode] = useState('');
   const [shippingQuotes, setShippingQuotes] = useState<ShippingQuote[] | null>(null);
+  const [selectedQuoteCode, setSelectedQuoteCode] = useState<string | null>(null);
   const [isEstimatingShipping, setIsEstimatingShipping] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
@@ -26,11 +27,14 @@ export default function CartPage() {
     setMounted(true);
   }, []);
 
-  // Fetch live shipping estimates when user enters a 4-digit AU postcode
-  const handleEstimateShipping = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!postcode || postcode.trim().length < 3 || items.length === 0) return;
+  // Recalculate shipping whenever cart items change if postcode is entered
+  useEffect(() => {
+    if (postcode && postcode.trim().length >= 3 && items.length > 0) {
+      calculateShipping(postcode.trim());
+    }
+  }, [items]);
 
+  const calculateShipping = async (targetPostcode: string) => {
     setIsEstimatingShipping(true);
     setShippingError(null);
 
@@ -38,7 +42,7 @@ export default function CartPage() {
       const res = await fetch('/api/shipping/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, toPostcode: postcode.trim() }),
+        body: JSON.stringify({ items, toPostcode: targetPostcode }),
       });
 
       const data = await res.json();
@@ -46,13 +50,23 @@ export default function CartPage() {
         throw new Error(data.error || 'Unable to calculate shipping.');
       }
 
-      setShippingQuotes(data.quotes || []);
+      const quotes: ShippingQuote[] = data.quotes || [];
+      setShippingQuotes(quotes);
+      if (quotes.length > 0 && !selectedQuoteCode) {
+        setSelectedQuoteCode(quotes[0].serviceCode);
+      }
     } catch (err: any) {
       console.error('Shipping quote error:', err);
       setShippingError(err.message || 'Error getting shipping quote.');
     } finally {
       setIsEstimatingShipping(false);
     }
+  };
+
+  const handleEstimateShipping = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!postcode || postcode.trim().length < 3 || items.length === 0) return;
+    await calculateShipping(postcode.trim());
   };
 
   const handleCheckout = async () => {
@@ -118,6 +132,10 @@ export default function CartPage() {
   const subtotal = getSubtotal();
   const currencyCode = items[0]?.currencyCode || 'AUD';
 
+  const activeQuote = shippingQuotes?.find((q) => q.serviceCode === selectedQuoteCode) || shippingQuotes?.[0];
+  const shippingCost = activeQuote ? activeQuote.price : 0;
+  const grandTotal = subtotal + shippingCost;
+
   return (
     <div className="cart-page">
       <h1 className="cart-title">Shopping Cart</h1>
@@ -133,6 +151,7 @@ export default function CartPage() {
                     src={item.image}
                     alt={item.title}
                     fill
+                    sizes="120px"
                     style={{ objectFit: 'cover' }}
                   />
                 ) : (
@@ -207,6 +226,9 @@ export default function CartPage() {
 
           <div className="cart-summary-row" style={{ borderBottom: 'none', paddingBottom: '0.25rem' }}>
             <span>Shipping</span>
+            <span>
+              {activeQuote ? formatPrice(shippingCost.toString(), currencyCode) : 'Calculated at checkout'}
+            </span>
           </div>
 
           {/* Australia Post Shipping Estimator */}
@@ -238,12 +260,42 @@ export default function CartPage() {
 
             {shippingQuotes && shippingQuotes.length > 0 && (
               <div className="cart-shipping-quotes">
-                {shippingQuotes.map((q) => (
-                  <div key={q.serviceCode} className="cart-shipping-quote-row">
-                    <span>{q.name} ({q.deliveryEstimate.minimum}-{q.deliveryEstimate.maximum} days):</span>
-                    <strong>${q.price.toFixed(2)} AUD</strong>
-                  </div>
-                ))}
+                {shippingQuotes.map((q) => {
+                  const isSelected = selectedQuoteCode === q.serviceCode;
+                  return (
+                    <label
+                      key={q.serviceCode}
+                      className="cart-shipping-quote-row"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: '0.375rem',
+                        backgroundColor: isSelected ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+                        border: isSelected ? '1px solid #0284c7' : '1px solid rgba(255, 255, 255, 0.1)',
+                        color: isSelected ? '#ffffff' : 'inherit',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <input
+                          type="radio"
+                          name="shippingOption"
+                          value={q.serviceCode}
+                          checked={isSelected}
+                          onChange={() => setSelectedQuoteCode(q.serviceCode)}
+                          style={{ accentColor: '#ffffff' }}
+                        />
+                        <span style={{ fontSize: '0.875rem', fontWeight: isSelected ? 600 : 400, color: isSelected ? '#ffffff' : 'inherit' }}>
+                          {q.name} ({q.deliveryEstimate.minimum}-{q.deliveryEstimate.maximum} days)
+                        </span>
+                      </div>
+                      <strong style={{ color: isSelected ? '#ffffff' : 'inherit' }}>${q.price.toFixed(2)} AUD</strong>
+                    </label>
+                  );
+                })}
               </div>
             )}
 
@@ -257,7 +309,7 @@ export default function CartPage() {
           <div className="cart-summary-total">
             <span>Total</span>
             <span>
-              {formatPrice(subtotal.toString(), currencyCode)}
+              {formatPrice(grandTotal.toString(), currencyCode)}
             </span>
           </div>
 

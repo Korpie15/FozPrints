@@ -38,7 +38,7 @@ const KNOWN_SPECS: Record<string, ProductDimensions> = {
     weightGrams: 100,
     lengthCm: 15,
     widthCm: 11,
-    heightCm: 41,
+    heightCm: 4.1,
   },
   cable: {
     weightGrams: 100,
@@ -49,10 +49,12 @@ const KNOWN_SPECS: Record<string, ProductDimensions> = {
 };
 
 /**
- * Estimate parcel dimensions and weight for a cart of items
+ * Estimate parcel dimensions, actual weight, and cubic (volumetric) weight for a cart of items
  */
 export function estimateParcel(items: CartItem[]): {
   totalWeightKg: number;
+  cubicWeightKg: number;
+  billableWeightKg: number;
   lengthCm: number;
   widthCm: number;
   heightCm: number;
@@ -79,31 +81,44 @@ export function estimateParcel(items: CartItem[]): {
       spec = KNOWN_SPECS.cable;
     }
 
-    const qty = item.quantity || 1;
+    const qty = Math.max(1, item.quantity || 1);
     totalWeightGrams += spec.weightGrams * qty;
     totalVolumeCm3 += spec.lengthCm * spec.widthCm * spec.heightCm * qty;
   }
 
   const totalWeightKg = Math.max(0.1, Number((totalWeightGrams / 1000).toFixed(2)));
+  // Australia Post cubic weight conversion: Volume (cm3) / 4000
+  const cubicWeightKg = Number((totalVolumeCm3 / 4000).toFixed(2));
+  // Australia Post charges on the greater of actual weight or cubic weight
+  const billableWeightKg = Math.max(totalWeightKg, cubicWeightKg);
 
-  // Select Australia Post standard box size based on volume & weight
-  if (totalWeightGrams <= 500 && totalVolumeCm3 <= 2800) {
-    // Small Box (Bx1)
-    return { totalWeightKg, lengthCm: 22, widthCm: 16, heightCm: 8 };
-  } else if (totalWeightGrams <= 1000 && totalVolumeCm3 <= 5500) {
-    // Medium Box (Bx2)
-    return { totalWeightKg, lengthCm: 24, widthCm: 19, heightCm: 12 };
-  } else if (totalWeightGrams <= 3000 && totalVolumeCm3 <= 10500) {
-    // Large Box (Bx3)
-    return { totalWeightKg, lengthCm: 31, widthCm: 22, heightCm: 15 };
+  // Select packaging dimensions based on billable cubic weight and volume
+  let lengthCm = 22;
+  let widthCm = 16;
+  let heightCm = 8;
+
+  if (billableWeightKg <= 0.5 && totalVolumeCm3 <= 2800) {
+    lengthCm = 22; widthCm = 16; heightCm = 8;
+  } else if (billableWeightKg <= 1.5 && totalVolumeCm3 <= 5500) {
+    lengthCm = 24; widthCm = 19; heightCm = 12;
+  } else if (billableWeightKg <= 3.5 && totalVolumeCm3 <= 10500) {
+    lengthCm = 31; widthCm = 22; heightCm = 15;
   } else {
-    // Extra Large Box
-    return { totalWeightKg, lengthCm: 40, widthCm: 30, heightCm: 20 };
+    lengthCm = 40; widthCm = 30; heightCm = Math.min(50, Math.ceil(totalVolumeCm3 / 1200));
   }
+
+  return {
+    totalWeightKg,
+    cubicWeightKg,
+    billableWeightKg,
+    lengthCm,
+    widthCm,
+    heightCm,
+  };
 }
 
 /**
- * Fetch live rates from Australia Post PAC API with fallback rates
+ * Fetch live rates from Australia Post PAC API with billable weight & item quantity scaling
  */
 export async function getLiveShippingQuotes(
   items: CartItem[],
@@ -113,7 +128,6 @@ export async function getLiveShippingQuotes(
   const apiKey = process.env.AUSPOST_API_KEY;
   const fromPostcode = process.env.AUSPOST_FROM_POSTCODE || '3000';
 
-  // If AusPost API key is present, query live PAC API
   if (apiKey) {
     try {
       const services = [
@@ -139,7 +153,7 @@ export async function getLiveShippingQuotes(
           url.searchParams.set('length', parcel.lengthCm.toString());
           url.searchParams.set('width', parcel.widthCm.toString());
           url.searchParams.set('height', parcel.heightCm.toString());
-          url.searchParams.set('weight', parcel.totalWeightKg.toString());
+          url.searchParams.set('weight', parcel.billableWeightKg.toString());
           url.searchParams.set('service_code', service.code);
 
           const res = await fetch(url.toString(), {
@@ -173,12 +187,34 @@ export async function getLiveShippingQuotes(
     }
   }
 
-  // Tiered fallback rates based on parcel weight
-  const isLight = parcel.totalWeightKg <= 0.5;
-  const isMedium = parcel.totalWeightKg <= 1.0;
+  // Tiered fallback rates based on billable weight (greater of actual vs cubic weight)
+  const billable = parcel.billableWeightKg;
 
-  const standardPrice = isLight ? 10.95 : isMedium ? 14.5 : 18.25;
-  const expressPrice = isLight ? 14.95 : isMedium ? 18.5 : 22.75;
+  let standardPrice: number;
+  let expressPrice: number;
+
+  if (billable <= 0.5) {
+    // Light item (e.g. 1 cable router)
+    standardPrice = 10.95;
+    expressPrice = 14.95;
+  } else if (billable <= 1.5) {
+    // 1 Medium item
+    standardPrice = 14.50;
+    expressPrice = 18.50;
+  } else if (billable <= 3.5) {
+    // 1 Large item or 2 Medium items (e.g. 1 Pod)
+    standardPrice = 18.25;
+    expressPrice = 24.95;
+  } else if (billable <= 6.0) {
+    // 2 Large items (e.g. 2 Pods)
+    standardPrice = 24.95;
+    expressPrice = 32.95;
+  } else {
+    // 3+ Large items
+    const extraKg = Math.ceil(billable - 6.0);
+    standardPrice = 24.95 + extraKg * 4.0;
+    expressPrice = 32.95 + extraKg * 6.0;
+  }
 
   return [
     {

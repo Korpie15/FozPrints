@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getShopPolicies } from '@/lib/policies';
 import '../styles/footer.css';
 
@@ -15,10 +16,10 @@ export async function Footer() {
       <div className="footer-container">
         <div className="footer-grid">
           <div className="footer-section">
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
               <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0284c7' }}>Foz</span>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700 }}>Prints</span>
-            </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827' }}>Prints</span>
+            </Link>
             <p>
               Premium 3D printed automotive parts. Designed and built in Australia specifically for the SG Subaru Forester using UV-resistant, engineering-grade materials.
             </p>
@@ -26,37 +27,38 @@ export async function Footer() {
 
           <div className="footer-section">
             <h3>Shop</h3>
-            <a href="/products">All Products</a>
+            <Link href="/products">All Products</Link>
+            <Link href="/manuals">Install Manuals</Link>
           </div>
 
           <div className="footer-section">
             <h3>Support</h3>
-            <a href="/about#contact">Contact Us</a>
+            <Link href="/about#contact">Contact Us</Link>
             {policies?.shippingPolicy && (
-              <a href="/policies/shipping-policy">
+              <Link href="/policies/shipping-policy">
                 {policies.shippingPolicy.title}
-              </a>
+              </Link>
             )}
             {policies?.refundPolicy && (
-              <a href="/policies/refund-policy">
+              <Link href="/policies/refund-policy">
                 {policies.refundPolicy.title}
-              </a>
+              </Link>
             )}
-            <a href="/about#faq">FAQ</a>
+            <Link href="/about#faq">FAQ</Link>
           </div>
 
           <div className="footer-section">
             <h3>Company</h3>
-            <a href="/about">About Us</a>
+            <Link href="/about">About Us</Link>
             {policies?.privacyPolicy && (
-              <a href="/policies/privacy-policy">
+              <Link href="/policies/privacy-policy">
                 {policies.privacyPolicy.title}
-              </a>
+              </Link>
             )}
             {policies?.termsOfService && (
-              <a href="/policies/terms-of-service">
+              <Link href="/policies/terms-of-service">
                 {policies.termsOfService.title}
-              </a>
+              </Link>
             )}
           </div>
         </div>

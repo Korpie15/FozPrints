@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPolicy } from '@/lib/policies';
 import '@/styles/policy.css';
@@ -6,6 +7,34 @@ interface PolicyPageProps {
   params: Promise<{
     handle: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: PolicyPageProps): Promise<Metadata> {
+  const { handle } = await params;
+  const policy = await getPolicy(handle);
+
+  if (!policy) {
+    return {
+      title: 'Policy Not Found',
+    };
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fozprints.com';
+
+  return {
+    title: policy.title,
+    description: `Read the ${policy.title} for Foz Prints online store.`,
+    alternates: {
+      canonical: `${siteUrl}/policies/${handle}`,
+    },
+    openGraph: {
+      title: `${policy.title} | Foz Prints`,
+      description: `Read the ${policy.title} for Foz Prints online store.`,
+      url: `${siteUrl}/policies/${handle}`,
+    },
+  };
 }
 
 export default async function PolicyPage({ params }: PolicyPageProps) {

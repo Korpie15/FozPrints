@@ -8,12 +8,26 @@ import '../styles/home.css';
 
 export const dynamic = 'force-dynamic';
 
-// =========================================================================
-// HERO BACKGROUND IMAGE:
-// 1. Clean Installed Dash:   '/images/hero-bg-installed.png'
-// 2. Hand Installing Hood:  '/images/hero-bg-installing.png'
-// =========================================================================
 const HERO_BACKGROUND_IMAGE = '/images/hero-bg-installed.png';
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'OnlineStore',
+  name: 'Foz Prints',
+  url: 'https://fozprints.com',
+  logo: 'https://fozprints.com/icon.png',
+  description:
+    'Precision 3D printed automotive parts designed and manufactured in Australia for the SG Subaru Forester.',
+  areaServed: 'Worldwide',
+  priceRange: '$$',
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Foz Prints',
+  url: 'https://fozprints.com',
+};
 
 export default async function HomePage() {
   const featuredHandles = [
@@ -26,7 +40,6 @@ export default async function HomePage() {
 
   const allProducts = await getProducts();
 
-  // Find products matching preferred featured handles in order
   const featuredProducts: Product[] = [];
   for (const handle of featuredHandles) {
     const found = allProducts.find(
@@ -37,7 +50,6 @@ export default async function HomePage() {
     }
   }
 
-  // Top up with any remaining active products if under 4
   for (const prod of allProducts) {
     if (featuredProducts.length >= 4) break;
     if (!featuredProducts.some((p) => p.id === prod.id)) {
@@ -47,13 +59,23 @@ export default async function HomePage() {
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+
       {/* Hero Section with Photo Backdrop */}
       <section className="home-hero">
         <div className="home-hero-bg">
           <Image
             src={HERO_BACKGROUND_IMAGE}
-            alt="Subaru Forester Double DIN Pod Installed"
+            alt="Subaru Forester Double DIN Pod Upgrade Kit Installed in Dash"
             fill
+            sizes="100vw"
             style={{ objectFit: 'cover', objectPosition: 'center' }}
             priority
           />
@@ -67,7 +89,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="hero-description">
-              Custom 3D printed parts, and accessories designed to meet your needs
+              Custom engineering-grade 3D printed interior pods, mounts, and accessories built for the SG Forester.
             </p>
 
             {/* Action Buttons */}
@@ -106,7 +128,7 @@ export default async function HomePage() {
         <div className="container">
           <h2>Can't Find What You're Looking For?</h2>
           <p>
-            Our team can help you find the perfect print for your Subaru Forester.
+            Our team can help you design or find the perfect print for your Subaru Forester.
           </p>
           <Link href="/about#contact" className="btn btn-primary btn-lg">
             Contact Us
