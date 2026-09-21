@@ -1,0 +1,22 @@
+# FozPrints
+
+> Premium 3D Printed Subaru Forester Parts & Accessories
+
+FozPrints designs and manufactures engineering-grade, heat-resistant (ASA up to 95°C) 3D printed interior pods, mounts, and accessories specifically for the SG Subaru Forester (2003–2008). Built and tested in Australia.
+
+## Core Products
+- **Double DIN Pod Upgrade Kit (SG 2003-2008 USDM Spec)**: Converts top dashboard pocket into a double DIN head unit navigation pod.
+- **Double DIN Lower Storage Cubby**: Replacement storage tray with OEM dashboard texture finish.
+- **Rooftop Tent Anderson Plug Holder**: Heavy-duty T-slot power mount.
+- **Rooftop Tent Cable Organiser**: T-slot wire routing mount.
+
+## Documentation & Manuals
+- Full Installation Manual for Double DIN Pod Kit: https://fozprints.com.au/manuals/double-DIN-pod-upgrade-kit
+- Manuals Catalog: https://fozprints.com.au/manuals
+- About & FAQ: https://fozprints.com.au/about
+
+## Specifications
+- Materials: Engineering-grade ASA (Acrylonitrile Styrene Acrylate)
+- Heat Resistance: Up to 95°C (UV & outdoor resistant, non-warping)
+- Textures: OEM Fuzzy Skin match & Smooth finishes
+- Ships: Australia only (via Australia Post)

@@ -3,92 +3,106 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
-import { getCart, updateCartLines, removeFromCart } from '@/lib/shopify';
-import { ShopifyCart } from '@/types/shopify';
 import { formatPrice } from '@/lib/utils';
-import '../../styles/cart.css';
+import { ShippingQuote } from '@/lib/shipping';
+import '@/styles/cart.css';
 
 export default function CartPage() {
-  const [cart, setCart] = useState<ShopifyCart | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { cartId, setItemCount, setItems, clearCart } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const updateStoreFromCart = (cartData: ShopifyCart | null) => {
-    if (!cartData) {
-      clearCart();
-      return;
-    }
-    const totalItems = cartData.lines.edges.reduce(
-      (sum: number, edge: any) => sum + edge.node.quantity,
-      0
-    );
-    setItemCount(totalItems);
+  // Australia Post estimation state
+  const [postcode, setPostcode] = useState('');
+  const [shippingQuotes, setShippingQuotes] = useState<ShippingQuote[] | null>(null);
+  const [selectedQuoteCode, setSelectedQuoteCode] = useState<string | null>(null);
+  const [isEstimatingShipping, setIsEstimatingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
 
-    const newItems: Record<string, number> = {};
-    cartData.lines.edges.forEach((edge: any) => {
-      const variantId = edge.node.merchandise.id;
-      newItems[variantId] = (newItems[variantId] || 0) + edge.node.quantity;
-    });
-    setItems(newItems);
-  };
+  const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
 
   useEffect(() => {
-    async function loadCart() {
-      if (!cartId) {
-        setIsLoading(false);
-        return;
-      }
+    setMounted(true);
+  }, []);
 
-      try {
-        const cartData = await getCart(cartId);
-        
-        if (!cartData) {
-          updateStoreFromCart(null);
-          setCart(null);
-          return;
-        }
-
-        setCart(cartData);
-        updateStoreFromCart(cartData);
-      } catch (error) {
-        console.error('Error loading cart:', error);
-      } finally {
-        setIsLoading(false);
-      }
+  // Recalculate shipping whenever cart items change if postcode is entered
+  useEffect(() => {
+    if (postcode && postcode.trim().length >= 3 && items.length > 0) {
+      calculateShipping(postcode.trim());
     }
+  }, [items]);
 
-    loadCart();
-  }, [cartId, setItemCount, setItems, clearCart]);
-
-  const handleUpdateQuantity = async (lineId: string, quantity: number) => {
-    if (!cartId || !cart) return;
+  const calculateShipping = async (targetPostcode: string) => {
+    setIsEstimatingShipping(true);
+    setShippingError(null);
 
     try {
-      const updatedCart = await updateCartLines(cartId, [
-        { id: lineId, quantity },
-      ]);
-      setCart(updatedCart);
-      updateStoreFromCart(updatedCart);
-    } catch (error) {
-      console.error('Error updating cart:', error);
+      const res = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, toPostcode: targetPostcode }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Unable to calculate shipping.');
+      }
+
+      const quotes: ShippingQuote[] = data.quotes || [];
+      setShippingQuotes(quotes);
+      if (quotes.length > 0 && !selectedQuoteCode) {
+        setSelectedQuoteCode(quotes[0].serviceCode);
+      }
+    } catch (err: any) {
+      console.error('Shipping quote error:', err);
+      setShippingError(err.message || 'Error getting shipping quote.');
+    } finally {
+      setIsEstimatingShipping(false);
     }
   };
 
-  const handleRemoveItem = async (lineId: string) => {
-    if (!cartId || !cart) return;
+  const handleEstimateShipping = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!postcode || postcode.trim().length < 3 || items.length === 0) return;
+    await calculateShipping(postcode.trim());
+  };
+
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+    setIsCheckingOut(true);
+    setCheckoutError(null);
 
     try {
-      const updatedCart = await removeFromCart(cartId, [lineId]);
-      setCart(updatedCart);
-      updateStoreFromCart(updatedCart);
-    } catch (error) {
-      console.error('Error removing item:', error);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items,
+          toPostcode: postcode.trim() || '2000',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to initiate checkout.');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      setCheckoutError(err.message || 'Something went wrong. Please try again.');
+      setIsCheckingOut(false);
     }
   };
 
-  if (isLoading) {
+  if (!mounted) {
     return (
       <div className="cart-page">
         <div className="cart-empty">
@@ -98,7 +112,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.lines.edges.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="cart-page">
         <div className="cart-empty">
@@ -115,6 +129,13 @@ export default function CartPage() {
     );
   }
 
+  const subtotal = getSubtotal();
+  const currencyCode = items[0]?.currencyCode || 'AUD';
+
+  const activeQuote = shippingQuotes?.find((q) => q.serviceCode === selectedQuoteCode) || shippingQuotes?.[0];
+  const shippingCost = activeQuote ? activeQuote.price : 0;
+  const grandTotal = subtotal + shippingCost;
+
   return (
     <div className="cart-page">
       <h1 className="cart-title">Shopping Cart</h1>
@@ -122,113 +143,201 @@ export default function CartPage() {
       <div className="cart-container">
         {/* Cart Items */}
         <div className="cart-items">
-          {cart.lines.edges.map(({ node: line }) => {
-            const image = line.merchandise.product.images.edges[0]?.node;
-            
-            return (
-              <div key={line.id} className="cart-item">
-                <div className="cart-item-image">
-                  {image ? (
-                    <Image
-                      src={image.url}
-                      alt={image.altText || line.merchandise.product.title}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.75rem' }}>
-                      No image
-                    </div>
-                  )}
-                </div>
+          {items.map((item) => (
+            <div key={item.id} className="cart-item">
+              <div className="cart-item-image">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="120px"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.75rem' }}>
+                    No image
+                  </div>
+                )}
+              </div>
 
-                <div className="cart-item-details">
-                  <Link 
-                    href={`/products/${line.merchandise.product.handle}`}
-                    className="cart-item-title"
-                  >
-                    {line.merchandise.product.title}
-                  </Link>
-                  {line.merchandise.title !== 'Default Title' && (
-                    <p className="cart-item-variant">
-                      {line.merchandise.title}
-                    </p>
-                  )}
+              <div className="cart-item-details">
+                <Link
+                  href={`/products/${item.handle}`}
+                  className="cart-item-title"
+                >
+                  {item.title}
+                </Link>
+                {item.variantTitle && item.variantTitle !== 'Default' && (
+                  <p className="cart-item-variant">
+                    {item.variantTitle}
+                  </p>
+                )}
 
-                  <div className="cart-item-actions">
-                    <div className="cart-item-quantity">
-                      <button
-                        onClick={() => handleUpdateQuantity(line.id, Math.max(1, line.quantity - 1))}
-                        className="cart-quantity-button"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="cart-quantity-value">
-                        {line.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleUpdateQuantity(line.id, line.quantity + 1)}
-                        className="cart-quantity-button"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-
-                    <span className="cart-item-price">
-                      {formatPrice(
-                        (parseFloat(line.merchandise.price.amount) * line.quantity).toString(),
-                        line.merchandise.price.currencyCode
-                      )}
-                    </span>
-
+                <div className="cart-item-actions">
+                  <div className="cart-item-quantity">
                     <button
-                      onClick={() => handleRemoveItem(line.id)}
-                      className="cart-item-remove"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="cart-quantity-button"
+                      aria-label="Decrease quantity"
                     >
-                      <Trash2 size={20} />
+                      <Minus size={16} />
+                    </button>
+                    <span className="cart-quantity-value">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      disabled={item.maxQuantity !== undefined && item.quantity >= item.maxQuantity}
+                      className="cart-quantity-button"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus size={16} />
                     </button>
                   </div>
+
+                  <span className="cart-item-price">
+                    {formatPrice((item.price * item.quantity).toString(), item.currencyCode)}
+                  </span>
+
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="cart-item-remove"
+                    aria-label="Remove item"
+                  >
+                    <Trash2 size={20} />
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {/* Order Summary */}
         <div className="cart-summary">
           <h2>Order Summary</h2>
-          
+
           <div className="cart-summary-row">
             <span>Subtotal</span>
             <span>
-              {formatPrice(
-                cart.cost.subtotalAmount.amount,
-                cart.cost.subtotalAmount.currencyCode
-              )}
+              {formatPrice(subtotal.toString(), currencyCode)}
             </span>
-          </div>
-          <div className="cart-summary-row">
-            <span>Shipping</span>
-            <span>Calculated at checkout</span>
           </div>
 
-          <div className="cart-summary-row">
-            <span>Total</span>
+          <div className="cart-summary-row" style={{ borderBottom: 'none', paddingBottom: '0.25rem' }}>
+            <span>Shipping</span>
             <span>
-              {formatPrice(
-                cart.cost.totalAmount.amount,
-                cart.cost.totalAmount.currencyCode
-              )}
+              {activeQuote ? formatPrice(shippingCost.toString(), currencyCode) : 'Calculated at checkout'}
             </span>
           </div>
+
+          {/* Australia Post Shipping Estimator */}
+          <div className="cart-shipping-estimator" style={{ marginTop: '0.25rem' }}>
+            <div className="cart-shipping-header">
+              <Truck size={18} style={{ color: '#0284c7' }} />
+              <span className="cart-shipping-title">
+                Australia Post Estimate
+              </span>
+            </div>
+
+            <form onSubmit={handleEstimateShipping} className="cart-shipping-form">
+              <input
+                type="text"
+                placeholder="Postcode (e.g. 3000)"
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
+                maxLength={4}
+                className="cart-shipping-input"
+              />
+              <button
+                type="submit"
+                disabled={isEstimatingShipping || !postcode}
+                className="cart-shipping-calc-btn"
+              >
+                {isEstimatingShipping ? 'Calculating...' : 'Calculate'}
+              </button>
+            </form>
+
+            {shippingQuotes && shippingQuotes.length > 0 && (
+              <div className="cart-shipping-quotes">
+                {shippingQuotes.map((q) => {
+                  const isSelected = selectedQuoteCode === q.serviceCode;
+                  return (
+                    <label
+                      key={q.serviceCode}
+                      className="cart-shipping-quote-row"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: '0.375rem',
+                        backgroundColor: isSelected ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+                        border: isSelected ? '1px solid #0284c7' : '1px solid rgba(255, 255, 255, 0.1)',
+                        color: isSelected ? '#ffffff' : 'inherit',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <input
+                          type="radio"
+                          name="shippingOption"
+                          value={q.serviceCode}
+                          checked={isSelected}
+                          onChange={() => setSelectedQuoteCode(q.serviceCode)}
+                          style={{ accentColor: '#ffffff' }}
+                        />
+                        <span style={{ fontSize: '0.875rem', fontWeight: isSelected ? 600 : 400, color: isSelected ? '#ffffff' : 'inherit' }}>
+                          {q.name} ({q.deliveryEstimate.minimum}-{q.deliveryEstimate.maximum} days)
+                        </span>
+                      </div>
+                      <strong style={{ color: isSelected ? '#ffffff' : 'inherit' }}>${q.price.toFixed(2)} AUD</strong>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            {shippingError && (
+              <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                {shippingError}
+              </p>
+            )}
+          </div>
+
+          <div className="cart-summary-total">
+            <span>Total</span>
+            <span>
+              {formatPrice(grandTotal.toString(), currencyCode)}
+            </span>
+          </div>
+
+          {checkoutError && (
+            <div style={{ color: '#dc2626', fontSize: '0.875rem', marginTop: '0.5rem', textAlign: 'center' }}>
+              {checkoutError}
+            </div>
+          )}
 
           <Link href="/products" className="cart-continue-shopping">
             Continue Shopping
           </Link>
 
-          <a href={cart.checkoutUrl} className="cart-checkout-button">
-            Proceed to Checkout
-          </a>
+          <button
+            onClick={handleCheckout}
+            disabled={isCheckingOut}
+            className="cart-checkout-button"
+            style={{ width: '100%', cursor: isCheckingOut ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          >
+            {isCheckingOut ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Connecting to Stripe...
+              </>
+            ) : (
+              'Proceed to Checkout'
+            )}
+          </button>
         </div>
       </div>
     </div>

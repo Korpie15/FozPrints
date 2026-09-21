@@ -1,14 +1,31 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Download, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import '../../styles/manuals.css';
+import { SITE_URL } from '@/lib/site';
+
+export const metadata: Metadata = {
+  title: 'Subaru Forester Installation Manuals & Guides',
+  description:
+    'Detailed step-by-step installation guides and documentation for FozPrints Subaru Forester 3D printed double DIN pods and custom accessories.',
+  alternates: {
+    canonical: '/manuals',
+  },
+  openGraph: {
+    title: 'Subaru Forester Installation Manuals | Foz Prints',
+    description:
+      'Detailed step-by-step installation guides and documentation for FozPrints Subaru Forester 3D printed double DIN pods and custom accessories.',
+    url: `${SITE_URL}/manuals`,
+  },
+};
 
 export default function ManualsPage() {
   return (
     <div className="manuals-page">
       <div className="container">
-        <h1>Installation Manuals</h1>
+        <h1>Installation Manuals & Guides</h1>
         <p className="manuals-intro">
-          Download installation guides and manuals for your FozPrints products.
+          Download and view step-by-step installation guides for FozPrints 3D printed Forester upgrades.
         </p>
 
         <div className="manuals-grid">
@@ -19,8 +36,7 @@ export default function ManualsPage() {
             </div>
             <h2>Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit – USDM Spec</h2>
             <p className="manual-description">
-              Complete installation guide for the Double DIN Pod Upgrade Kit
-              with step-by-step instructions and photos.
+              Complete step-by-step installation guide for the Double DIN Pod Upgrade Kit with photos, tool requirements, and video transcript.
             </p>
             <div className="manual-actions">
               <span className="view-button">

@@ -1,7 +1,4 @@
-import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,25 +13,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send email using Resend
-    const { data, error } = await resend.emails.send({
-      from: 'noreply@fozprints.com.au',
-      to: ['info@fozprints.com.au'], 
-      replyTo: email,
-      subject: `Contact Form: ${subject}`,
-      html: `<p>${message.replace(/\n/g, '<br>')}</p>`,
-    });
-
-    if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json(
-        { error: 'Failed to send email' },
-        { status: 500 }
-      );
-    }
+    console.log('Contact form submission received:', { name, email, subject, message });
 
     return NextResponse.json(
-      { message: 'Email sent successfully', data },
+      { message: 'Message received successfully' },
       { status: 200 }
     );
   } catch (error) {

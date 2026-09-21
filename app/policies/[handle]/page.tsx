@@ -1,6 +1,8 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getShopPolicies } from '@/lib/shopify';
-import '../../../styles/policy.css';
+import { getPolicy } from '@/lib/policies';
+import '@/styles/policy.css';
+import { SITE_URL } from '@/lib/site';
 
 interface PolicyPageProps {
   params: Promise<{
@@ -8,42 +10,49 @@ interface PolicyPageProps {
   }>;
 }
 
+export async function generateMetadata({
+  params,
+}: PolicyPageProps): Promise<Metadata> {
+  const { handle } = await params;
+  const policy = await getPolicy(handle);
+
+  if (!policy) {
+    return {
+      title: 'Policy Not Found',
+    };
+  }
+
+  const siteUrl = SITE_URL;
+
+  return {
+    title: policy.title,
+    description: `Read the ${policy.title} for Foz Prints online store.`,
+    alternates: {
+      canonical: `${siteUrl}/policies/${handle}`,
+    },
+    openGraph: {
+      title: `${policy.title} | Foz Prints`,
+      description: `Read the ${policy.title} for Foz Prints online store.`,
+      url: `${siteUrl}/policies/${handle}`,
+    },
+  };
+}
+
 export default async function PolicyPage({ params }: PolicyPageProps) {
   try {
     const { handle } = await params;
-    const policies = await getShopPolicies();
-
-    // Map the handle to the correct policy
-    let policy = null;
-
-    switch (handle) {
-      case 'privacy-policy':
-        policy = policies.privacyPolicy;
-        break;
-      case 'refund-policy':
-        policy = policies.refundPolicy;
-        break;
-      case 'shipping-policy':
-        policy = policies.shippingPolicy;
-        break;
-      case 'terms-of-service':
-        policy = policies.termsOfService;
-        break;
-      default:
-        notFound();
-    }
+    const policy = await getPolicy(handle);
 
     if (!policy || !policy.body) {
       notFound();
     }
 
-    // Display the policy content directly
     return (
       <div className="policy-page">
         <div className="container">
           <div className="policy-content">
             <h1>{policy.title}</h1>
-            <div 
+            <div
               className="policy-body"
               dangerouslySetInnerHTML={{ __html: policy.body }}
             />

@@ -82,6 +82,7 @@
   font-weight: 600;
   color: #111827;
   transition: color 0.3s;
+  text-decoration: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -171,6 +172,15 @@
   background-color: #fee2e2;
 }
 
+@media (prefers-color-scheme: dark) {
+  .cart-item-remove {
+    color: #f87171;
+  }
+  .cart-item-remove:hover {
+    background-color: #374151;
+  }
+}
+
 .cart-item-price {
   text-align: right;
   font-weight: 600;
@@ -225,6 +235,7 @@
 @media (prefers-color-scheme: dark) {
   .cart-summary-row {
     border-bottom-color: #374151;
+    color: #e5e7eb;
   }
 }
 
@@ -233,6 +244,159 @@
   padding-top: 1rem;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.cart-summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 1.25rem;
+  font-weight: 700;
+  transition: border-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-summary-total {
+    border-top-color: #374151;
+    color: #e5e7eb;
+  }
+}
+
+/* Australia Post Shipping Estimator */
+.cart-shipping-estimator {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-estimator {
+    background-color: #111827;
+    border-color: #374151;
+  }
+}
+
+.cart-shipping-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cart-shipping-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-title {
+    color: #f3f4f6;
+  }
+}
+
+.cart-shipping-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cart-shipping-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #111827;
+  outline: none;
+}
+
+.cart-shipping-input:focus {
+  border-color: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-input {
+    background-color: #1f2937;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  .cart-shipping-input:focus {
+    border-color: #38bdf8;
+  }
+}
+
+.cart-shipping-calc-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background-color: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.cart-shipping-calc-btn:hover:not(:disabled) {
+  background-color: #0369a1;
+}
+
+.cart-shipping-calc-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-calc-btn {
+    background-color: #0284c7;
+  }
+  .cart-shipping-calc-btn:hover:not(:disabled) {
+    background-color: #0ea5e9;
+  }
+}
+
+.cart-shipping-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-quotes {
+    border-top-color: #374151;
+  }
+}
+
+.cart-shipping-quote-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.cart-shipping-quote-row strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-shipping-quote-row {
+    color: #cbd5e1;
+  }
+  .cart-shipping-quote-row strong {
+    color: #38bdf8;
+  }
 }
 
 .cart-continue-shopping {
@@ -304,7 +468,19 @@
   margin-bottom: 1rem;
 }
 
+@media (prefers-color-scheme: dark) {
+  .cart-empty h2 {
+    color: #f9fafb;
+  }
+}
+
 .cart-empty p {
   color: #6b7280;
   margin-bottom: 2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-empty p {
+    color: #9ca3af;
+  }
 }
