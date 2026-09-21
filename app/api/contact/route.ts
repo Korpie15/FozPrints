@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     const to = process.env.CONTACT_TO_EMAIL || 'info@fozprints.com.au';
     // Must be an address on a domain verified in Resend
-    const from = process.env.CONTACT_FROM_EMAIL || 'noreply@fozprints.com.au';
+    const from = process.env.CONTACT_FROM_EMAIL || 'info@fozprints.com.au';
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

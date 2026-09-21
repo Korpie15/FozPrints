@@ -77,7 +77,6 @@ export default async function HomePage() {
             alt="Subaru Forester Double DIN Pod Upgrade Kit Installed in Dash"
             fill
             sizes="100vw"
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
             priority
           />
         </div>

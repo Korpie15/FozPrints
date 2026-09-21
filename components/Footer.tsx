@@ -17,8 +17,8 @@ export async function Footer() {
         <div className="footer-grid">
           <div className="footer-section">
             <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0284c7' }}>Foz</span>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827' }}>Prints</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0ea5e9' }}>Foz</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#e0f2fe' }}>Prints</span>
             </Link>
             <p>
               Premium 3D printed automotive parts. Designed and built in Australia specifically for the SG Subaru Forester using UV-resistant, engineering-grade materials.
