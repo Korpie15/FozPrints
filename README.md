@@ -20,6 +20,18 @@ A modern, headless e-commerce platform for selling Subaru Forester 3D printed pa
 - **Icons**: Lucide React
 - **Hosting**: Netlify
 
+## Product photos
+
+Stripe's file storage is slow to serve images, so product photos are mirrored onto this site.
+After adding or changing photos on a Stripe product, run:
+
+```bash
+npm run sync-images
+```
+
+then commit `public/product-images/` and `lib/product-images.json` and deploy. Photos that haven't been
+synced still load (from Stripe) but more slowly.
+
 ## Environment Variables
 
 Copy `.env.example` to `.env.local` and add your keys:

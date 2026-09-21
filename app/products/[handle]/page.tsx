@@ -73,7 +73,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       '@type': 'Product',
       name: product.title,
       description: product.shortDescription || product.description,
-      image: product.images.map((img) => img.url),
+      image: product.images.map((img) => (img.url.startsWith('/') ? `${siteUrl}${img.url}` : img.url)),
       url: productUrl,
       brand: {
         '@type': 'Brand',
