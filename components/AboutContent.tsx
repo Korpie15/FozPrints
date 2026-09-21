@@ -1,9 +1,10 @@
 'use client';
 
-import { Mail, MapPin, Phone, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { FormEvent, useState } from 'react';
 import { Toast } from './Toast';
+import '../styles/about.css';
 
 export function AboutContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -182,67 +183,38 @@ export function AboutContent() {
         {/* Contact Section */}
         <section id="contact" className="contact-section">
           <div className="container">
-            <h2>Get In Touch</h2>
+            <h2>Contact Us</h2>
             <p className="contact-intro">
-              Have a question about a product or need custom CAD/3D printing work? Send us a message below.
+              Have questions or need assistance? We'd love to hear from you!
             </p>
 
-            <div className="contact-grid">
-              <div className="contact-info">
-                <h3>Contact Information</h3>
-                
-                <div className="contact-item">
-                  <Mail className="contact-icon" size={24} />
-                  <div>
-                    <h4>Email</h4>
-                    <p>info@fozprints.com.au</p>
-                  </div>
+            <div className="contact-form-section">
+              <h3>Send us a message</h3>
+              <form className="contact-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="name">Name</label>
+                  <input type="text" id="name" name="name" required />
                 </div>
 
-                <div className="contact-item">
-                  <Phone className="contact-icon" size={24} />
-                  <div>
-                    <h4>Phone</h4>
-                    <p>+61 400 000 000</p>
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="email">Email</label>
+                  <input type="email" id="email" name="email" required />
                 </div>
 
-                <div className="contact-item">
-                  <MapPin className="contact-icon" size={24} />
-                  <div>
-                    <h4>Location</h4>
-                    <p>Australia</p>
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="subject">Subject</label>
+                  <input type="text" id="subject" name="subject" required />
                 </div>
-              </div>
 
-              <div className="contact-form-container">
-                <form onSubmit={handleSubmit} className="contact-form">
-                  <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input type="text" id="name" name="name" required />
-                  </div>
+                <div className="form-group">
+                  <label htmlFor="message">Message</label>
+                  <textarea id="message" name="message" rows={6} required></textarea>
+                </div>
 
-                  <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" required />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" required />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="message">Message</label>
-                    <textarea id="message" name="message" rows={5} required></textarea>
-                  </div>
-
-                  <button type="submit" className="btn btn-primary btn-lg">
-                    Send Message
-                  </button>
-                </form>
-              </div>
+                <button type="submit" className="btn btn-primary">
+                  Send Message
+                </button>
+              </form>
             </div>
           </div>
         </section>
