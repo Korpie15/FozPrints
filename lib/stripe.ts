@@ -1,8 +1,8 @@
 import Stripe from 'stripe';
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
 import { Product, ProductVariant } from '@/types/product';
 import { getInventoryMap } from '@/lib/db';
+import imageManifest from '@/lib/product-images.json';
 
 /**
  * Lazy initializer for Stripe server instance
@@ -16,6 +16,17 @@ export function getStripeServer(): Stripe | null {
   return new Stripe(key, { timeout: 20_000, maxNetworkRetries: 2 });
 }
 
+/**
+ * Swaps a Stripe-hosted photo for our own copy (made by `npm run sync-images`).
+ * Stripe's file storage is slow to serve, so the local copy loads much faster.
+ * Photos that haven't been synced yet keep their Stripe URL.
+ */
+function localImageUrl(url: string): string;
+function localImageUrl(url: string | undefined): string | undefined;
+function localImageUrl(url: string | undefined): string | undefined {
+  return url ? (imageManifest as Record<string, string>)[url] ?? url : url;
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -25,13 +36,9 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-export const CATALOGUE_CACHE_TAG = 'catalogue';
-const CATALOGUE_REVALIDATE_SECONDS = 60;
-
 /**
  * Fetch all active products and their prices from Stripe.
  * Stock is NOT applied here (variants come back with 0 stock); see getProducts.
- * Throws on failure so a bad result is never stored in the cache.
  */
 async function fetchCatalogue(): Promise<Product[]> {
   const stripe = getStripeServer();
@@ -99,7 +106,7 @@ async function fetchCatalogue(): Promise<Product[]> {
         priceCents: unitAmount,
         availableForSale: false,
         quantityAvailable: 0,
-        image: variantImageUrl ? { url: variantImageUrl, altText: `${prod.name} - ${variantTitle}` } : undefined,
+        image: variantImageUrl ? { url: localImageUrl(variantImageUrl), altText: `${prod.name} - ${variantTitle}` } : undefined,
       };
     });
 
@@ -133,7 +140,7 @@ async function fetchCatalogue(): Promise<Product[]> {
         }
       }
       return {
-        url,
+        url: localImageUrl(url),
         altText,
       };
     });
@@ -162,20 +169,14 @@ async function fetchCatalogue(): Promise<Product[]> {
   return products;
 }
 
-const getCachedCatalogue = unstable_cache(fetchCatalogue, ['stripe-catalogue'], {
-  revalidate: CATALOGUE_REVALIDATE_SECONDS,
-  tags: [CATALOGUE_CACHE_TAG],
-});
-
 /**
- * All active products. The Stripe catalogue is cached for a short time;
- * stock is always read live from Neon so availability stays accurate.
- * Wrapped in React cache() so metadata + page share one result per request.
+ * All active products, read live from Stripe with stock from Neon.
+ * Wrapped in React cache() so metadata + page share one fetch per request.
  */
 export const getProducts = cache(async (): Promise<Product[]> => {
   try {
     const [catalogue, inventoryMap] = await Promise.all([
-      getCachedCatalogue(),
+      fetchCatalogue(),
       // If the DB is down, still show the catalogue but mark everything unavailable
       getInventoryMap().catch((error) => {
         console.error('Failed to query inventory from Neon:', error);
