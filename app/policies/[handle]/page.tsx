@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPolicy } from '@/lib/policies';
 import '@/styles/policy.css';
+import { SITE_URL } from '@/lib/site';
 
 interface PolicyPageProps {
   params: Promise<{
@@ -21,7 +22,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fozprints.com';
+  const siteUrl = SITE_URL;
 
   return {
     title: policy.title,

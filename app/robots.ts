@@ -1,14 +1,15 @@
 import { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fozprints.com';
+  const baseUrl = SITE_URL;
 
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/checkout/'],
+        disallow: ['/api/', '/checkout/', '/cart'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

@@ -94,3 +94,11 @@ export function formatDescriptionToHtml(description: string): string {
 
   return htmlParts.join('\n');
 }
+
+/**
+ * Serialises structured data for a <script type="application/ld+json"> tag.
+ * Escapes "<" so text from Stripe can't close the script tag early.
+ */
+export function toJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}

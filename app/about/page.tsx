@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AboutContent } from '@/components/AboutContent';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'About Foz Prints & FAQ',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     title: 'About Foz Prints & FAQ | Custom Subaru Forester Parts',
     description:
       'Learn how Foz Prints designs engineering-grade, heat-resistant 3D printed parts for the SG Subaru Forester in Australia. Frequently asked questions and contact info.',
-    url: 'https://fozprints.com/about',
+    url: `${SITE_URL}/about`,
   },
 };
 
@@ -49,7 +50,7 @@ const faqSchema = {
       name: 'Do you ship internationally?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, we ship worldwide! Shipping costs and delivery estimates are calculated at checkout.',
+        text: 'We currently ship within Australia only, via Australia Post. Shipping costs and delivery estimates are calculated at checkout.',
       },
     },
   ],

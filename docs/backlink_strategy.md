@@ -37,7 +37,7 @@ FozPrints specializes in engineering-grade 3D printed automotive upgrades for Su
 - **Target Channels**: Subaru restoration channels, DIY car audio installers, overland Forester build channels (e.g., Softroadingthesubaru).
 - **Partnership Package**:
   - Provide free Double DIN Pod Upgrade Kits and t-slot wire routers for video install features.
-  - Require canonical backlink to `https://fozprints.com/products/` and product installation pages in video descriptions and pinned comments.
+  - Require canonical backlink to `https://fozprints.com.au/products/` and product installation pages in video descriptions and pinned comments.
 
 ---
 

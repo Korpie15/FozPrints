@@ -3,6 +3,7 @@ import { getProducts } from '@/lib/stripe';
 import { ProductCard } from '@/components/ProductCard';
 import { Product } from '@/types/product';
 import '@/styles/products.css';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     title: 'Subaru Forester 3D Printed Parts Catalog | Foz Prints',
     description:
       'Browse our complete catalog of precision 3D printed double DIN pods, storage cubbies, cable organizers, and accessories for the SG Subaru Forester.',
-    url: 'https://fozprints.com/products',
+    url: `${SITE_URL}/products`,
   },
 };
 

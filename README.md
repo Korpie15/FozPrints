@@ -7,7 +7,7 @@ A modern, headless e-commerce platform for selling Subaru Forester 3D printed pa
 - 🛒 **Full E-commerce Functionality**: Stripe-powered product catalog, cart, and hosted checkout
 - ⚡ **Performance**: Server-rendered product pages with Next.js App Router
 - 🔄 **Instant Local Cart**: Zustand state management with localStorage persistence
-- 📦 **Australia Post Shipping**: Configured domestic and international parcel options
+- 📦 **Australia Post Shipping**: Domestic (Australia-only) parcel options with live rates
 - 🔐 **Secure Checkout**: Powered by Stripe Checkout (Credit Card, Apple Pay, Google Pay, Link)
 - 📱 **Mobile First**: Responsive layout with carousel and quick-add actions
 

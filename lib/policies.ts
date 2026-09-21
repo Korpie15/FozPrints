@@ -17,17 +17,17 @@ export const POLICIES: Record<string, Policy> = {
       <p>Shipping charges for your order will be calculated and displayed at checkout based on the weight of your items and your delivery location.</p>
       <ul>
         <li><strong>Domestic (Australia):</strong> We use Australia Post standard and express carrier options.</li>
-        <li><strong>International:</strong> We ship worldwide. Delivery times depend on your local customs processing and carrier speeds.</li>
+        <li><strong>International:</strong> We currently ship within Australia only.</li>
       </ul>
 
       <h2>3. Shipment to P.O. Boxes</h2>
-      <p>FozPrints ships to addresses within Australia and internationally. We can deliver to P.O. Boxes and Parcel Lockers via Australia Post.</p>
+      <p>FozPrints ships to addresses within Australia only. We can deliver to P.O. Boxes and Parcel Lockers via Australia Post.</p>
 
       <h2>4. Shipment Confirmation &amp; Order Tracking</h2>
       <p>You will receive a Shipment Confirmation email once your order has shipped containing your tracking number(s). Please allow up to 48 hours for the tracking number to become active in the carrier's system.</p>
 
-      <h2>5. Customs, Duties, and Taxes (International Orders)</h2>
-      <p>FozPrints is not responsible for any customs and taxes applied to your order. All fees imposed during or after shipping (tariffs, taxes, duties, etc.) are the responsibility of the customer.</p>
+      <h2>5. Customs, Duties, and Taxes</h2>
+      <p>FozPrints currently ships within Australia only, so customs duties and import taxes do not apply to domestic orders. If we begin offering international shipping in the future, any customs, tariffs, duties, or taxes imposed during or after shipping will be the responsibility of the customer, and we will update this policy before doing so.</p>
 
       <h2>6. Damages &amp; Lost Packages</h2>
       <p>FozPrints is not strictly liable for products damaged or lost during shipping, but we want to ensure you get your parts. If your order arrives damaged, please save all packaging materials and damaged goods and contact us immediately at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a> so we can assist you in filing a claim with the carrier.</p>

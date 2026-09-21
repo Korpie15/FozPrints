@@ -5,6 +5,7 @@ import { getProducts } from '@/lib/stripe';
 import { Product } from '@/types/product';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,11 +15,11 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'OnlineStore',
   name: 'Foz Prints',
-  url: 'https://fozprints.com',
-  logo: 'https://fozprints.com/icon.png',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
   description:
     'Precision 3D printed automotive parts designed and manufactured in Australia for the SG Subaru Forester.',
-  areaServed: 'Worldwide',
+  areaServed: 'AU',
   priceRange: '$$',
 };
 
@@ -26,7 +27,7 @@ const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Foz Prints',
-  url: 'https://fozprints.com',
+  url: SITE_URL,
 };
 
 export default async function HomePage() {

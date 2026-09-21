@@ -170,7 +170,7 @@ export function AboutContent() {
                 {openFaq === 4 && (
                   <div className="faq-answer">
                     <p>
-                      Yes, we ship worldwide! Shipping costs and estimated delivery times will be calculated at checkout based on your location.
+                      We currently ship within Australia only, via Australia Post. Shipping costs and estimated delivery times will be calculated at checkout based on your postcode.
                     </p>
                   </div>
                 )}

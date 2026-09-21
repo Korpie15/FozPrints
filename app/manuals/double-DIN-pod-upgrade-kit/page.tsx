@@ -5,6 +5,7 @@ import { Download, ChevronRight, AlertCircle } from 'lucide-react';
 import { InstallationTranscript } from '@/components/InstallationTranscript';
 import { TroubleshootingAccordion } from '@/components/TroubleshootingAccordion';
 import '../../../styles/manual-detail.css';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Subaru Forester SG Double DIN Pod Installation Guide',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     title: 'Subaru Forester SG Double DIN Pod Installation Guide | Foz Prints',
     description:
       'Step-by-step installation manual with photos and video transcript for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
-    url: 'https://fozprints.com/manuals/double-DIN-pod-upgrade-kit',
+    url: `${SITE_URL}/manuals/double-DIN-pod-upgrade-kit`,
     images: [{ url: '/images/parts-layout.jpg', alt: 'Double DIN Pod Upgrade Kit Parts' }],
   },
 };

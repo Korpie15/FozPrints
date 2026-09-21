@@ -161,6 +161,7 @@ export async function getLiveShippingQuotes(
               'AUTH-KEY': apiKey,
             },
             next: { revalidate: 3600 },
+            signal: AbortSignal.timeout(8000),
           });
 
           if (!res.ok) {

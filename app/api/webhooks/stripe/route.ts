@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
+import { decrementInventoryOnce } from '@/lib/db';
 
 export async function POST(req: Request) {
   const stripe = getStripeServer();
@@ -10,8 +11,8 @@ export async function POST(req: Request) {
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.warn('STRIPE_WEBHOOK_SECRET is not configured. Skipping webhook verification.');
-    return NextResponse.json({ received: true, note: 'Webhook secret not configured' });
+    console.error('STRIPE_WEBHOOK_SECRET is not configured.');
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
 
   const body = await req.text();
@@ -38,7 +39,25 @@ export async function POST(req: Request) {
     const customerEmail = session.customer_details?.email;
     const orderId = session.id.slice(-8).toUpperCase();
 
-    console.log(`Order #${orderId} completed successfully for ${customerEmail}`);
+    try {
+      const lineItems = await stripe.checkout.sessions
+        .listLineItems(session.id, { limit: 100 })
+        .autoPagingToArray({ limit: 1000 });
+
+      const lines = lineItems.flatMap((li) =>
+        li.price?.id && li.quantity ? [{ priceId: li.price.id, quantity: li.quantity }] : []
+      );
+
+      const applied = await decrementInventoryOnce(event.id, lines);
+      console.log(
+        `Order #${orderId} completed for ${customerEmail}; ` +
+          (applied ? 'inventory updated' : 'duplicate event, inventory already updated')
+      );
+    } catch (err) {
+      // Non-2xx makes Stripe retry; decrementInventoryOnce is safe to retry
+      console.error(`Order #${orderId}: failed to update inventory:`, err);
+      return NextResponse.json({ error: 'Failed to update inventory' }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ received: true });

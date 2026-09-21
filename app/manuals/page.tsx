@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
 import '../../styles/manuals.css';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Subaru Forester Installation Manuals & Guides',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     title: 'Subaru Forester Installation Manuals | Foz Prints',
     description:
       'Detailed step-by-step installation guides and documentation for FozPrints Subaru Forester 3D printed double DIN pods and custom accessories.',
-    url: 'https://fozprints.com/manuals',
+    url: `${SITE_URL}/manuals`,
   },
 };
 

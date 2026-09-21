@@ -287,10 +287,12 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
-          {/* Availability badge */}
-          <div className={`product-availability ${isAvailable ? 'product-in-stock' : 'product-out-of-stock'}`}>
-            {isAvailable ? '✓ In Stock' : '✕ Out of Stock'}
-          </div>
+          {/* Out of Stock badge */}
+          {!isAvailable && (
+            <div className="product-availability product-out-of-stock">
+              ✕ Out of Stock
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { SITE_URL } from '@/lib/site';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fozprints.com';
+const siteUrl = SITE_URL;
 
 export const viewport: Viewport = {
   width: 'device-width',
