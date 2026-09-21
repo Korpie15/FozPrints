@@ -9,9 +9,11 @@ import '../styles/about.css';
 export function AboutContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSending) return;
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -19,7 +21,9 @@ export function AboutContent() {
     const email = formData.get('email');
     const subject = formData.get('subject');
     const message = formData.get('message');
+    const website = formData.get('website');
 
+    setIsSending(true);
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -31,6 +35,7 @@ export function AboutContent() {
           email,
           subject,
           message,
+          website,
         }),
       });
 
@@ -38,11 +43,14 @@ export function AboutContent() {
         setShowToast(true);
         form.reset();
       } else {
-        alert('Failed to send message. Please try again.');
+        const data = await response.json().catch(() => null);
+        alert(data?.error || 'Failed to send message. Please try again.');
       }
     } catch (error) {
       console.error('Error sending message:', error);
       alert('An error occurred. Please try again later.');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -211,8 +219,14 @@ export function AboutContent() {
                   <textarea id="message" name="message" rows={6} required></textarea>
                 </div>
 
-                <button type="submit" className="btn btn-primary">
-                  Send Message
+                {/* Honeypot: hidden from people, filled in by bots */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                  <label htmlFor="website">Leave this field empty</label>
+                  <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+                </div>
+
+                <button type="submit" className="btn btn-primary" disabled={isSending}>
+                  {isSending ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>

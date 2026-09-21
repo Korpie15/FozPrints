@@ -36,7 +36,7 @@ const CATALOGUE_REVALIDATE_SECONDS = 60;
 async function fetchCatalogue(): Promise<Product[]> {
   const stripe = getStripeServer();
   if (!stripe) {
-    return [];
+    throw new Error('STRIPE_SECRET_KEY is not configured.');
   }
 
   // 1. Fetch active products
