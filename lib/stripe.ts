@@ -72,19 +72,25 @@ export async function getProducts(): Promise<Product[]> {
         associatedPrices.push(defaultPriceObj);
       }
 
-      const variants: ProductVariant[] = associatedPrices.map((price, priceIndex) => {
+      let variants: ProductVariant[] = associatedPrices.map((price, priceIndex) => {
         const unitAmount = price.unit_amount || 0;
         const currency = (price.currency || 'aud').toUpperCase();
-        const variantTitle = price.nickname || price.metadata?.title || (priceIndex === 0 ? 'Textured' : 'Smooth');
+        const variantTitle = price.nickname || price.metadata?.title || (priceIndex === 0 ? 'Smooth' : 'Textured');
         const stockCount = inventoryMap[price.id] ?? 0;
         const availableForSale = Boolean(price.active && prod.active && stockCount > 0);
 
-        // Map variant image by metadata, image_index, priceIndex, or fallback
-        const variantImageUrl =
-          price.metadata?.image_url ||
-          (price.metadata?.image_index !== undefined ? prod.images[parseInt(price.metadata.image_index)] : undefined) ||
-          prod.images[priceIndex] ||
-          prod.images[0];
+        const titleLower = variantTitle.toLowerCase();
+        let variantImageUrl: string | undefined;
+
+        if (titleLower.includes('smooth') && prod.images[0]) {
+          variantImageUrl = prod.images[0];
+        } else if (titleLower.includes('textured') && prod.images[2]) {
+          variantImageUrl = prod.images[2];
+        } else {
+          variantImageUrl =
+            price.metadata?.image_url ||
+            (price.metadata?.image_index !== undefined ? prod.images[parseInt(price.metadata.image_index)] : undefined);
+        }
 
         return {
           id: price.id,
@@ -100,6 +106,15 @@ export async function getProducts(): Promise<Product[]> {
         };
       });
 
+      // Sort variants so 'Smooth' is first (default variant)
+      variants.sort((a, b) => {
+        const aTitle = a.title.toLowerCase();
+        const bTitle = b.title.toLowerCase();
+        if (aTitle.includes('smooth') && !bTitle.includes('smooth')) return -1;
+        if (!aTitle.includes('smooth') && bTitle.includes('smooth')) return 1;
+        return 0;
+      });
+
       const minPrice = variants.length > 0
         ? Math.min(...variants.map((v) => v.priceCents)) / 100
         : 0;
@@ -107,10 +122,19 @@ export async function getProducts(): Promise<Product[]> {
       const currencyCode = variants[0]?.price.currencyCode || 'AUD';
 
       const images = prod.images.map((url, i) => {
-        const matchingVariant = variants[i];
-        const altText = matchingVariant && matchingVariant.title !== 'Default'
-          ? `${prod.name} - ${matchingVariant.title}`
-          : prod.name;
+        let altText = prod.name;
+        if (prod.images.length === 8) {
+          if (i === 0 || i === 1) {
+            altText = `${prod.name} - Smooth`;
+          } else if (i === 2 || i === 3) {
+            altText = `${prod.name} - Textured`;
+          }
+        } else {
+          const matchingVariant = variants[i];
+          if (matchingVariant && matchingVariant.title !== 'Default') {
+            altText = `${prod.name} - ${matchingVariant.title}`;
+          }
+        }
         return {
           url,
           altText,

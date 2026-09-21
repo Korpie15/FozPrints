@@ -35,18 +35,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     const urlLower = img.url.toLowerCase();
 
     const keywordMatch = product.variants.find((v) => {
-      const titleLower = v.title.toLowerCase();
+      const titleLower = (v.title || '').toLowerCase();
+      if (!titleLower || titleLower === 'default') return false;
       return (
-        altLower.includes(titleLower) ||
-        urlLower.includes(titleLower) ||
-        ((altLower.includes('textured') || urlLower.includes('textured')) && titleLower.includes('textured')) ||
-        ((altLower.includes('smooth') || urlLower.includes('smooth')) && titleLower.includes('smooth'))
+        (titleLower.includes('textured') && (altLower.includes('textured') || urlLower.includes('textured'))) ||
+        (titleLower.includes('smooth') && (altLower.includes('smooth') || urlLower.includes('smooth')))
       );
     });
     if (keywordMatch) return keywordMatch;
 
-    // 3. Positional fallback: variant at imageIndex if available
-    return product.variants[imageIndex] || undefined;
+    return undefined;
   };
 
   // Helper to find image index matching a variant
@@ -58,25 +56,17 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     }
 
     // 2. Keyword match by variant title (e.g. "textured", "smooth") against altText or filename
-    if (variant.title) {
+    if (variant.title && variant.title.toLowerCase() !== 'default') {
       const titleLower = variant.title.toLowerCase();
       const idx = product.images.findIndex((img) => {
         const altLower = (img.altText || '').toLowerCase();
         const urlLower = img.url.toLowerCase();
         return (
-          altLower.includes(titleLower) ||
-          urlLower.includes(titleLower) ||
           (titleLower.includes('textured') && (altLower.includes('textured') || urlLower.includes('textured'))) ||
           (titleLower.includes('smooth') && (altLower.includes('smooth') || urlLower.includes('smooth')))
         );
       });
       if (idx !== -1) return idx;
-    }
-
-    // 3. Positional fallback: image at variantIndex
-    const variantIndex = product.variants.findIndex((v) => v.id === variant.id);
-    if (variantIndex !== -1 && product.images[variantIndex]) {
-      return variantIndex;
     }
 
     return -1;
