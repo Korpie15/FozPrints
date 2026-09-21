@@ -242,6 +242,43 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           )}
 
+          {/* Quantity Controls */}
+          <div className="product-quantity">
+            <label>Quantity</label>
+            <div className="product-purchase-row">
+              <div className="quantity-controls">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={!isAvailable || quantity <= 1}
+                  className="quantity-button"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="quantity-value">
+                  {isAvailable ? quantity : 0}
+                </span>
+                <button
+                  onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+                  disabled={!isAvailable || quantity >= maxQuantity}
+                  className="quantity-button"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+
+              <button
+                onClick={handleAddToCart}
+                disabled={!isAvailable}
+                className="product-add-to-cart"
+              >
+                <ShoppingCart size={20} />
+                {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+
           <div className="product-description">
             <div
               className="product-description-content"
@@ -250,49 +287,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               }}
             />
           </div>
-
-          {/* Quantity Controls */}
-          <div className="product-quantity">
-            <label>Quantity</label>
-            <div className="quantity-controls">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={!isAvailable || quantity <= 1}
-                className="quantity-button"
-                aria-label="Decrease quantity"
-              >
-                <Minus size={16} />
-              </button>
-              <span className="quantity-value">
-                {isAvailable ? quantity : 0}
-              </span>
-              <button
-                onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
-                disabled={!isAvailable || quantity >= maxQuantity}
-                className="quantity-button"
-                aria-label="Increase quantity"
-              >
-                <Plus size={16} />
-              </button>
-            </div>
-          </div>
-
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            disabled={!isAvailable}
-            className="product-add-to-cart"
-          >
-            <ShoppingCart size={20} />
-            {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
-          </button>
-
-          {/* Out of Stock badge */}
-          {!isAvailable && (
-            <div className="product-availability product-out-of-stock">
-              ✕ Out of Stock
-            </div>
-          )}
         </div>
       </div>
     </>
