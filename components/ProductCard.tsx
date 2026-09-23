@@ -71,6 +71,8 @@ export function ProductCard({ product }: ProductCardProps) {
               src={image.url}
               alt={image.altText || product.title}
               fill
+              // Matches the products grid (1/2/3/4 columns) so small cards don't download huge images
+              sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, (max-width: 1279px) 33vw, 25vw"
               style={{ objectFit: 'cover' }}
             />
           ) : (

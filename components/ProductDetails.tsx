@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import Image, { getImageProps } from 'next/image';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
@@ -13,6 +13,17 @@ interface ProductDetailsProps {
   product: Product;
 }
 
+const MAIN_IMAGE_SIZES = '(max-width: 768px) 100vw, 50vw';
+
+/** Starts downloading an image at the size the main gallery slot will request. */
+function preloadMainImage(url: string) {
+  const { props } = getImageProps({ src: url, alt: '', fill: true, sizes: MAIN_IMAGE_SIZES });
+  const img = new window.Image();
+  img.sizes = MAIN_IMAGE_SIZES;
+  img.srcset = props.srcSet || '';
+  img.src = props.src;
+}
+
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
@@ -20,6 +31,18 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [showToast, setShowToast] = useState(false);
 
   const { addItem } = useCartStore();
+
+  // Warm the browser and image caches so switching variants/photos is instant.
+  // Variant photos go first; the rest of the gallery follows once the page is idle.
+  useEffect(() => {
+    const variantUrls = product.variants.flatMap((v) => (v.image?.url ? [v.image.url] : []));
+    const otherUrls = product.images.map((img) => img.url).filter((url) => !variantUrls.includes(url));
+
+    [...new Set(variantUrls)].forEach(preloadMainImage);
+
+    const timer = window.setTimeout(() => otherUrls.forEach(preloadMainImage), 1500);
+    return () => window.clearTimeout(timer);
+  }, [product]);
 
   // Helper to find variant matching an image index
   const findVariantForImage = (imageIndex: number): ProductVariant | undefined => {
@@ -152,7 +175,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   src={selectedImage.url}
                   alt={selectedImage.altText || `${product.title} - ${selectedVariant?.title || 'View'}`}
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes={MAIN_IMAGE_SIZES}
                   style={{ objectFit: 'cover' }}
                   priority
                 />
