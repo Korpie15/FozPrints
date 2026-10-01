@@ -36,7 +36,7 @@ export default function ManualsPage() {
             </div>
             <h2>Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit – USDM Spec</h2>
             <p className="manual-description">
-              Complete step-by-step installation guide for the Double DIN Pod Upgrade Kit with photos, tool requirements, and video transcript.
+              Complete step-by-step installation guide for the Double DIN Pod Upgrade Kit with photos, tool requirements, and detailed instructions.
             </p>
             <div className="manual-actions">
               <span className="view-button">

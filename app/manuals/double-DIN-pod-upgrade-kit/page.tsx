@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Download, ChevronRight, AlertCircle } from 'lucide-react';
-import { InstallationTranscript } from '@/components/InstallationTranscript';
 import { TroubleshootingAccordion } from '@/components/TroubleshootingAccordion';
 import '../../../styles/manual-detail.css';
 import { SITE_URL } from '@/lib/site';
@@ -10,14 +9,14 @@ import { SITE_URL } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'Subaru Forester SG Double DIN Pod Installation Guide',
   description:
-    'Step-by-step installation manual with photos and video transcript for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
+    'Step-by-step installation manual with photos and detailed instructions for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
   alternates: {
     canonical: '/manuals/double-DIN-pod-upgrade-kit',
   },
   openGraph: {
     title: 'Subaru Forester SG Double DIN Pod Installation Guide | Foz Prints',
     description:
-      'Step-by-step installation manual with photos and video transcript for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
+      'Step-by-step installation manual with photos and detailed instructions for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
     url: `${SITE_URL}/manuals/double-DIN-pod-upgrade-kit`,
     images: [{ url: '/images/parts-layout.jpg', alt: 'Double DIN Pod Upgrade Kit Parts' }],
   },
@@ -95,9 +94,6 @@ export default function DoubleDinPodUpgradeKitManual() {
             </a>
           </div>
         </div>
-
-        {/* Video & Installation Transcript */}
-        <InstallationTranscript />
 
         {/* Tools Required */}
         <div className="manual-section-with-image">
