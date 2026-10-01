@@ -31,7 +31,7 @@ export default async function ProductsPage() {
         <div className="products-header">
           <h1>Subaru Forester 3D Printed Parts</h1>
           <p>
-            Browse our complete catalog of engineering-grade 3D printed parts and custom Forester accessories.
+            Factory-fit navigation pods, interior storage, and touring accessories for the SG Forester.
           </p>
         </div>
 

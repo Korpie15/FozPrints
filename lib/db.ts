@@ -8,6 +8,21 @@ export function getDb() {
   return neon(url);
 }
 
+async function withRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 400): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 /**
  * Stock levels keyed by Stripe Price ID.
  * Throws if the database is unavailable so callers choose how to fail
@@ -19,7 +34,7 @@ export async function getInventoryMap(): Promise<Record<string, number>> {
     throw new Error('DATABASE_URL is not configured.');
   }
 
-  const rows = await sql`SELECT id, stock_count FROM inventory`;
+  const rows = await withRetry(() => sql`SELECT id, stock_count FROM inventory`);
   const map: Record<string, number> = {};
   for (const row of rows) {
     map[row.id] = Number(row.stock_count) || 0;
@@ -50,7 +65,7 @@ export async function decrementInventoryOnce(
   const ids = [...totals.keys()];
   const qtys = [...totals.values()];
 
-  const rows = await sql`
+  const rows = await withRetry(() => sql`
     WITH claimed AS (
       INSERT INTO processed_stripe_events (event_id)
       VALUES (${eventId})
@@ -68,7 +83,7 @@ export async function decrementInventoryOnce(
       RETURNING i.id
     )
     SELECT (SELECT count(*) FROM claimed) AS claimed
-  `;
+  `);
 
   return Number(rows[0]?.claimed) > 0;
 }

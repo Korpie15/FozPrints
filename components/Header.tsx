@@ -26,7 +26,7 @@ export function Header() {
               About
             </Link>
             <Link href="/about#faq" className="nav-link">
-              FAQ's
+              FAQs
             </Link>
             <Link href="/about#contact" className="nav-link">
               Contact
@@ -59,7 +59,7 @@ export function Header() {
             About
           </Link>
           <Link href="/about#faq" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-            FAQ's
+            FAQs
           </Link>
           <Link href="/about#contact" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
             Contact

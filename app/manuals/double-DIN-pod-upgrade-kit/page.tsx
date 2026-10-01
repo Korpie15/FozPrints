@@ -43,7 +43,7 @@ const howToSchema = {
   step: [
     {
       '@type': 'HowToStep',
-      name: 'Remove the Storage Compartment',
+      name: 'Pry Up the Storage Compartment',
       text: 'Use a flat-head screwdriver or trim removal tool to pop off the top storage compartment by moving around the edges at the front.',
     },
     {
@@ -105,8 +105,8 @@ export default function DoubleDinPodUpgradeKitManual() {
             <h2>Tools & Parts Required</h2>
             <h3 style={{ fontSize: '1.125rem', marginTop: '1rem' }}>Tools Required:</h3>
             <ul className="tools-list">
-              <li>Phillips head screwdriver (electric screwdriver will make things go faster)</li>
-              <li>Trim removal tool (optional but recommended), flat head screwdriver will also work fine</li>
+              <li>Phillips head screwdriver (a cordless driver speeds this up)</li>
+              <li>Plastic trim tool (or flathead screwdriver wrapped in tape to protect dash plastic)</li>
             </ul>
             <h3 style={{ fontSize: '1.125rem', marginTop: '1.5rem' }}>Included in the Kit:</h3>
             <ul className="tools-list">
@@ -154,9 +154,9 @@ export default function DoubleDinPodUpgradeKitManual() {
           <div className="installation-step">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Remove the Storage Compartment</h3>
+              <h3>Pry Up Storage Compartment</h3>
               <p>
-                Use a flat-head screwdriver or trim removal tool to pop off the top storage compartment by moving around the edges at the front. It is only held in by clips and no screws.
+                Use a trim removal tool or taped flathead screwdriver to gently pry along the front edge of the top storage compartment. It is held in place by friction clips without any hidden screws.
               </p>
               <div className="step-images single-image">
                 <div className="step-image">
@@ -207,9 +207,9 @@ export default function DoubleDinPodUpgradeKitManual() {
           <div className="installation-step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Remove the Storage Compartment</h3>
+              <h3>Lift Out Storage Compartment</h3>
               <p>
-                Everything should now be disconnected and you can fully remove the storage compartment from the dash.
+                With the harness detached, lift the storage compartment clear out of the dash cavity.
               </p>
               <div className="step-images single-image">
                 <div className="step-image">

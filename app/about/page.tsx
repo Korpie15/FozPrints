@@ -5,14 +5,14 @@ import { SITE_URL } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'About Foz Prints & FAQ',
   description:
-    'Learn how Foz Prints designs engineering-grade, heat-resistant 3D printed parts for the SG Subaru Forester in Australia. Frequently asked questions and contact info.',
+    'Custom 3D printed parts for the SG Subaru Forester, made in Australia from heat-resistant ASA. Read about the design process, FAQs, and get in touch.',
   alternates: {
     canonical: '/about',
   },
   openGraph: {
     title: 'About Foz Prints & FAQ | Custom Subaru Forester Parts',
     description:
-      'Learn how Foz Prints designs engineering-grade, heat-resistant 3D printed parts for the SG Subaru Forester in Australia. Frequently asked questions and contact info.',
+      'Custom 3D printed parts for the SG Subaru Forester, made in Australia from heat-resistant ASA. Read about the design process, FAQs, and get in touch.',
     url: `${SITE_URL}/about`,
   },
 };
@@ -26,7 +26,7 @@ const faqSchema = {
       name: 'Will these parts melt in the Australian sun?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No. We use ASA (Acrylonitrile Styrene Acrylate), an engineering-grade material designed for outdoor and automotive use. It is UV resistant and heat resistant up to approximately 95°C.',
+        text: 'No. The parts are printed in ASA (Acrylonitrile Styrene Acrylate), an automotive-grade thermoplastic with heat resistance up to ~95°C and full UV stability. It won’t soften or sag sitting on an Australian dashboard in mid-summer.',
       },
     },
     {
@@ -34,7 +34,7 @@ const faqSchema = {
       name: 'What is the difference between Smooth and Textured?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Textured is printed using a fuzzy skin technique that mimics the grain of the OEM Subaru dashboard. Smooth is a standard clean 3D printed finish.',
+        text: 'Textured uses a fuzzy skin finish that closely matches the grain and matte look of the factory SG Subaru dashboard, so it blends straight into the cabin. Smooth is a clean, uniform 3D printed surface without the grain texture. Both are finished parts ready to install out of the box.',
       },
     },
     {
@@ -42,7 +42,7 @@ const faqSchema = {
       name: 'How do I install the kit?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'We provide detailed digital step-by-step guides with photos and video transcripts in our Manuals section.',
+        text: 'Step-by-step digital install guides with photos are available in the Manuals section.',
       },
     },
     {
@@ -50,7 +50,7 @@ const faqSchema = {
       name: 'Do you ship internationally?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'We currently ship within Australia only, via Australia Post. Shipping costs and delivery estimates are calculated at checkout.',
+        text: 'Currently shipping is within Australia only via Australia Post. Rates and estimated delivery times calculate automatically at checkout based on your postcode.',
       },
     },
   ],

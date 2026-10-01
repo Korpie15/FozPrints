@@ -177,9 +177,9 @@ export const getProducts = cache(async (): Promise<Product[]> => {
   try {
     const [catalogue, inventoryMap] = await Promise.all([
       fetchCatalogue(),
-      // If the DB is down, still show the catalogue but mark everything unavailable
+      // If the DB is down or waking up, still show the catalogue but mark everything unavailable
       getInventoryMap().catch((error) => {
-        console.error('Failed to query inventory from Neon:', error);
+        console.warn('Failed to query inventory from Neon:', error?.message || error);
         return {} as Record<string, number>;
       }),
     ]);

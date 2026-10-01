@@ -89,7 +89,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="hero-description">
-              Custom engineering-grade 3D printed interior pods, mounts, and accessories built for the SG Forester.
+              Heat-resistant interior pods, mounts, and accessories engineered specifically for the SG Subaru Forester.
             </p>
 
             {/* Action Buttons */}
@@ -126,9 +126,9 @@ export default async function HomePage() {
       {/* CTA Section */}
       <section className="home-cta">
         <div className="container">
-          <h2>Can't Find What You're Looking For?</h2>
+          <h2>Need Something Custom?</h2>
           <p>
-            Our team can help you design or find the perfect print for your Subaru Forester.
+            Need a custom gauge mount, bracket, or tweak for your setup? Get in touch and let's see what we can make.
           </p>
           <Link href="/about#contact" className="btn btn-primary btn-lg">
             Contact Us

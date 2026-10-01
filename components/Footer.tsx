@@ -21,7 +21,7 @@ export async function Footer() {
               <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#e0f2fe' }}>Prints</span>
             </Link>
             <p>
-              Premium 3D printed automotive parts. Designed and built in Australia specifically for the SG Subaru Forester using UV-resistant, engineering-grade materials.
+              Heat-resistant 3D printed parts for the SG Subaru Forester. Designed, tested, and made in Australia.
             </p>
           </div>
 

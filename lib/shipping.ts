@@ -20,36 +20,39 @@ export interface ShippingQuote {
   };
 }
 
-// Known physical specs for Subaru Forester 3D printed parts
-const KNOWN_SPECS: Record<string, ProductDimensions> = {
-  pod: {
-    weightGrams: 200,
-    lengthCm: 26.5,
-    widthCm: 25.5,
-    heightCm: 14.5,
-  },
-  cubby: {
-    weightGrams: 200,
-    lengthCm: 26.5,
-    widthCm: 25.5,
-    heightCm: 14.5,
-  },
-  anderson: {
-    weightGrams: 100,
-    lengthCm: 15,
-    widthCm: 11,
-    heightCm: 4.1,
-  },
-  cable: {
-    weightGrams: 100,
-    lengthCm: 15,
-    widthCm: 11,
-    heightCm: 1,
-  },
+// Standard shipping box (BX4 / standard box: fits 1 Pod + 1 Cubby + accessories)
+const STANDARD_BOX = {
+  lengthCm: 31,
+  widthCm: 23,
+  heightCm: 15,
+  tareWeightGrams: 120,
+};
+
+// Small satchel/mailer for accessory-only orders (brackets, plugs, cables)
+const SMALL_SATCHEL = {
+  lengthCm: 22,
+  widthCm: 16,
+  heightCm: 5,
+  tareWeightGrams: 50,
+};
+
+// Physical dead weights for products (grams)
+const ITEM_WEIGHTS = {
+  pod: 220,
+  cubby: 200,
+  bracket: 60,
+  anderson: 100,
+  cable: 80,
+  defaultSmall: 100,
 };
 
 /**
  * Estimate parcel dimensions, actual weight, and cubic (volumetric) weight for a cart of items
+ * Uses slot-based packing logic:
+ * - 1 Dash Pod + 1 Cubby share the same standard box (exterior dimensions do not increase).
+ * - Small accessories (T-slot brackets, Anderson mounts, cables) fit into the box cavities for free.
+ * - 2 Pods or 2 Cubbies exceed single box capacity and scale into additional boxes.
+ * - Accessory-only orders ship in a lightweight satchel/mailer.
  */
 export function estimateParcel(items: CartItem[]): {
   totalWeightKg: number;
@@ -59,53 +62,82 @@ export function estimateParcel(items: CartItem[]): {
   widthCm: number;
   heightCm: number;
 } {
-  let totalWeightGrams = 100; // 100g base packaging/box weight
-  let totalVolumeCm3 = 0;
+  let podCount = 0;
+  let cubbyCount = 0;
+  let smallItemsCount = 0;
+  let itemsWeightGrams = 0;
 
   for (const item of items) {
     const handleLower = (item.handle || item.title || '').toLowerCase();
-    let spec: ProductDimensions = {
-      weightGrams: 150,
-      lengthCm: 15,
-      widthCm: 10,
-      heightCm: 5,
-    };
+    const qty = Math.max(1, item.quantity || 1);
 
     if (handleLower.includes('pod')) {
-      spec = KNOWN_SPECS.pod;
+      podCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.pod * qty;
     } else if (handleLower.includes('cubby') || handleLower.includes('storage')) {
-      spec = KNOWN_SPECS.cubby;
+      cubbyCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.cubby * qty;
+    } else if (
+      handleLower.includes('bracket') ||
+      handleLower.includes('t-slot') ||
+      handleLower.includes('tslot')
+    ) {
+      smallItemsCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.bracket * qty;
     } else if (handleLower.includes('anderson') || handleLower.includes('plug')) {
-      spec = KNOWN_SPECS.anderson;
+      smallItemsCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.anderson * qty;
     } else if (handleLower.includes('cable') || handleLower.includes('wire')) {
-      spec = KNOWN_SPECS.cable;
+      smallItemsCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.cable * qty;
+    } else {
+      smallItemsCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.defaultSmall * qty;
     }
-
-    const qty = Math.max(1, item.quantity || 1);
-    totalWeightGrams += spec.weightGrams * qty;
-    totalVolumeCm3 += spec.lengthCm * spec.widthCm * spec.heightCm * qty;
   }
 
-  const totalWeightKg = Math.max(0.1, Number((totalWeightGrams / 1000).toFixed(2)));
+  // 1. Accessory-only orders (no Pods, no Cubbies)
+  if (podCount === 0 && cubbyCount === 0) {
+    const totalWeightGrams = itemsWeightGrams + SMALL_SATCHEL.tareWeightGrams;
+    const totalWeightKg = Math.max(0.1, Number((totalWeightGrams / 1000).toFixed(2)));
+
+    // For large quantities of small items (> 4), expand satchel thickness gradually
+    const heightCm =
+      smallItemsCount > 4
+        ? Math.min(12, SMALL_SATCHEL.heightCm + Math.ceil((smallItemsCount - 4) / 4) * 2)
+        : SMALL_SATCHEL.heightCm;
+
+    const volumeCm3 = SMALL_SATCHEL.lengthCm * SMALL_SATCHEL.widthCm * heightCm;
+    const cubicWeightKg = Number((volumeCm3 / 4000).toFixed(2));
+    const billableWeightKg = Math.max(totalWeightKg, cubicWeightKg);
+
+    return {
+      totalWeightKg,
+      cubicWeightKg,
+      billableWeightKg,
+      lengthCm: SMALL_SATCHEL.lengthCm,
+      widthCm: SMALL_SATCHEL.widthCm,
+      heightCm,
+    };
+  }
+
+  // 2. Large items present (Pod and/or Cubby):
+  // One standard box fits: [up to 1 Pod] + [up to 1 Cubby] + [any number of small accessories]
+  const boxesNeeded = Math.max(podCount, cubbyCount, 1);
+
+  const totalWeightGrams =
+    itemsWeightGrams + STANDARD_BOX.tareWeightGrams * boxesNeeded;
+  const totalWeightKg = Math.max(0.2, Number((totalWeightGrams / 1000).toFixed(2)));
+
+  const lengthCm = STANDARD_BOX.lengthCm;
+  const widthCm = STANDARD_BOX.widthCm;
+  const heightCm = STANDARD_BOX.heightCm * boxesNeeded;
+
+  const totalVolumeCm3 = lengthCm * widthCm * heightCm;
   // Australia Post cubic weight conversion: Volume (cm3) / 4000
   const cubicWeightKg = Number((totalVolumeCm3 / 4000).toFixed(2));
   // Australia Post charges on the greater of actual weight or cubic weight
   const billableWeightKg = Math.max(totalWeightKg, cubicWeightKg);
-
-  // Select packaging dimensions based on billable cubic weight and volume
-  let lengthCm = 22;
-  let widthCm = 16;
-  let heightCm = 8;
-
-  if (billableWeightKg <= 0.5 && totalVolumeCm3 <= 2800) {
-    lengthCm = 22; widthCm = 16; heightCm = 8;
-  } else if (billableWeightKg <= 1.5 && totalVolumeCm3 <= 5500) {
-    lengthCm = 24; widthCm = 19; heightCm = 12;
-  } else if (billableWeightKg <= 3.5 && totalVolumeCm3 <= 10500) {
-    lengthCm = 31; widthCm = 22; heightCm = 15;
-  } else {
-    lengthCm = 40; widthCm = 30; heightCm = Math.min(50, Math.ceil(totalVolumeCm3 / 1200));
-  }
 
   return {
     totalWeightKg,
