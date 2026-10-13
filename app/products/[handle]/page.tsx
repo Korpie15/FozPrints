@@ -5,6 +5,7 @@ import { ProductDetails } from '@/components/ProductDetails';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { toJsonLd } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
+import { getProductSeoData, NAV_POD_FAQS, isNavPodProduct } from '@/lib/product-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,28 +29,26 @@ export async function generateMetadata({
 
   const siteUrl = SITE_URL;
   const canonicalUrl = `${siteUrl}/products/${encodeURIComponent(product.handle)}`;
-  const description =
-    product.shortDescription ||
-    product.description ||
-    `Precision 3D printed ${product.title} designed for Subaru Forester models.`;
+  const { title, description, keywords } = getProductSeoData(product);
 
   const images = product.images.map((img) => img.url);
 
   return {
-    title: product.title,
+    title,
     description,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${product.title} | Foz Prints`,
+      title: `${title} | Foz Prints`,
       description,
       url: canonicalUrl,
       images: images.length > 0 ? images.map((url) => ({ url })) : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.title} | Foz Prints`,
+      title: `${title} | Foz Prints`,
       description,
       images: images[0] ? [images[0]] : undefined,
     },
@@ -67,12 +66,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     const siteUrl = SITE_URL;
     const productUrl = `${siteUrl}/products/${encodeURIComponent(product.handle)}`;
+    const isNavPod = isNavPodProduct(product);
+    const { title: seoTitle, description: seoDescription } = getProductSeoData(product);
 
     const productSchema = {
       '@context': 'https://schema.org',
       '@type': 'Product',
-      name: product.title,
-      description: product.shortDescription || product.description,
+      name: seoTitle,
+      alternateName: isNavPod
+        ? [
+            'Subaru Forester SG Nav Pod',
+            'SG Forester Navigation Pod',
+            'Subaru Forester Double DIN Dash Pod',
+            'Forester Double DIN Pod Upgrade Kit',
+          ]
+        : undefined,
+      description: seoDescription,
+      category: 'Automotive Interior Accessories',
       image: product.images.map((img) => (img.url.startsWith('/') ? `${siteUrl}${img.url}` : img.url)),
       url: productUrl,
       brand: {
@@ -97,6 +107,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
       })),
     };
 
+    const faqSchema = isNavPod
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: NAV_POD_FAQS.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: faq.answer,
+            },
+          })),
+        }
+      : null;
+
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -116,7 +141,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {
           '@type': 'ListItem',
           position: 3,
-          name: product.title,
+          name: seoTitle,
           item: `${siteUrl}/products/${encodeURIComponent(product.handle)}`,
         },
       ],
@@ -128,6 +153,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: toJsonLd(productSchema) }}
         />
+        {faqSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: toJsonLd(faqSchema) }}
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: toJsonLd(breadcrumbSchema) }}
@@ -136,7 +167,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           items={[
             { label: 'Home', href: '/' },
             { label: 'Products', href: '/products' },
-            { label: product.title },
+            { label: seoTitle },
           ]}
         />
         <ProductDetails product={product} />

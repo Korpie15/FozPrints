@@ -125,18 +125,28 @@ async function fetchCatalogue(): Promise<Product[]> {
 
     const currencyCode = variants[0]?.price.currencyCode || 'AUD';
 
+    const isNavPod =
+      handle.toLowerCase().includes('double-din-pod') ||
+      handle.toLowerCase().includes('nav-pod') ||
+      handle.toLowerCase().includes('pod-kit') ||
+      prod.name.toLowerCase().includes('double din pod');
+
+    const baseAlt = isNavPod
+      ? 'Subaru Forester SG Double DIN Nav Pod'
+      : prod.name;
+
     const images = prod.images.map((url, i) => {
-      let altText = prod.name;
+      let altText = baseAlt;
       if (prod.images.length === 8) {
         if (i === 0 || i === 1) {
-          altText = `${prod.name} - Smooth`;
+          altText = `${baseAlt} - Smooth Finish`;
         } else if (i === 2 || i === 3) {
-          altText = `${prod.name} - Textured`;
+          altText = `${baseAlt} - OEM Textured Finish`;
         }
       } else {
         const matchingVariant = variants[i];
         if (matchingVariant && matchingVariant.title !== 'Default') {
-          altText = `${prod.name} - ${matchingVariant.title}`;
+          altText = `${baseAlt} - ${matchingVariant.title}`;
         }
       }
       return {

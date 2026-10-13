@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   keywords: [
     'Subaru Forester',
     'SG Forester',
+    'SG Forester Nav Pod',
+    'Forester Navigation Pod',
     'Double DIN Pod',
     '3D printed car parts',
     'Forester accessories',

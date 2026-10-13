@@ -16,6 +16,29 @@ const nextConfig = {
         hostname: 'placehold.co',
       },
     ],
+  async redirects() {
+    return [
+      {
+        source: '/products/sg-forester-nav-pod',
+        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        permanent: true,
+      },
+      {
+        source: '/products/sg-forester-nav-pod-kit',
+        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        permanent: true,
+      },
+      {
+        source: '/products/sg-forester-pod-kit',
+        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        permanent: true,
+      },
+      {
+        source: '/manuals/sg-forester-nav-pod',
+        destination: '/manuals/double-DIN-pod-upgrade-kit',
+        permanent: true,
+      },
+    ];
   },
 };
 

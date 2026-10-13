@@ -74,7 +74,7 @@ export default async function HomePage() {
         <div className="home-hero-bg">
           <Image
             src={HERO_BACKGROUND_IMAGE}
-            alt="Subaru Forester Double DIN Pod Upgrade Kit Installed in Dash"
+            alt="Subaru Forester SG Double DIN Nav Pod Kit Installed in Dash"
             fill
             sizes="100vw"
             priority

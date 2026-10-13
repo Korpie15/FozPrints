@@ -7,27 +7,33 @@ import '../../../styles/manual-detail.css';
 import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Subaru Forester SG Double DIN Pod Installation Guide',
+  title: 'Subaru Forester SG Double DIN Nav Pod Installation Guide',
   description:
-    'Step-by-step installation manual with photos and detailed instructions for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
+    'Complete step-by-step DIY installation manual with photos for the Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit (USDM Spec).',
+  keywords: [
+    'SG Forester Nav Pod Install',
+    'Subaru Forester Navigation Pod Installation Guide',
+    'Forester Double DIN Pod Instructions',
+    'SG Forester stereo relocation',
+  ],
   alternates: {
     canonical: '/manuals/double-DIN-pod-upgrade-kit',
   },
   openGraph: {
-    title: 'Subaru Forester SG Double DIN Pod Installation Guide | Foz Prints',
+    title: 'Subaru Forester SG Double DIN Nav Pod Installation Guide | Foz Prints',
     description:
-      'Step-by-step installation manual with photos and detailed instructions for the Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit (USDM Spec).',
+      'Complete step-by-step DIY installation manual with photos for the Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit (USDM Spec).',
     url: `${SITE_URL}/manuals/double-DIN-pod-upgrade-kit`,
-    images: [{ url: '/images/parts-layout.jpg', alt: 'Double DIN Pod Upgrade Kit Parts' }],
+    images: [{ url: '/images/parts-layout.jpg', alt: 'Double DIN Nav Pod Upgrade Kit Parts' }],
   },
 };
 
 const howToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: 'Subaru Forester (SG 2003-2008) Double DIN Pod Upgrade Kit Installation',
+  name: 'Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit Installation',
   description:
-    'Complete step-by-step installation guide for installing a Double DIN Pod Upgrade Kit in a Subaru Forester SG (2003-2008).',
+    'Complete step-by-step DIY installation guide for installing a Double DIN Nav Pod Upgrade Kit in a Subaru Forester SG (2003-2008).',
   totalTime: 'PT20M',
   tool: [
     { '@type': 'HowToTool', name: 'Phillips head screwdriver' },
@@ -80,9 +86,21 @@ export default function DoubleDinPodUpgradeKitManual() {
 
         {/* Header */}
         <div className="manual-header">
-          <h1>Double DIN Pod Upgrade Kit Installation Guide</h1>
+          <h1>SG Forester Double DIN Nav Pod Installation Guide</h1>
           <p className="manual-subtitle">For Subaru Forester SG (2003-2008), USDM Spec</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link
+              href="/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec"
+              className="download-pdf-button"
+              style={{
+                textDecoration: 'none',
+                backgroundColor: '#0284c7',
+                borderColor: '#0284c7',
+                color: '#ffffff',
+              }}
+            >
+              Order the SG Forester Nav Pod Kit &rarr;
+            </Link>
             <a
               href="/manuals/double-din-pod-upgrade-kit-guide.pdf"
               download
@@ -432,6 +450,29 @@ export default function DoubleDinPodUpgradeKitManual() {
         <div className="manual-section">
           <h2>Troubleshooting & Frequently Asked Questions</h2>
           <TroubleshootingAccordion />
+        </div>
+
+        {/* Purchase Kit Callout */}
+        <div className="support-box" style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <h3>Need to Order Your Kit?</h3>
+          <p>
+            Upgrade your Forester dashboard today with our precision 3D printed double DIN navigation pod, printed in heat-resistant ASA.
+          </p>
+          <div style={{ marginTop: '1rem' }}>
+            <Link
+              href="/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec"
+              className="download-pdf-button"
+              style={{
+                textDecoration: 'none',
+                backgroundColor: '#0284c7',
+                borderColor: '#0284c7',
+                color: '#ffffff',
+                display: 'inline-block',
+              }}
+            >
+              Shop SG Forester Double DIN Nav Pod Kit &rarr;
+            </Link>
+          </div>
         </div>
 
         {/* Support */}

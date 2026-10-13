@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Image, { getImageProps } from 'next/image';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import Link from 'next/link';
+import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
+import { isNavPodProduct, NAV_POD_FAQS } from '@/lib/product-seo';
 import { Toast } from './Toast';
 import '../styles/product-details.css';
 
@@ -29,8 +31,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showToast, setShowToast] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const { addItem } = useCartStore();
+  const isNavPod = isNavPodProduct(product);
 
   // Warm the browser and image caches so switching variants/photos is instant.
   // Variant photos go first; the rest of the gallery follows once the page is idle.
@@ -302,6 +306,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           </div>
 
+          {isNavPod && (
+            <div className="product-manual-callout">
+              <div className="product-manual-callout-header">
+                <BookOpen size={18} className="product-manual-icon" />
+                <div>
+                  <strong>Official Installation Guide</strong>
+                  <p>Step-by-step photos, wiring notes, and tool recommendations.</p>
+                </div>
+              </div>
+              <Link
+                href="/manuals/double-DIN-pod-upgrade-kit"
+                className="product-manual-link"
+              >
+                Read the SG Forester Nav Pod Installation Guide &rarr;
+              </Link>
+            </div>
+          )}
+
           <div className="product-description">
             <div
               className="product-description-content"
@@ -312,6 +334,85 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
       </div>
+
+      {isNavPod && (
+        <div className="product-extended-details">
+          <div className="product-seo-highlights">
+            <h2>SG Forester Double DIN Nav Pod Kit Features</h2>
+            <div className="product-highlights-grid">
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>Eye-Level Stereo Relocation</h3>
+                  <p>
+                    Converts your upper dashboard storage pocket into a functional double DIN navigation pod housing. Keeps navigation maps, backup cameras, and Apple CarPlay / Android Auto in your direct field of view while driving.
+                  </p>
+                </div>
+              </div>
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>OEM Fit & Dashboard Texture Match</h3>
+                  <p>
+                    Custom engineered specifically for the 2003–2008 Subaru Forester (SG chassis). Available in both smooth satin and textured OEM-matched finish to blend seamlessly with factory dashboard trim.
+                  </p>
+                </div>
+              </div>
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>High-Heat Automotive ASA Material</h3>
+                  <p>
+                    Precision 3D printed in engineering-grade ASA polymer. Rated to withstand interior dashboard temperatures up to 95°C (203°F) and harsh UV exposure without softening, warping, or discoloring.
+                  </p>
+                </div>
+              </div>
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>Reversible Factory Mounting</h3>
+                  <p>
+                    Securely attaches using factory mounting points. No permanent dashboard cutting or irreversible modifications needed. Retains your original dashboard clock and hazard button functionality.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="product-faq-section">
+            <h2>Frequently Asked Questions: SG Forester Nav Pod</h2>
+            <div className="product-faq-list">
+              {NAV_POD_FAQS.map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    className={`product-faq-item ${isOpen ? 'product-faq-item-open' : ''}`}
+                  >
+                    <button
+                      type="button"
+                      className="product-faq-question"
+                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                      aria-expanded={isOpen}
+                    >
+                      <span>{faq.question}</span>
+                      <ChevronDown
+                        size={18}
+                        className={`product-faq-chevron ${isOpen ? 'product-faq-chevron-rotated' : ''}`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="product-faq-answer">
+                        <p>{faq.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
