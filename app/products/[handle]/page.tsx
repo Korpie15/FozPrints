@@ -1,13 +1,25 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getProduct } from '@/lib/stripe';
+import { getProduct, getProducts } from '@/lib/stripe';
 import { ProductDetails } from '@/components/ProductDetails';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { toJsonLd } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { getProductSeoData, NAV_POD_FAQS, isNavPodProduct } from '@/lib/product-seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  try {
+    const products = await getProducts();
+    return products.map((product) => ({
+      handle: product.handle,
+    }));
+  } catch (error) {
+    console.error('Error generating static params for products:', error);
+    return [];
+  }
+}
 
 interface ProductPageProps {
   params: Promise<{

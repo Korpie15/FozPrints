@@ -7,7 +7,7 @@ import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
 import { SITE_URL } from '@/lib/site';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 const HERO_BACKGROUND_IMAGE = '/images/hero-bg-installed.png';
 

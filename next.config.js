@@ -16,6 +16,7 @@ const nextConfig = {
         hostname: 'placehold.co',
       },
     ],
+  },
   async redirects() {
     return [
       {

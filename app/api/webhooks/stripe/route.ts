@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
 import { decrementInventoryOnce } from '@/lib/db';
@@ -53,6 +54,15 @@ export async function POST(req: Request) {
         `Order #${orderId} completed for ${customerEmail}; ` +
           (applied ? 'inventory updated' : 'duplicate event, inventory already updated')
       );
+
+      if (applied) {
+        try {
+          revalidatePath('/products');
+          revalidatePath('/');
+        } catch (revalErr) {
+          console.warn('Failed to revalidate paths after order:', revalErr);
+        }
+      }
     } catch (err) {
       // Non-2xx makes Stripe retry; decrementInventoryOnce is safe to retry
       console.error(`Order #${orderId}: failed to update inventory:`, err);

@@ -5,7 +5,7 @@ import { Product } from '@/types/product';
 import '@/styles/products.css';
 import { SITE_URL } from '@/lib/site';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Subaru Forester 3D Printed Parts Catalog',
