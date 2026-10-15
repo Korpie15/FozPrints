@@ -87,6 +87,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       name: seoTitle,
       alternateName: isNavPod
         ? [
+            'Subaru Forester SG Double DIN Nav Pod Kit (2003–2008) – USDM Spec',
+            'SG Forester Nav Pod',
             'Subaru Forester SG Nav Pod',
             'SG Forester Navigation Pod',
             'Subaru Forester Double DIN Dash Pod',

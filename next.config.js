@@ -20,18 +20,23 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        destination: '/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
+        permanent: true,
+      },
+      {
         source: '/products/sg-forester-nav-pod',
-        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        destination: '/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
         permanent: true,
       },
       {
         source: '/products/sg-forester-nav-pod-kit',
-        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        destination: '/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
         permanent: true,
       },
       {
         source: '/products/sg-forester-pod-kit',
-        destination: '/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec',
+        destination: '/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
         permanent: true,
       },
       {

@@ -40,7 +40,7 @@ export function getProductSeoData(product: Product) {
 
   const title =
     product.metadata?.seo_title ||
-    (isNavPod ? 'SG Forester Double DIN Nav Pod Kit (2003-2008)' : product.title);
+    (isNavPod ? 'SG Forester Nav Pod - Double DIN Upgrade Kit (2003-2008)' : product.title);
 
   const description =
     product.metadata?.seo_description ||

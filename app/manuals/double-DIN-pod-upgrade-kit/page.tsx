@@ -81,7 +81,7 @@ export default function DoubleDinPodUpgradeKitManual() {
         <div className="breadcrumb">
           <Link href="/manuals">Manuals</Link>
           <ChevronRight size={16} />
-          <span>Double DIN Pod Upgrade Kit</span>
+          <span>SG Forester Nav Pod Upgrade Kit</span>
         </div>
 
         {/* Header */}
@@ -90,7 +90,7 @@ export default function DoubleDinPodUpgradeKitManual() {
           <p className="manual-subtitle">For Subaru Forester SG (2003-2008), USDM Spec</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
-              href="/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec"
+              href="/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec"
               className="download-pdf-button"
               style={{
                 textDecoration: 'none',

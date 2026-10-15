@@ -239,7 +239,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         {/* Product Info */}
         <div className="product-info">
           <h1 className="product-title">
-            {product.title}
+            {isNavPod ? 'Subaru Forester SG Double DIN Nav Pod Kit (2003–2008) – USDM Spec' : product.title}
           </h1>
 
           <div className="product-price-container">

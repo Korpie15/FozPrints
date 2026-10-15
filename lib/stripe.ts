@@ -216,9 +216,21 @@ export const getProducts = cache(async (): Promise<Product[]> => {
  */
 export async function getProduct(handleOrId: string): Promise<Product | null> {
   const products = await getProducts();
-  const found = products.find(
-    (p) => p.handle.toLowerCase() === handleOrId.toLowerCase() || p.id === handleOrId
-  );
+  const lower = handleOrId.toLowerCase();
+  const found = products.find((p) => {
+    const pHandle = p.handle.toLowerCase();
+    if (pHandle === lower || p.id === handleOrId) return true;
+    // Support legacy handle aliases so old indexed links or redirects never fail
+    if (
+      (lower === 'subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec' ||
+        lower === 'sg-forester-nav-pod' ||
+        lower === 'sg-forester-pod-kit') &&
+      (pHandle.includes('nav-pod') || pHandle.includes('double-din-pod') || p.title.toLowerCase().includes('nav pod'))
+    ) {
+      return true;
+    }
+    return false;
+  });
   return found || null;
 }
 
