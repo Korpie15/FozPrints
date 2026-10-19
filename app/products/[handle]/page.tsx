@@ -118,6 +118,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
           '@type': 'Organization',
           name: 'Foz Prints',
         },
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'AU',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+          merchantReturnLink: `${siteUrl}/policies/refund-policy`,
+          itemDefectReturnFees: 'https://schema.org/FreeReturn',
+          itemDefectReturnShippingFeesAmount: {
+            '@type': 'MonetaryAmount',
+            value: '0',
+            currency: 'AUD',
+          },
+        },
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: {
+            '@type': 'MonetaryAmount',
+            value: isNavPod ? '18.25' : '10.95',
+            currency: 'AUD',
+          },
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'AU',
+          },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 1,
+              maxValue: 2,
+              unitCode: 'DAY',
+            },
+            transitTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 3,
+              maxValue: 7,
+              unitCode: 'DAY',
+            },
+          },
+        },
       })),
     };
 

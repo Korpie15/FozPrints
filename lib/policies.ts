@@ -10,13 +10,13 @@ export const POLICIES: Record<string, Policy> = {
     title: 'Shipping Policy',
     body: `
       <h2>1. Processing Time</h2>
-      <p>All orders are processed within 1-5 business days. As many of our parts are 3D printed to order, we appreciate your patience while we manufacture your items. Orders are not shipped or delivered on weekends or holidays.</p>
-      <p>If we are experiencing a high volume of orders, shipments may be delayed by a few days. If there will be a significant delay in the shipment of your order, we will contact you via email.</p>
+      <p>All parts are 3D printed and made to order. Please allow 1–2 business days for manufacturing and order processing before dispatch. Orders are not shipped or delivered on weekends or holidays.</p>
+      <p>If we are experiencing a high volume of orders, manufacturing may take slightly longer. If there will be a significant delay in the shipment of your order, we will contact you via email.</p>
       
       <h2>2. Shipping Rates &amp; Delivery Estimates</h2>
       <p>Shipping charges for your order will be calculated and displayed at checkout based on the weight of your items and your delivery location.</p>
       <ul>
-        <li><strong>Domestic (Australia):</strong> We use Australia Post standard and express carrier options.</li>
+        <li><strong>Domestic (Australia):</strong> We ship via Australia Post standard (typically 3–7 business days) and express (typically 1–3 business days) carrier options.</li>
         <li><strong>International:</strong> We currently ship within Australia only.</li>
       </ul>
 
@@ -38,13 +38,13 @@ export const POLICIES: Record<string, Policy> = {
     handle: 'refund-policy',
     title: 'Refund Policy',
     body: `
-      <h2>General Policy: All Sales Final</h2>
-      <p>Because our products are 3D printed and manufactured to order, all sales are final. We do not offer returns, refunds, or exchanges for "change of mind" or if you simply decide you no longer want the item.</p>
+      <h2>General Policy: All Sales Final (Made to Order)</h2>
+      <p>Because all our products are custom 3D printed and manufactured to order, all sales are final. We only accept returns, replacements, or refunds if an item arrives faulty, damaged, or broken. We do not accept returns or refunds for "change of mind" or if you simply decide you no longer want the item.</p>
       <p>Please ensure you have selected the correct variant (e.g., correct model year or finish) before completing your purchase.</p>
 
-      <h2>Damages, Defects, and Issues</h2>
-      <p>We stand by the quality of our prints. If your item arrives damaged, defective, or if you receive the wrong item, we will make it right.</p>
-      <p>Please inspect your order immediately upon reception. If you believe your item is defective or damaged during shipping, please contact us within 7 days of receiving your order so that we can evaluate the issue.</p>
+      <h2>Damages, Defects, and Faulty Items</h2>
+      <p>We stand by the quality of our prints. If your item arrives damaged, defective, broken, or if you receive the wrong item, we will make it right with a replacement part (sent at no cost to you) or a refund.</p>
+      <p>Please inspect your order immediately upon reception. If you believe your item is defective, broken, or damaged during shipping, please contact us within 7 days of receiving your order so that we can evaluate the issue.</p>
 
       <h2>How to Initiate a Claim</h2>
       <p>To report a defective or damaged item, please contact us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.</p>
