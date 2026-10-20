@@ -129,6 +129,7 @@ export async function POST(req: Request) {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
+      allow_promotion_codes: true,
       billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: ['AU'],

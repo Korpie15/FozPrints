@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2, Truck, Sparkles, Globe } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { isNavPodProduct, NAV_POD_FAQS } from '@/lib/product-seo';
+import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
 import '../styles/product-details.css';
 
@@ -251,6 +252,47 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
           </div>
 
+          {isNavPod && (
+            <div style={{ marginTop: '0.75rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.55rem 0.75rem',
+                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '0.5rem',
+                  color: '#34d399',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                }}
+              >
+                <Truck size={17} style={{ flexShrink: 0 }} />
+                <span>FREE Standard Australia-Wide Shipping Included</span>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.55rem 0.75rem',
+                  backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                  border: '1px solid rgba(2, 132, 199, 0.3)',
+                  borderRadius: '0.5rem',
+                  color: '#7dd3fc',
+                  fontSize: '0.85rem',
+                }}
+              >
+                <Sparkles size={16} style={{ color: '#fde047', flexShrink: 0 }} />
+                <span>
+                  <strong>Launch Special:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong> at checkout! (First 10 orders only)
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Variants Selector */}
           {product.variants.length > 1 && (
             <div className="product-variants">
@@ -304,6 +346,30 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
               </button>
             </div>
+
+            {isNavPod && (
+              <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => openInternationalWaitlist(product.title)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#9ca3af',
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: '3px',
+                  }}
+                >
+                  <Globe size={14} />
+                  Outside Australia? Register for international delivery notification
+                </button>
+              </div>
+            )}
           </div>
 
           {isNavPod && (

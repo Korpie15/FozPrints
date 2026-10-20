@@ -150,7 +150,27 @@ export function estimateParcel(items: CartItem[]): {
 }
 
 /**
- * Fetch live rates from Australia Post PAC API with billable weight & item quantity scaling
+ * Checks whether the cart contains any Full Nav Pod Upgrade Kit
+ * which qualifies for free standard domestic shipping.
+ */
+export function hasFullKit(items: CartItem[]): boolean {
+  return items.some((item) => {
+    const handle = (item.handle || '').toLowerCase();
+    const title = (item.title || '').toLowerCase();
+    return (
+      item.id === 'price_1UAm8QDV66BLpkjB0jQSOvpR' ||
+      item.id === 'price_1UAmDwDV66BLpkjB486XPemH' ||
+      handle.includes('upgrade-kit') ||
+      handle.includes('pod-kit') ||
+      title.includes('upgrade kit') ||
+      title.includes('pod upgrade kit')
+    );
+  });
+}
+
+/**
+ * Fetch live rates from Australia Post PAC API with billable weight & item quantity scaling.
+ * Orders containing a Full Pod Kit receive Free Standard Shipping.
  */
 export async function getLiveShippingQuotes(
   items: CartItem[],
@@ -159,13 +179,14 @@ export async function getLiveShippingQuotes(
   const parcel = estimateParcel(items);
   const apiKey = process.env.AUSPOST_API_KEY;
   const fromPostcode = process.env.AUSPOST_FROM_POSTCODE || '3000';
+  const freeKitShipping = hasFullKit(items);
 
   if (apiKey) {
     try {
       const services = [
         {
           code: 'AUS_PARCEL_REGULAR',
-          name: 'Australia Post Standard',
+          name: freeKitShipping ? 'Australia Post Standard (Free Kit Shipping)' : 'Australia Post Standard',
           estimate: { minimum: 3, maximum: 7, unit: 'business_day' as const },
         },
         {
@@ -177,6 +198,18 @@ export async function getLiveShippingQuotes(
 
       const results = await Promise.all(
         services.map(async (service) => {
+          // If this order qualifies for free kit shipping on Standard, return $0 without query
+          if (service.code === 'AUS_PARCEL_REGULAR' && freeKitShipping) {
+            return {
+              serviceCode: service.code,
+              name: service.name,
+              price: 0,
+              priceCents: 0,
+              currency: 'AUD',
+              deliveryEstimate: service.estimate,
+            };
+          }
+
           const url = new URL(
             'https://digitalapi.auspost.com.au/postage/parcel/domestic/calculate.json'
           );
@@ -249,10 +282,14 @@ export async function getLiveShippingQuotes(
     expressPrice = 32.95 + extraKg * 6.0;
   }
 
+  if (freeKitShipping) {
+    standardPrice = 0;
+  }
+
   return [
     {
       serviceCode: 'AUS_PARCEL_REGULAR',
-      name: 'Australia Post Standard',
+      name: freeKitShipping ? 'Australia Post Standard (Free Kit Shipping)' : 'Australia Post Standard',
       price: standardPrice,
       priceCents: Math.round(standardPrice * 100),
       currency: 'AUD',

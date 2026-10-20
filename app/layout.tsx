@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { InternationalInterestModal } from '@/components/InternationalInterestModal';
 import { SITE_URL } from '@/lib/site';
 
 const siteUrl = SITE_URL;
@@ -86,6 +87,7 @@ export default function RootLayout({
         <Header />
         <main id="main-content">{children}</main>
         <Footer />
+        <InternationalInterestModal />
       </body>
     </html>
   );

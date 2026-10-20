@@ -87,3 +87,53 @@ export async function decrementInventoryOnce(
 
   return Number(rows[0]?.claimed) > 0;
 }
+
+export interface InternationalInterestEntry {
+  name: string;
+  email: string;
+  country: string;
+  productInterest?: string;
+  notes?: string;
+}
+
+/**
+ * Saves international shipping waitlist interest in Neon DB.
+ * If the email already exists, updates their details and country.
+ */
+export async function recordInternationalInterest(entry: InternationalInterestEntry): Promise<{ id: number; alreadyRegistered: boolean }> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  const { name, email, country, productInterest = 'Subaru Forester SG Double DIN Pod Kit', notes = '' } = entry;
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = name.trim();
+  const cleanCountry = country.trim();
+  const cleanNotes = notes.trim();
+
+  // Check for existing registration
+  const existing = await withRetry(() => sql`
+    SELECT id FROM international_interest WHERE LOWER(email) = ${cleanEmail} LIMIT 1
+  `);
+
+  if (existing.length > 0) {
+    await withRetry(() => sql`
+      UPDATE international_interest
+      SET name = ${cleanName},
+          country = ${cleanCountry},
+          product_interest = ${productInterest},
+          notes = ${cleanNotes}
+      WHERE id = ${existing[0].id}
+    `);
+    return { id: Number(existing[0].id), alreadyRegistered: true };
+  }
+
+  const inserted = await withRetry(() => sql`
+    INSERT INTO international_interest (name, email, country, product_interest, notes)
+    VALUES (${cleanName}, ${cleanEmail}, ${cleanCountry}, ${productInterest}, ${cleanNotes})
+    RETURNING id
+  `);
+
+  return { id: Number(inserted[0].id), alreadyRegistered: false };
+}

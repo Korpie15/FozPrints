@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Globe, Sparkles } from 'lucide-react';
 import { CartButton } from '@/components/CartButton';
+import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import '../styles/header.css';
 
 export function Header() {
@@ -11,6 +12,27 @@ export function Header() {
 
   return (
     <header className="header">
+      {/* Announcement Bar */}
+      <div className="header-announcement">
+        <div className="header-announcement-content">
+          <Sparkles size={14} style={{ color: '#fef08a' }} />
+          <span>
+            Launch Offer: <strong>$50 OFF</strong> first 10 Full Nav Pod Kits with code
+          </span>
+          <code className="header-promo-code">LAUNCH50</code>
+          <span>+ Free AU Standard Shipping!</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => openInternationalWaitlist('Subaru Forester SG Double DIN Pod Kit')}
+          className="header-intl-btn"
+          aria-label="Register international shipping interest"
+        >
+          <Globe size={13} />
+          Outside Australia? Register Interest
+        </button>
+      </div>
+
       <div className="header-container">
         <div className="header-left">
           <Link href="/" className="header-logo" onClick={() => setIsMobileMenuOpen(false)}>

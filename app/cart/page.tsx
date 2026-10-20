@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
-import { ShippingQuote } from '@/lib/shipping';
+import { ShippingQuote, hasFullKit } from '@/lib/shipping';
+import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import '@/styles/cart.css';
 
 export default function CartPage() {
@@ -217,6 +218,32 @@ export default function CartPage() {
         <div className="cart-summary">
           <h2>Order Summary</h2>
 
+          {hasFullKit(items) && (
+            <div
+              style={{
+                marginBottom: '1rem',
+                padding: '0.75rem',
+                borderRadius: '0.5rem',
+                backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                border: '1px solid rgba(2, 132, 199, 0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#7dd3fc', fontSize: '0.825rem' }}>
+                <Sparkles size={15} style={{ color: '#fde047', flexShrink: 0 }} />
+                <span>
+                  <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> on Stripe checkout for <strong>$50 OFF</strong>!
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontSize: '0.8rem', fontWeight: 500 }}>
+                <Truck size={14} style={{ flexShrink: 0 }} />
+                <span>Includes FREE Standard Australia-Wide Shipping</span>
+              </div>
+            </div>
+          )}
+
           <div className="cart-summary-row">
             <span>Subtotal</span>
             <span>
@@ -227,7 +254,15 @@ export default function CartPage() {
           <div className="cart-summary-row" style={{ borderBottom: 'none', paddingBottom: '0.25rem' }}>
             <span>Shipping</span>
             <span>
-              {activeQuote ? formatPrice(shippingCost.toString(), currencyCode) : 'Calculated at checkout'}
+              {activeQuote ? (
+                shippingCost === 0 ? (
+                  <span style={{ color: '#10b981', fontWeight: 700 }}>FREE</span>
+                ) : (
+                  formatPrice(shippingCost.toString(), currencyCode)
+                )
+              ) : (
+                'Calculated at checkout'
+              )}
             </span>
           </div>
 
@@ -262,6 +297,7 @@ export default function CartPage() {
               <div className="cart-shipping-quotes">
                 {shippingQuotes.map((q) => {
                   const isSelected = selectedQuoteCode === q.serviceCode;
+                  const isFree = q.price === 0;
                   return (
                     <label
                       key={q.serviceCode}
@@ -292,7 +328,9 @@ export default function CartPage() {
                           {q.name} ({q.deliveryEstimate.minimum}-{q.deliveryEstimate.maximum} days)
                         </span>
                       </div>
-                      <strong style={{ color: isSelected ? '#ffffff' : 'inherit' }}>${q.price.toFixed(2)} AUD</strong>
+                      <strong style={{ color: isFree ? '#10b981' : isSelected ? '#ffffff' : 'inherit' }}>
+                        {isFree ? 'FREE' : `$${q.price.toFixed(2)} AUD`}
+                      </strong>
                     </label>
                   );
                 })}
@@ -338,6 +376,42 @@ export default function CartPage() {
               'Proceed to Checkout'
             )}
           </button>
+
+          {/* International Shipping Waitlist Trigger */}
+          <div
+            style={{
+              marginTop: '1.25rem',
+              padding: '0.85rem',
+              borderRadius: '0.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+              Outside Australia? We currently deliver domestically for launch.
+            </p>
+            <button
+              type="button"
+              onClick={() => openInternationalWaitlist(items[0]?.title)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#38bdf8',
+                fontSize: '0.825rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+              }}
+            >
+              <Globe size={13} />
+              Register your country for international shipping notification
+            </button>
+          </div>
         </div>
       </div>
     </div>
