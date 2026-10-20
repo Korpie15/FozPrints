@@ -161,7 +161,11 @@
 }
 
 .product-price-container {
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
 
 .product-price {
@@ -175,6 +179,66 @@
   .product-price {
     color: #0ea5e9;
   }
+}
+
+.product-free-shipping-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 9999px;
+}
+
+.product-launch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.22);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #e0f2fe;
+  margin-bottom: 1.25rem;
+}
+
+.product-launch-pill code {
+  background-color: #ffffff;
+  color: #0369a1;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-weight: 800;
+  font-family: monospace;
+}
+
+.product-manual-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-top: 1.25rem;
+}
+
+.product-manual-compact a {
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.product-manual-compact a:hover {
+  color: #7dd3fc;
 }
 
 .product-description {

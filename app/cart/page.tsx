@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles, Tag, Check } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
 import { ShippingQuote, hasFullKit } from '@/lib/shipping';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
+import { PayPalCheckoutButton } from '@/components/PayPalCheckoutButton';
 import '@/styles/cart.css';
 
 export default function CartPage() {
@@ -22,11 +23,28 @@ export default function CartPage() {
   const [isEstimatingShipping, setIsEstimatingShipping] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
+  // Promo code state
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [isPromoTouched, setIsPromoTouched] = useState(false);
+
   const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
+
+  const isFullKitPresent = hasFullKit(items);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auto-apply LAUNCH50 if the full kit is in cart and user hasn't explicitly cleared it
+  useEffect(() => {
+    if (isFullKitPresent && !appliedPromo && !isPromoTouched) {
+      setAppliedPromo('LAUNCH50');
+    } else if (!isFullKitPresent && appliedPromo === 'LAUNCH50') {
+      setAppliedPromo(null);
+    }
+  }, [isFullKitPresent, appliedPromo, isPromoTouched]);
 
   // Recalculate shipping whenever cart items change if postcode is entered
   useEffect(() => {
@@ -70,6 +88,32 @@ export default function CartPage() {
     await calculateShipping(postcode.trim());
   };
 
+  const handleApplyPromo = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPromoTouched(true);
+    setPromoError(null);
+
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+
+    if (code === 'LAUNCH50') {
+      if (!isFullKitPresent) {
+        setPromoError('LAUNCH50 is only valid for the Full Nav Pod Upgrade Kit.');
+        return;
+      }
+      setAppliedPromo('LAUNCH50');
+      setPromoInput('');
+    } else {
+      setPromoError('Invalid coupon or promotion code.');
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setIsPromoTouched(true);
+    setAppliedPromo(null);
+    setPromoError(null);
+  };
+
   const handleCheckout = async () => {
     if (items.length === 0) return;
     setIsCheckingOut(true);
@@ -84,6 +128,7 @@ export default function CartPage() {
         body: JSON.stringify({
           items,
           toPostcode: postcode.trim() || '2000',
+          promoCode: appliedPromo,
         }),
       });
 
@@ -135,7 +180,10 @@ export default function CartPage() {
 
   const activeQuote = shippingQuotes?.find((q) => q.serviceCode === selectedQuoteCode) || shippingQuotes?.[0];
   const shippingCost = activeQuote ? activeQuote.price : 0;
-  const grandTotal = subtotal + shippingCost;
+
+  // Calculate discount amount
+  const discountAmount = appliedPromo === 'LAUNCH50' && isFullKitPresent ? 50.00 : 0;
+  const grandTotal = Math.max(0.01, subtotal - discountAmount + shippingCost);
 
   return (
     <div className="cart-page">
@@ -234,7 +282,15 @@ export default function CartPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#7dd3fc', fontSize: '0.825rem' }}>
                 <Sparkles size={15} style={{ color: '#fde047', flexShrink: 0 }} />
                 <span>
-                  <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> on Stripe checkout for <strong>$50 OFF</strong>!
+                  {appliedPromo === 'LAUNCH50' ? (
+                    <>
+                      <strong>Launch Deal Applied:</strong> $50 OFF has been deducted from your order!
+                    </>
+                  ) : (
+                    <>
+                      <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong>!
+                    </>
+                  )}
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontSize: '0.8rem', fontWeight: 500 }}>
@@ -249,6 +305,81 @@ export default function CartPage() {
             <span>
               {formatPrice(subtotal.toString(), currencyCode)}
             </span>
+          </div>
+
+          {discountAmount > 0 && (
+            <div className="cart-summary-row" style={{ color: '#10b981', fontWeight: 600 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <Tag size={15} />
+                Discount ({appliedPromo})
+              </span>
+              <span>
+                -{formatPrice(discountAmount.toString(), currencyCode)}
+              </span>
+            </div>
+          )}
+
+          {/* Promo / Discount Code Input */}
+          <div style={{ margin: '0.85rem 0', padding: '0.75rem 0', borderTop: '1px solid rgba(255, 255, 255, 0.08)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            {appliedPromo ? (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontSize: '0.825rem', fontWeight: 500 }}>
+                  <Check size={14} />
+                  <span>
+                    Promo code <strong>{appliedPromo}</strong> applied (-${discountAmount.toFixed(2)})
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemovePromo}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ef4444',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    padding: '0 0.25rem',
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleApplyPromo} style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Promo code (e.g. LAUNCH50)"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  className="cart-shipping-input"
+                  style={{ textTransform: 'uppercase' }}
+                />
+                <button
+                  type="submit"
+                  disabled={!promoInput.trim()}
+                  className="cart-shipping-calc-btn"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  Apply
+                </button>
+              </form>
+            )}
+            {promoError && (
+              <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.35rem' }}>
+                {promoError}
+              </p>
+            )}
           </div>
 
           <div className="cart-summary-row" style={{ borderBottom: 'none', paddingBottom: '0.25rem' }}>
@@ -376,6 +507,20 @@ export default function CartPage() {
               'Proceed to Checkout'
             )}
           </button>
+
+          {/* PayPal Checkout */}
+          <div style={{ marginTop: '0.75rem', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.75rem 0', color: '#6b7280', fontSize: '0.75rem' }}>
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+              <span>OR PAY WITH</span>
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+            </div>
+            <PayPalCheckoutButton
+              items={items}
+              shippingCost={shippingCost}
+              promoCode={appliedPromo || undefined}
+            />
+          </div>
 
           {/* International Shipping Waitlist Trigger */}
           <div

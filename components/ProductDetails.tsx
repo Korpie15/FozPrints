@@ -258,46 +258,19 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 selectedVariant?.price.currencyCode || product.currencyCode
               )}
             </span>
+            {isFullKit && (
+              <span className="product-free-shipping-tag">
+                <Truck size={13} /> Free AU Shipping
+              </span>
+            )}
           </div>
 
           {isFullKit && (
-            <div style={{ marginTop: '0.75rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.55rem 0.75rem',
-                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: '0.5rem',
-                  color: '#34d399',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}
-              >
-                <Truck size={17} style={{ flexShrink: 0 }} />
-                <span>FREE Standard Australia-Wide Shipping Included</span>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.55rem 0.75rem',
-                  backgroundColor: 'rgba(2, 132, 199, 0.12)',
-                  border: '1px solid rgba(2, 132, 199, 0.3)',
-                  borderRadius: '0.5rem',
-                  color: '#7dd3fc',
-                  fontSize: '0.85rem',
-                }}
-              >
-                <Sparkles size={16} style={{ color: '#fde047', flexShrink: 0 }} />
-                <span>
-                  <strong>Launch Special:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong> at checkout! (First 10 orders only)
-                </span>
-              </div>
+            <div className="product-launch-pill">
+              <Sparkles size={14} style={{ color: '#38bdf8', flexShrink: 0 }} />
+              <span>
+                Launch Offer: <strong>$50 OFF</strong> first 10 orders with code <code>LAUNCH50</code>
+              </span>
             </div>
           )}
 
@@ -403,19 +376,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           {isNavPod && (
-            <div className="product-manual-callout">
-              <div className="product-manual-callout-header">
-                <BookOpen size={18} className="product-manual-icon" />
-                <div>
-                  <strong>Official Installation Guide</strong>
-                  <p>Step-by-step photos, wiring notes, and tool recommendations.</p>
-                </div>
-              </div>
-              <Link
-                href="/manuals/double-DIN-pod-upgrade-kit"
-                className="product-manual-link"
-              >
-                Read the SG Forester Nav Pod Installation Guide &rarr;
+            <div className="product-manual-compact">
+              <BookOpen size={16} style={{ color: '#38bdf8', flexShrink: 0 }} />
+              <span>Step-by-step DIY guide:</span>
+              <Link href="/manuals/double-DIN-pod-upgrade-kit">
+                Installation Manual &rarr;
               </Link>
             </div>
           )}

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { CartItem } from '@/types/product';
 import { getStripeServer } from '@/lib/stripe';
-import { getLiveShippingQuotes } from '@/lib/shipping';
+import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { getInventoryMap } from '@/lib/db';
 
 const MAX_LINE_ITEMS = 20;
@@ -68,6 +68,7 @@ export async function POST(req: Request) {
 
     const toPostcode = typeof body.toPostcode === 'string' ? body.toPostcode.trim() : '';
     const destinationPostcode = /^\d{4}$/.test(toPostcode) ? toPostcode : '2000';
+    const promoCode = typeof body.promoCode === 'string' ? body.promoCode.trim().toUpperCase() : undefined;
 
     // Verify stock availability from Neon. Fail closed: no inventory data, no sale.
     let inventoryMap: Record<string, number>;
@@ -124,12 +125,13 @@ export async function POST(req: Request) {
       },
     }));
 
+    const isLaunchPromo = promoCode === 'LAUNCH50' && hasFullKit(items);
+
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      allow_promotion_codes: true,
       billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: ['AU'],
@@ -137,7 +139,12 @@ export async function POST(req: Request) {
       shipping_options,
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
-    });
+      ...(isLaunchPromo
+        ? { discounts: [{ coupon: 'LAUNCH50' }] }
+        : { allow_promotion_codes: true }),
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

@@ -38,12 +38,13 @@ main {
   flex: 1;
   position: relative;
   z-index: 1;
-  padding-top: 6.25rem; /* Height of fixed header with announcement bar */
+  padding-top: var(--main-header-offset, 6.25rem); /* Height of fixed header with announcement bar */
+  transition: padding-top 0.25s ease;
 }
 
 @media (max-width: 640px) {
   main {
-    padding-top: 7.25rem;
+    padding-top: var(--mobile-header-offset, 5.5rem);
   }
 }
 

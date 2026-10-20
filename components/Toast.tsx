@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CheckCircle, X } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle2, X, ArrowRight } from 'lucide-react';
 import '../styles/toast.css';
 
 interface ToastProps {
@@ -13,7 +14,7 @@ export function Toast({ message, onClose }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 3000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [onClose]);
@@ -21,10 +22,14 @@ export function Toast({ message, onClose }: ToastProps) {
   return (
     <div className="toast-container">
       <div className="toast toast-success">
-        <CheckCircle className="toast-icon" size={20} />
+        <CheckCircle2 className="toast-icon" size={18} />
         <span className="toast-message">{message}</span>
+        <Link href="/cart" className="toast-cart-link" onClick={onClose}>
+          <span>View Cart</span>
+          <ArrowRight size={14} />
+        </Link>
         <button onClick={onClose} className="toast-close" aria-label="Close notification">
-          <X size={18} />
+          <X size={16} />
         </button>
       </div>
     </div>
