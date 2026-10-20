@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Globe, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { X, Globe, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface InternationalInterestModalProps {
   isOpen?: boolean;
@@ -264,24 +264,6 @@ export function InternationalInterestModal({
             <p style={{ color: '#9ca3af', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
               We currently ship exclusively within Australia during our launch phase. Register your country below to be notified first when international shipping opens, plus receive an early-bird launch discount code!
             </p>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.75rem',
-                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                border: '1px solid rgba(2, 132, 199, 0.25)',
-                borderRadius: '0.5rem',
-                marginBottom: '1.25rem',
-                fontSize: '0.85rem',
-                color: '#7dd3fc',
-              }}
-            >
-              <Sparkles size={16} style={{ flexShrink: 0 }} />
-              <span>USDM, JDM & EUDM SG Forester fitments are tested and ready.</span>
-            </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>

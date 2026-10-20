@@ -33,6 +33,16 @@ export const NAV_POD_FAQS = [
     answer:
       'Installation is a straightforward DIY process taking approximately 20-30 minutes using basic hand tools (Phillips screwdriver and trim tool). No cutting of your factory dashboard is required. Full step-by-step instructions are available in our online manual.',
   },
+  {
+    question: 'Is this kit compatible with original factory OEM Subaru USDM pod parts (H0010SA950ML)?',
+    answer:
+      'Yes, 100%! Every FozPrints component is precision-modeled to be backwards-compatible with the factory Subaru USDM navigation housing (OEM part # H0010SA950ML). If you already own an original OEM pod and the front clips snapped, or you only need brackets or fascia trim, our individual replacement parts click directly into your factory components without needing to purchase the full kit.',
+  },
+  {
+    question: 'What is the difference between the USDM spec and JDM spec nav pod?',
+    answer:
+      'The USDM spec (OEM # H0010SA950ML) features a recessed, streamlined housing that sits further back into the dash cavity for a clean, factory-integrated look that preserves full windshield visibility. The JDM spec (OEM # H0017SA908) sits further forward with a steeper hood. Because the center SG Forester dash pocket footprint is identical, our USDM spec pod fits both RHD (Australia, UK, Japan) and LHD (USA, Canada, Europe) Foresters.',
+  },
 ];
 
 export function getProductSeoData(product: Product) {
@@ -58,6 +68,10 @@ export function getProductSeoData(product: Product) {
         'SG Forester Dash Pod',
         'Forester Stereo Relocation',
         'Forester 2003-2008 Nav Housing',
+        'Subaru H0010SA950ML',
+        'H0010SA950ML replacement',
+        'SG Forester nav pod broken clips',
+        'H0017SA908',
       ]
     : undefined;
 

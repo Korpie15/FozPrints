@@ -133,6 +133,23 @@ export default function DoubleDinPodUpgradeKitManual() {
             <ul className="tools-list">
               <li>Aftermarket Double DIN head unit</li>
             </ul>
+
+            <div
+              style={{
+                marginTop: '1.5rem',
+                padding: '0.85rem 1rem',
+                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                border: '1px solid rgba(2, 132, 199, 0.3)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                lineHeight: 1.5,
+              }}
+            >
+              <strong style={{ color: '#38bdf8' }}>💡 OEM Compatibility (Subaru Part # H0010SA950ML):</strong>
+              <p style={{ marginTop: '0.35rem', color: '#bae6fd' }}>
+                All FozPrints parts are 1:1 backwards-compatible with factory Subaru USDM nav pods. If you are using this guide to replace a cracked shell, broken clips, or missing brackets on an original OEM housing, all mounting steps and hardware positions are identical.
+              </p>
+            </div>
           </div>
           <div className="manual-section-image">
             <Image

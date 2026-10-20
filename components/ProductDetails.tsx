@@ -36,6 +36,14 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const { addItem } = useCartStore();
   const isNavPod = isNavPodProduct(product);
+  const handleLower = (product.handle || '').toLowerCase();
+  const titleLower = (product.title || '').toLowerCase();
+  const isFullKit =
+    handleLower.includes('upgrade-kit') ||
+    handleLower.includes('pod-kit') ||
+    titleLower.includes('upgrade kit') ||
+    product.id === 'prod_VB8PtVP327MDhq';
+  const isModularComponent = !isFullKit && isNavPod;
 
   // Warm the browser and image caches so switching variants/photos is instant.
   // Variant photos go first; the rest of the gallery follows once the page is idle.
@@ -252,7 +260,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
           </div>
 
-          {isNavPod && (
+          {isFullKit && (
             <div style={{ marginTop: '0.75rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div
                 style={{
@@ -290,6 +298,28 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   <strong>Launch Special:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong> at checkout! (First 10 orders only)
                 </span>
               </div>
+            </div>
+          )}
+
+          {isModularComponent && (
+            <div
+              style={{
+                marginTop: '0.75rem',
+                marginBottom: '1.25rem',
+                padding: '0.75rem 0.85rem',
+                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                border: '1px solid rgba(2, 132, 199, 0.25)',
+                borderRadius: '0.5rem',
+                fontSize: '0.85rem',
+                lineHeight: 1.5,
+              }}
+            >
+              <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '0.25rem' }}>
+                🔄 Direct OEM Replacement (Subaru Part # H0010SA950ML)
+              </strong>
+              <span style={{ color: '#94a3b8' }}>
+                100% backwards-compatible with the factory original Subaru USDM navigation housing. If your OEM pod clips snapped or you only need this specific component, it clips directly into your existing factory dash hardware—no full kit purchase needed.
+              </span>
             </div>
           )}
 
@@ -439,6 +469,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                   <h3>Reversible Factory Mounting</h3>
                   <p>
                     Securely attaches using factory mounting points. No permanent dashboard cutting or irreversible modifications needed. Retains your original dashboard clock and hazard button functionality.
+                  </p>
+                </div>
+              </div>
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>100% OEM Modular Compatibility (Subaru Part # H0010SA950ML)</h3>
+                  <p>
+                    Every component is dimensionally matched to the factory Subaru USDM Navigation Pod (H0010SA950ML). If you already own an OEM pod with snapped front clips, you don&apos;t need to purchase a full kit—our individual pod shells, front fascias, and brackets connect directly with your existing factory hardware.
                   </p>
                 </div>
               </div>
