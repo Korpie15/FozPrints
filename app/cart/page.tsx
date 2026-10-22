@@ -517,7 +517,8 @@ export default function CartPage() {
             </div>
             <PayPalCheckoutButton
               items={items}
-              shippingCost={shippingCost}
+              toPostcode={postcode.trim() || '2000'}
+              serviceCode={activeQuote?.serviceCode}
               promoCode={appliedPromo || undefined}
             />
           </div>

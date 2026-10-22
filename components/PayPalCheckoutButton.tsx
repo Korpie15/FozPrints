@@ -8,13 +8,15 @@ import { Loader2 } from 'lucide-react';
 
 interface PayPalCheckoutButtonProps {
   items: CartItem[];
-  shippingCost: number;
+  toPostcode: string;
+  serviceCode?: string;
   promoCode?: string;
 }
 
 export function PayPalCheckoutButton({
   items,
-  shippingCost,
+  toPostcode,
+  serviceCode,
   promoCode,
 }: PayPalCheckoutButtonProps) {
   const router = useRouter();
@@ -86,7 +88,8 @@ export function PayPalCheckoutButton({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   items,
-                  shippingCost,
+                  toPostcode,
+                  serviceCode,
                   promoCode,
                 }),
               });
@@ -112,7 +115,6 @@ export function PayPalCheckoutButton({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   orderId: data.orderID,
-                  items,
                 }),
               });
 

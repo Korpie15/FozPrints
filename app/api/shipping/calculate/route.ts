@@ -1,19 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getLiveShippingQuotes, estimateParcel } from '@/lib/shipping';
-import { CartItem } from '@/types/product';
+import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const items: CartItem[] = body.items || [];
-    const toPostcode = body.toPostcode || '2000';
-
-    if (!items || items.length === 0) {
-      return NextResponse.json(
-        { error: 'Cart is empty.' },
-        { status: 400 }
-      );
-    }
+    const body = await req.json().catch(() => null);
+    const items = await resolveCart(body?.items);
+    const toPostcode = parsePostcode(body?.toPostcode);
 
     const quotes = await getLiveShippingQuotes(items, toPostcode);
     const parcel = estimateParcel(items);
@@ -22,10 +15,13 @@ export async function POST(req: Request) {
       quotes,
       parcel,
     });
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof CheckoutError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error('Shipping calculation error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to calculate shipping.' },
+      { error: 'Failed to calculate shipping.' },
       { status: 500 }
     );
   }

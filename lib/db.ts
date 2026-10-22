@@ -88,6 +88,54 @@ export async function decrementInventoryOnce(
   return Number(rows[0]?.claimed) > 0;
 }
 
+export interface PayPalOrderRecord {
+  lines: Array<{ priceId: string; quantity: number }>;
+  amount: string;
+  postcode: string;
+  serviceCode: string;
+  shippingCents: number;
+}
+
+/** Records a PayPal order our server created, so capture only accepts our own orders. */
+export async function savePayPalOrder(orderId: string, record: PayPalOrderRecord): Promise<void> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  await withRetry(() => sql`
+    INSERT INTO paypal_orders (order_id, lines, amount, postcode, service_code, shipping_cents)
+    VALUES (
+      ${orderId}, ${JSON.stringify(record.lines)}::jsonb, ${record.amount},
+      ${record.postcode}, ${record.serviceCode}, ${record.shippingCents}
+    )
+  `);
+}
+
+/** The order as our server created it, or null if we never created it. */
+export async function getPayPalOrder(orderId: string): Promise<PayPalOrderRecord | null> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  const rows = await withRetry(() => sql`
+    SELECT lines, amount, postcode, service_code, shipping_cents
+    FROM paypal_orders WHERE order_id = ${orderId}
+  `);
+  if (rows.length === 0) {
+    return null;
+  }
+  const row = rows[0];
+  return {
+    lines: row.lines,
+    amount: row.amount,
+    postcode: row.postcode,
+    serviceCode: row.service_code,
+    shippingCents: Number(row.shipping_cents),
+  };
+}
+
 export interface InternationalInterestEntry {
   name: string;
   email: string;

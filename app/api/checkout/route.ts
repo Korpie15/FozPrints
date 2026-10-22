@@ -1,53 +1,9 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { CartItem } from '@/types/product';
 import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { getInventoryMap } from '@/lib/db';
-
-const MAX_LINE_ITEMS = 20;
-const MAX_QUANTITY = 99;
-
-/**
- * Validates untrusted cart input and merges duplicate Price IDs.
- * Only the Price ID and quantity are trusted for charging; the other
- * fields are display/shipping-estimate hints.
- */
-function parseCartItems(raw: unknown): { items: CartItem[] } | { error: string } {
-  if (!Array.isArray(raw) || raw.length === 0) {
-    return { error: 'Cart is empty.' };
-  }
-  if (raw.length > MAX_LINE_ITEMS) {
-    return { error: 'Too many items in cart.' };
-  }
-
-  const merged = new Map<string, CartItem>();
-  for (const entry of raw) {
-    const id = entry?.id;
-    const quantity = entry?.quantity;
-    if (typeof id !== 'string' || !id.startsWith('price_')) {
-      return { error: 'Your cart contains an invalid item. Please remove it and try again.' };
-    }
-    if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
-      return { error: 'Invalid item quantity.' };
-    }
-
-    const existing = merged.get(id);
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      merged.set(id, {
-        ...entry,
-        id,
-        title: typeof entry.title === 'string' ? entry.title : 'Item',
-        handle: typeof entry.handle === 'string' ? entry.handle : '',
-        quantity,
-      });
-    }
-  }
-
-  return { items: [...merged.values()] };
-}
+import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
 
 export async function POST(req: Request) {
   try {
@@ -60,14 +16,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => null);
-    const parsed = parseCartItems(body?.items);
-    if ('error' in parsed) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
-    }
-    const items = parsed.items;
-
-    const toPostcode = typeof body.toPostcode === 'string' ? body.toPostcode.trim() : '';
-    const destinationPostcode = /^\d{4}$/.test(toPostcode) ? toPostcode : '2000';
+    const items = await resolveCart(body?.items);
+    const destinationPostcode = parsePostcode(body?.toPostcode);
     const promoCode = typeof body.promoCode === 'string' ? body.promoCode.trim().toUpperCase() : undefined;
 
     // Verify stock availability from Neon. Fail closed: no inventory data, no sale.
@@ -118,6 +68,7 @@ export async function POST(req: Request) {
           currency: 'aud',
         },
         display_name: quote.name,
+        metadata: { service_code: quote.serviceCode },
         delivery_estimate: {
           minimum: { unit: quote.deliveryEstimate.unit, value: quote.deliveryEstimate.minimum },
           maximum: { unit: quote.deliveryEstimate.unit, value: quote.deliveryEstimate.maximum },
@@ -137,6 +88,8 @@ export async function POST(req: Request) {
         allowed_countries: ['AU'],
       },
       shipping_options,
+      // The webhook compares this with the address the buyer enters
+      metadata: { quoted_postcode: destinationPostcode },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
       ...(isLaunchPromo
@@ -148,6 +101,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
+    if (error instanceof CheckoutError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error('Stripe checkout error:', error);
     return NextResponse.json(
       { error: 'Something went wrong starting checkout. Please try again.' },

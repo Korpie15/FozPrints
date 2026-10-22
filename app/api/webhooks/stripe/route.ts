@@ -3,6 +3,52 @@ import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
 import { decrementInventoryOnce } from '@/lib/db';
+import { shippingShortfall } from '@/lib/cart';
+
+/**
+ * Stripe Checkout can't re-price shipping once the buyer types their address,
+ * so flag orders shipping somewhere dearer than the postcode they were quoted for.
+ * The note goes on the payment in the Stripe Dashboard so it's seen before dispatch.
+ */
+async function flagShippingShortfall(
+  stripe: Stripe,
+  sessionId: string,
+  orderId: string,
+  lines: Array<{ priceId: string; quantity: number }>
+) {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['shipping_cost.shipping_rate'],
+    });
+    const quotedPostcode = session.metadata?.quoted_postcode;
+    const postcode = session.collected_information?.shipping_details?.address?.postal_code;
+    const rate = session.shipping_cost?.shipping_rate;
+    if (!quotedPostcode || !postcode || postcode === quotedPostcode || !rate || typeof rate === 'string') {
+      return;
+    }
+
+    const shortfall = await shippingShortfall(
+      lines,
+      rate.metadata?.service_code ?? '',
+      postcode,
+      session.shipping_cost?.amount_total ?? 0
+    );
+    if (shortfall === 0) {
+      return;
+    }
+
+    const note = `Shipping quoted for ${quotedPostcode} but address is ${postcode}: short $${(shortfall / 100).toFixed(2)}`;
+    console.warn(`Order #${orderId}: ${note}`);
+    if (typeof session.payment_intent === 'string') {
+      await stripe.paymentIntents.update(session.payment_intent, {
+        metadata: { shipping_review: note },
+      });
+    }
+  } catch (err) {
+    // Never fail the webhook over this check: stock has already been updated
+    console.error(`Order #${orderId}: shipping shortfall check failed:`, err);
+  }
+}
 
 export async function POST(req: Request) {
   const stripe = getStripeServer();
@@ -56,6 +102,8 @@ export async function POST(req: Request) {
       );
 
       if (applied) {
+        await flagShippingShortfall(stripe, session.id, orderId, lines);
+
         try {
           revalidatePath('/products');
           revalidatePath('/');

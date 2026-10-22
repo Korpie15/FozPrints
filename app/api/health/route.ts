@@ -6,16 +6,16 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const startTime = Date.now();
   let dbStatus = 'unconfigured';
-  let errorDetail: string | null = null;
 
   const sql = getDb();
   if (sql) {
     try {
       await sql`SELECT 1`;
       dbStatus = 'connected';
-    } catch (err: any) {
+    } catch (err) {
+      // Logged only: the raw error can reveal connection details
+      console.error('Health check database error:', err);
       dbStatus = 'error';
-      errorDetail = err?.message || String(err);
     }
   }
 
@@ -28,7 +28,6 @@ export async function GET() {
       database: dbStatus,
       durationMs,
       timestamp: new Date().toISOString(),
-      ...(errorDetail ? { error: errorDetail } : {}),
     },
     {
       status: isHealthy ? 200 : 503,
