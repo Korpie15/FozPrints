@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Menu, X, Globe, Sparkles } from 'lucide-react';
 import { CartButton } from '@/components/CartButton';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
@@ -10,6 +10,8 @@ import '../styles/header.css';
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
+  const headerRef = useRef<HTMLElement>(null);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -20,18 +22,23 @@ export function Header() {
     }
   }, []);
 
+  // Reserve exactly the header's height above the page. The banner wraps to
+  // two lines on narrow screens, so its height can't be hard-coded. The mobile
+  // menu is left out so opening it covers the page instead of pushing it down.
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      if (!isAnnouncementVisible) {
-        root.style.setProperty('--main-header-offset', '4rem');
-        root.style.setProperty('--mobile-header-offset', '3.5rem');
-      } else {
-        root.style.setProperty('--main-header-offset', '6.25rem');
-        root.style.setProperty('--mobile-header-offset', '5.5rem');
-      }
-    }
-  }, [isAnnouncementVisible]);
+    const header = headerRef.current;
+    if (!header) return;
+
+    const updateOffset = () => {
+      const height = header.offsetHeight - (mobileNavRef.current?.offsetHeight ?? 0);
+      document.documentElement.style.setProperty('--header-offset', `${height}px`);
+    };
+
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   const handleDismissAnnouncement = () => {
     setIsAnnouncementVisible(false);
@@ -41,7 +48,7 @@ export function Header() {
   };
 
   return (
-    <header className="header">
+    <header className="header" ref={headerRef}>
       {/* Announcement Bar */}
       {isAnnouncementVisible && (
         <div className="header-announcement">
@@ -125,7 +132,7 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="mobile-nav">
+        <div className="mobile-nav" ref={mobileNavRef}>
           <Link href="/products" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
             All Products
           </Link>

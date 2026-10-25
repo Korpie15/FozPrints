@@ -38,13 +38,13 @@ main {
   flex: 1;
   position: relative;
   z-index: 1;
-  padding-top: var(--main-header-offset, 6.25rem); /* Height of fixed header with announcement bar */
+  padding-top: var(--header-offset, 6.25rem); /* Measured by Header; fallback is the usual height before it loads */
   transition: padding-top 0.25s ease;
 }
 
 @media (max-width: 640px) {
   main {
-    padding-top: var(--mobile-header-offset, 5.5rem);
+    padding-top: var(--header-offset, 6.4rem);
   }
 }
 

@@ -266,7 +266,8 @@ export default function CartPage() {
         <div className="cart-summary">
           <h2>Order Summary</h2>
 
-          {hasFullKit(items) && (
+          {/* Nudge towards LAUNCH50; once applied, the Discount row says it instead */}
+          {hasFullKit(items) && appliedPromo !== 'LAUNCH50' && (
             <div
               style={{
                 marginBottom: '1rem',
@@ -282,15 +283,7 @@ export default function CartPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#7dd3fc', fontSize: '0.825rem' }}>
                 <Sparkles size={15} style={{ color: '#fde047', flexShrink: 0 }} />
                 <span>
-                  {appliedPromo === 'LAUNCH50' ? (
-                    <>
-                      <strong>Launch Deal Applied:</strong> $50 OFF has been deducted from your order!
-                    </>
-                  ) : (
-                    <>
-                      <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong>!
-                    </>
-                  )}
+                  <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong>!
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontSize: '0.8rem', fontWeight: 500 }}>
@@ -320,7 +313,7 @@ export default function CartPage() {
           )}
 
           {/* Promo / Discount Code Input */}
-          <div style={{ margin: '0.85rem 0', padding: '0.75rem 0', borderTop: '1px solid rgba(255, 255, 255, 0.08)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ marginBottom: '0.85rem', padding: '0.75rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
             {appliedPromo ? (
               <div
                 style={{
@@ -336,7 +329,7 @@ export default function CartPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontSize: '0.825rem', fontWeight: 500 }}>
                   <Check size={14} />
                   <span>
-                    Promo code <strong>{appliedPromo}</strong> applied (-${discountAmount.toFixed(2)})
+                    Promo code <strong>{appliedPromo}</strong> applied
                   </span>
                 </div>
                 <button
@@ -391,6 +384,8 @@ export default function CartPage() {
                 ) : (
                   formatPrice(shippingCost.toString(), currencyCode)
                 )
+              ) : isFullKitPresent ? (
+                <span style={{ color: '#10b981', fontWeight: 700 }}>FREE (standard)</span>
               ) : (
                 'Calculated at checkout'
               )}

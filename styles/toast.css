@@ -1,6 +1,6 @@
 .toast-container {
   position: fixed;
-  top: calc(var(--main-header-offset, 6.25rem) + 0.6rem);
+  top: calc(var(--header-offset, 6.25rem) + 0.6rem);
   left: 50%;
   transform: translateX(-50%);
   z-index: 99999;
@@ -94,7 +94,7 @@
 
 @media (max-width: 640px) {
   .toast-container {
-    top: calc(var(--mobile-header-offset, 5.5rem) + 0.35rem);
+    top: calc(var(--header-offset, 6.4rem) + 0.35rem);
     padding: 0 0.75rem;
   }
 
