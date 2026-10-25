@@ -1,4 +1,5 @@
 import { CartItem } from '@/types/product';
+import { isLaunchKit } from '@/lib/promo';
 
 export interface ProductDimensions {
   weightGrams: number;
@@ -150,22 +151,11 @@ export function estimateParcel(items: CartItem[]): {
 }
 
 /**
- * Checks whether the cart contains any Full Nav Pod Upgrade Kit
- * which qualifies for free standard domestic shipping.
+ * Checks whether the cart contains the Nav Pod Kit, which qualifies for
+ * LAUNCH50 and free standard domestic shipping.
  */
 export function hasFullKit(items: CartItem[]): boolean {
-  return items.some((item) => {
-    const handle = (item.handle || '').toLowerCase();
-    const title = (item.title || '').toLowerCase();
-    return (
-      item.id === 'price_1UAm8QDV66BLpkjB0jQSOvpR' ||
-      item.id === 'price_1UAmDwDV66BLpkjB486XPemH' ||
-      handle.includes('upgrade-kit') ||
-      handle.includes('pod-kit') ||
-      title.includes('upgrade kit') ||
-      title.includes('pod upgrade kit')
-    );
-  });
+  return items.some((item) => isLaunchKit(item.productId));
 }
 
 /**

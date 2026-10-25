@@ -17,6 +17,22 @@ export function getStripeServer(): Stripe | null {
 }
 
 /**
+ * True when a Checkout Session has completed and needs no further payment.
+ */
+export async function isCheckoutSessionPaid(sessionId: string): Promise<boolean> {
+  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(sessionId)) {
+    return false;
+  }
+  const stripe = getStripeServer();
+  if (!stripe) {
+    return false;
+  }
+
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  return session.status === 'complete' && session.payment_status !== 'unpaid';
+}
+
+/**
  * Swaps a Stripe-hosted photo for our own copy (made by `npm run sync-images`).
  * Stripe's file storage is slow to serve, so the local copy loads much faster.
  * Photos that haven't been synced yet keep their Stripe URL.

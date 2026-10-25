@@ -16,6 +16,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Anchor jumps (e.g. /about#faq) stop below the fixed header */
+html {
+  scroll-padding-top: var(--header-offset, 6.25rem);
+}
+
 body {
   color: #1f2937;
   background: #ffffff;
@@ -104,21 +109,22 @@ p {
 }
 
 .btn-primary {
-  background-color: #0284c7;
+  background-color: #0369a1;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0369a1;
+  background-color: #075985;
 }
 
 @media (prefers-color-scheme: dark) {
   .btn-primary {
-    background-color: #0ea5e9;
+    background-color: #38bdf8;
+    color: #082f49;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background-color: #0284c7;
+    background-color: #7dd3fc;
   }
 }
 

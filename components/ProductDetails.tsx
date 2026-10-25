@@ -8,6 +8,7 @@ import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { isNavPodProduct, NAV_POD_FAQS } from '@/lib/product-seo';
+import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
 import '../styles/product-details.css';
@@ -36,13 +37,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
   const { addItem } = useCartStore();
   const isNavPod = isNavPodProduct(product);
-  const handleLower = (product.handle || '').toLowerCase();
-  const titleLower = (product.title || '').toLowerCase();
-  const isFullKit =
-    handleLower.includes('upgrade-kit') ||
-    handleLower.includes('pod-kit') ||
-    titleLower.includes('upgrade kit') ||
-    product.id === 'prod_VB8PtVP327MDhq';
+  const isFullKit = isLaunchKit(product.id);
   const isModularComponent = !isFullKit && isNavPod;
 
   // Warm the browser and image caches so switching variants/photos is instant.
@@ -260,38 +255,37 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
             {isFullKit && (
               <span className="product-free-shipping-tag">
-                <Truck size={13} /> Free AU Shipping
+                <Truck size={13} /> Free AU standard shipping
               </span>
             )}
           </div>
 
           {isFullKit && (
             <div className="product-launch-pill">
-              <Sparkles size={14} style={{ color: '#38bdf8', flexShrink: 0 }} />
+              <Sparkles size={14} style={{ flexShrink: 0 }} />
               <span>
-                Launch Offer: <strong>$50 OFF</strong> first 10 orders with code <code>LAUNCH50</code>
+                Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> with code <code>{LAUNCH_OFFER.code}</code> ({LAUNCH_OFFER.limit})
+              </span>
+            </div>
+          )}
+
+          {isFullKit && (
+            <div className="product-oem-callout">
+              <strong>Fits</strong>
+              <span>
+                Subaru Forester SG, 2003 to 2008 (all trims), in both right-hand drive (Australia, UK, Japan) and
+                left-hand drive (USA, Canada, Europe) cars. &quot;USDM Spec&quot; describes the pod&apos;s shape, not where your car is from.
               </span>
             </div>
           )}
 
           {isModularComponent && (
-            <div
-              style={{
-                marginTop: '0.75rem',
-                marginBottom: '1.25rem',
-                padding: '0.75rem 0.85rem',
-                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                border: '1px solid rgba(2, 132, 199, 0.25)',
-                borderRadius: '0.5rem',
-                fontSize: '0.85rem',
-                lineHeight: 1.5,
-              }}
-            >
-              <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '0.25rem' }}>
+            <div className="product-oem-callout">
+              <strong>
                 🔄 Direct OEM Replacement (Subaru Part # H0010SA950ML)
               </strong>
-              <span style={{ color: '#94a3b8' }}>
-                100% backwards-compatible with the factory original Subaru USDM navigation housing. If your OEM pod clips snapped or you only need this specific component, it clips directly into your existing factory dash hardware—no full kit purchase needed.
+              <span>
+                100% backwards-compatible with the factory original Subaru USDM navigation housing. If your OEM pod clips snapped or you only need this specific component, it clips directly into your existing factory dash hardware, so there&apos;s no need to buy the full kit.
               </span>
             </div>
           )}
@@ -377,7 +371,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           {isNavPod && (
             <div className="product-manual-compact">
-              <BookOpen size={16} style={{ color: '#38bdf8', flexShrink: 0 }} />
+              <BookOpen size={16} style={{ flexShrink: 0 }} />
               <span>Step-by-step DIY guide:</span>
               <Link href="/manuals/double-DIN-pod-upgrade-kit">
                 Installation Manual &rarr;
@@ -433,7 +427,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>Reversible Factory Mounting</h3>
                   <p>
-                    Securely attaches using factory mounting points. No permanent dashboard cutting or irreversible modifications needed. Retains your original dashboard clock and hazard button functionality.
+                    Securely attaches using factory mounting points. No permanent dashboard cutting or irreversible modifications needed. Keeps your hazard button working. The factory clock is built into the storage lid you remove, so it isn&apos;t refitted.
                   </p>
                 </div>
               </div>
@@ -442,7 +436,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>100% OEM Modular Compatibility (Subaru Part # H0010SA950ML)</h3>
                   <p>
-                    Every component is dimensionally matched to the factory Subaru USDM Navigation Pod (H0010SA950ML). If you already own an OEM pod with snapped front clips, you don&apos;t need to purchase a full kit—our individual pod shells, front fascias, and brackets connect directly with your existing factory hardware.
+                    Every component is dimensionally matched to the factory Subaru USDM Navigation Pod (H0010SA950ML). If you already own an OEM pod and only need a pod shell, front fascia or bracket, email us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. Individual parts aren&apos;t listed in the shop, but we can supply them, and they fit your existing factory hardware.
                   </p>
                 </div>
               </div>

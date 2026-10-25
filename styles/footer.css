@@ -42,14 +42,16 @@
 }
 
 .footer-section p,
-.footer-section a {
+.footer-section a,
+.footer-section .footer-link-button {
   font-size: 0.875rem;
   color: #d1d5db;
   margin-bottom: 0.5rem;
   display: block;
 }
 
-.footer-section a:hover {
+.footer-section a:hover,
+.footer-section .footer-link-button:hover {
   color: white;
   text-decoration: underline;
 }

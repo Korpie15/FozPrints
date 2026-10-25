@@ -1,8 +1,16 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPolicy } from '@/lib/policies';
+import { getAllPolicies, getPolicy } from '@/lib/policies';
 import '@/styles/policy.css';
 import { SITE_URL } from '@/lib/site';
+
+// The policies are a fixed set, so build them all ahead and 404 anything else
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const policies = await getAllPolicies();
+  return policies.map((policy) => ({ handle: policy.handle }));
+}
 
 interface PolicyPageProps {
   params: Promise<{
@@ -17,9 +25,7 @@ export async function generateMetadata({
   const policy = await getPolicy(handle);
 
   if (!policy) {
-    return {
-      title: 'Policy Not Found',
-    };
+    notFound();
   }
 
   const siteUrl = SITE_URL;
@@ -39,29 +45,24 @@ export async function generateMetadata({
 }
 
 export default async function PolicyPage({ params }: PolicyPageProps) {
-  try {
-    const { handle } = await params;
-    const policy = await getPolicy(handle);
+  const { handle } = await params;
+  const policy = await getPolicy(handle);
 
-    if (!policy || !policy.body) {
-      notFound();
-    }
-
-    return (
-      <div className="policy-page">
-        <div className="container">
-          <div className="policy-content">
-            <h1>{policy.title}</h1>
-            <div
-              className="policy-body"
-              dangerouslySetInnerHTML={{ __html: policy.body }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  } catch (error) {
-    console.error('Error loading policy:', error);
+  if (!policy || !policy.body) {
     notFound();
   }
+
+  return (
+    <div className="policy-page">
+      <div className="container">
+        <div className="policy-content">
+          <h1>{policy.title}</h1>
+          <div
+            className="policy-body"
+            dangerouslySetInnerHTML={{ __html: policy.body }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

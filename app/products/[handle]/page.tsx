@@ -34,9 +34,7 @@ export async function generateMetadata({
   const product = await getProduct(handle);
 
   if (!product) {
-    return {
-      title: 'Product Not Found',
-    };
+    notFound();
   }
 
   const siteUrl = SITE_URL;

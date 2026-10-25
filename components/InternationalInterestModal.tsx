@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Globe, CheckCircle2, Loader2 } from 'lucide-react';
+import { useFocusTrap } from '@/lib/use-focus-trap';
 
 interface InternationalInterestModalProps {
   isOpen?: boolean;
@@ -84,6 +85,10 @@ export function InternationalInterestModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  // Keep keyboard focus inside the dialog while it's open
+  const panelRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(panelRef, isOpen);
+
   // Lock scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -148,6 +153,7 @@ export function InternationalInterestModal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="intl-waitlist-title"
       style={{
         position: 'fixed',
         inset: 0,
@@ -164,6 +170,7 @@ export function InternationalInterestModal({
       }}
     >
       <div
+        ref={panelRef}
         style={{
           position: 'relative',
           width: '100%',
@@ -216,7 +223,7 @@ export function InternationalInterestModal({
             >
               <CheckCircle2 size={36} />
             </div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
+            <h3 id="intl-waitlist-title" style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
               You&apos;re on the priority list!
             </h3>
             <p style={{ color: '#9ca3af', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
@@ -226,7 +233,7 @@ export function InternationalInterestModal({
               onClick={handleClose}
               style={{
                 padding: '0.75rem 1.75rem',
-                backgroundColor: '#0284c7',
+                backgroundColor: '#0369a1',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: '0.5rem',
@@ -255,7 +262,7 @@ export function InternationalInterestModal({
                 <Globe size={22} />
               </div>
               <div>
-                <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#ffffff', margin: 0 }}>
+                <h3 id="intl-waitlist-title" style={{ fontSize: '1.35rem', fontWeight: 700, color: '#ffffff', margin: 0 }}>
                   International Shipping Waitlist
                 </h3>
               </div>
@@ -410,7 +417,7 @@ export function InternationalInterestModal({
                   style={{
                     flex: 2,
                     padding: '0.75rem',
-                    backgroundColor: '#0284c7',
+                    backgroundColor: '#0369a1',
                     border: 'none',
                     borderRadius: '0.375rem',
                     color: '#ffffff',

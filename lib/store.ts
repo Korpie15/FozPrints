@@ -12,6 +12,40 @@ interface CartState {
   getSubtotal: () => number;
 }
 
+const MAX_QUANTITY = 99;
+
+/**
+ * Repairs or drops cart items read from localStorage, which may be stale,
+ * left over from the old Shopify store, or hand-edited.
+ */
+function sanitizeItems(raw: unknown): CartItem[] {
+  if (!Array.isArray(raw)) return [];
+
+  return raw.flatMap((item) => {
+    if (typeof item?.id !== 'string' || !item.id.startsWith('price_')) return [];
+    const price = Number(item.price);
+    if (!Number.isFinite(price) || price < 0) return [];
+
+    const maxQuantity =
+      Number.isInteger(item.maxQuantity) && item.maxQuantity > 0 ? item.maxQuantity : undefined;
+    const quantity = Math.min(
+      Math.max(Math.floor(Number(item.quantity)) || 1, 1),
+      maxQuantity ?? MAX_QUANTITY
+    );
+
+    return [{
+      ...item,
+      title: typeof item.title === 'string' ? item.title : 'Item',
+      handle: typeof item.handle === 'string' ? item.handle : '',
+      price,
+      priceCents: Math.round(price * 100),
+      currencyCode: typeof item.currencyCode === 'string' && item.currencyCode ? item.currencyCode : 'AUD',
+      quantity,
+      maxQuantity,
+    }];
+  });
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -97,6 +131,20 @@ export const useCartStore = create<CartState>()(
         }
         return persistedState;
       },
+      merge: (persisted, current) => ({
+        ...current,
+        items: sanitizeItems((persisted as { items?: unknown } | undefined)?.items),
+      }),
     }
   )
 );
+
+// Keep open tabs in sync: when another tab changes the cart, reload it here so a
+// stale tab can't overwrite it with an old copy
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'fozprints-cart') {
+      useCartStore.persist.rehydrate();
+    }
+  });
+}

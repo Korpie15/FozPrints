@@ -36,7 +36,7 @@ export const NAV_POD_FAQS = [
   {
     question: 'Is this kit compatible with original factory OEM Subaru USDM pod parts (H0010SA950ML)?',
     answer:
-      'Yes, 100%! Every FozPrints component is precision-modeled to be backwards-compatible with the factory Subaru USDM navigation housing (OEM part # H0010SA950ML). If you already own an original OEM pod and the front clips snapped, or you only need brackets or fascia trim, our individual replacement parts click directly into your factory components without needing to purchase the full kit.',
+      'Yes, 100%! Every FozPrints component is precision-modeled to be backwards-compatible with the factory Subaru USDM navigation housing (OEM part # H0010SA950ML). If you already own an original OEM pod and the front clips snapped, or you only need brackets or fascia trim, email us at info@fozprints.com.au. Individual replacement parts are not listed in the shop, but we can supply them, and they click directly into your factory components.',
   },
   {
     question: 'What is the difference between the USDM spec and JDM spec nav pod?',

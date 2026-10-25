@@ -1,0 +1,106 @@
+.consent-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  max-width: 44rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.consent-text {
+  flex: 1 1 20rem;
+}
+
+.consent-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.consent-text a {
+  color: #0369a1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Both choices look the same so neither is nudged */
+.consent-button {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #0369a1;
+  background-color: #0369a1;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consent-button:hover {
+  background-color: #075985;
+}
+
+.consent-button:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .consent-banner {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    border-color: #374151;
+  }
+
+  .consent-text a {
+    color: #7dd3fc;
+  }
+}
+
+@media (max-width: 640px) {
+  .consent-banner {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+
+  .consent-actions {
+    width: 100%;
+  }
+
+  .consent-button {
+    flex: 1;
+  }
+}
+
+.footer-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.footer-link-button:hover {
+  text-decoration: underline;
+}

@@ -266,6 +266,27 @@ export async function capturePayPalOrderService(orderId: string) {
 }
 
 /**
+ * True when an order our server created has been paid in PayPal.
+ */
+export async function isPayPalOrderPaid(orderId: string): Promise<boolean> {
+  if (!/^[A-Za-z0-9]{1,64}$/.test(orderId) || !(await getPayPalOrder(orderId))) {
+    return false;
+  }
+
+  const accessToken = await getPayPalAccessToken();
+  const response = await fetch(`${getPayPalBaseUrl()}/v2/checkout/orders/${orderId}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    return false;
+  }
+
+  const order = await response.json();
+  return order.status === 'COMPLETED';
+}
+
+/**
  * Asks PayPal whether a webhook delivery really came from PayPal.
  */
 export async function verifyPayPalWebhook(headers: Headers, event: unknown): Promise<boolean> {

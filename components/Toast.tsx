@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { CheckCircle2, X, ArrowRight } from 'lucide-react';
 import '../styles/toast.css';
@@ -19,7 +20,8 @@ export function Toast({ message, onClose }: ToastProps) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  return (
+  // Render into <body>: inside <main> the toast is trapped under the fixed header
+  return createPortal(
     <div className="toast-container">
       <div className="toast toast-success">
         <CheckCircle2 className="toast-icon" size={18} />
@@ -32,6 +34,7 @@ export function Toast({ message, onClose }: ToastProps) {
           <X size={16} />
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

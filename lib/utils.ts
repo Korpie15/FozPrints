@@ -5,10 +5,16 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(amount: string, currencyCode: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(parseFloat(amount));
+  const value = parseFloat(amount);
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(value);
+  } catch {
+    // Missing or invalid currency code (e.g. an old saved cart item): fall back to AUD
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'AUD' }).format(value);
+  }
 }
 
 export function stripHtml(html: string): string {

@@ -14,7 +14,7 @@ export const POLICIES: Record<string, Policy> = {
       <p>If we are experiencing a high volume of orders, manufacturing may take slightly longer. If there will be a significant delay in the shipment of your order, we will contact you via email.</p>
       
       <h2>2. Shipping Rates &amp; Delivery Estimates</h2>
-      <p>Shipping charges for your order will be calculated and displayed at checkout based on the weight of your items and your delivery location.</p>
+      <p>Shipping charges for your order will be calculated and displayed at checkout based on the weight of your items and your delivery location. The Nav Pod Kit ships free with Australia Post standard shipping.</p>
       <ul>
         <li><strong>Domestic (Australia):</strong> We ship via Australia Post standard (typically 3–7 business days) and express (typically 1–3 business days) carrier options.</li>
         <li><strong>International:</strong> We currently ship within Australia only.</li>
@@ -29,8 +29,8 @@ export const POLICIES: Record<string, Policy> = {
       <h2>5. Customs, Duties, and Taxes</h2>
       <p>FozPrints currently ships within Australia only, so customs duties and import taxes do not apply to domestic orders. If we begin offering international shipping in the future, any customs, tariffs, duties, or taxes imposed during or after shipping will be the responsibility of the customer, and we will update this policy before doing so.</p>
 
-      <h2>6. Damages &amp; Lost Packages</h2>
-      <p>FozPrints is not strictly liable for products damaged or lost during shipping, but we want to ensure you get your parts. If your order arrives damaged, please save all packaging materials and damaged goods and contact us immediately at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a> so we can assist you in filing a claim with the carrier.</p>
+      <h2>6. Damaged or Lost Parcels</h2>
+      <p>Your order is our responsibility until it is delivered. If your parcel is lost in transit or arrives damaged, we will send a replacement at no cost to you or give you a refund. If it arrives damaged, please keep the packaging and the damaged parts, take a few photos, and email us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. We'll deal with Australia Post ourselves.</p>
     `,
   },
 
@@ -38,13 +38,13 @@ export const POLICIES: Record<string, Policy> = {
     handle: 'refund-policy',
     title: 'Refund Policy',
     body: `
-      <h2>General Policy: All Sales Final (Made to Order)</h2>
-      <p>Because all our products are custom 3D printed and manufactured to order, all sales are final. We only accept returns, replacements, or refunds if an item arrives faulty, damaged, or broken. We do not accept returns or refunds for "change of mind" or if you simply decide you no longer want the item.</p>
+      <h2>Change of Mind (Made to Order)</h2>
+      <p>Because every part is 3D printed to order, we don't offer refunds or returns if you simply change your mind or no longer want the item. This doesn't affect your rights under the Australian Consumer Law, which are explained below.</p>
       <p>Please ensure you have selected the correct variant (e.g., correct model year or finish) before completing your purchase.</p>
 
       <h2>Damages, Defects, and Faulty Items</h2>
       <p>We stand by the quality of our prints. If your item arrives damaged, defective, broken, or if you receive the wrong item, we will make it right with a replacement part (sent at no cost to you) or a refund.</p>
-      <p>Please inspect your order immediately upon reception. If you believe your item is defective, broken, or damaged during shipping, please contact us within 7 days of receiving your order so that we can evaluate the issue.</p>
+      <p>Please check your order when it arrives and contact us as soon as you can if anything is wrong. Telling us early helps us sort it out quickly, but your rights under the Australian Consumer Law don't end after a set number of days.</p>
 
       <h2>How to Initiate a Claim</h2>
       <p>To report a defective or damaged item, please contact us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.</p>
@@ -54,7 +54,7 @@ export const POLICIES: Record<string, Policy> = {
         <li>A description of the issue.</li>
         <li>Photos of the damage/defect.</li>
       </ol>
-      <p>Do not send items back to us without first contacting us. If a return is required for inspection, we will provide you with the correct return address and instructions via email. Items sent back to us without first requesting a return will not be accepted.</p>
+      <p>Please contact us before sending anything back. If we need to inspect the item, we'll email you the return address and instructions, and we'll cover the return postage for faulty, damaged or incorrect items.</p>
 
       <h2>Refunds</h2>
       <p>We will notify you once we've inspected your claim (via photos or returned item) and let you know if the refund or replacement was approved.</p>
@@ -72,7 +72,7 @@ export const POLICIES: Record<string, Policy> = {
     handle: 'privacy-policy',
     title: 'Privacy Policy',
     body: `
-      <p><em>Last updated: August 26, 2026</em></p>
+      <p><em>Last updated: October 25, 2026</em></p>
       <p>Foz Prints operates this store and website, including all related information, content, features, tools, products and services, in order to provide you, the customer, with a curated shopping experience (the "Services"). This Privacy Policy describes how we collect, use, and disclose your personal information when you visit, use, or make a purchase or other transaction using the Services or otherwise communicate with us. If there is a conflict between our Terms of Service and this Privacy Policy, this Privacy Policy controls with respect to the collection, processing, and disclosure of your personal information.</p>
       <p>Please read this Privacy Policy carefully. By using and accessing any of the Services, you acknowledge that you have read this Privacy Policy and understand the collection, use, and disclosure of your information as described in this Privacy Policy.</p>
 
@@ -113,6 +113,11 @@ export const POLICIES: Record<string, Policy> = {
         <li>In connection with legal obligations, regulatory compliance, or to protect and defend our rights and the safety of our users.</li>
       </ul>
 
+      <h2>Website Analytics (Microsoft Clarity)</h2>
+      <p>If you choose "Allow analytics" in the banner on our website, we use Microsoft Clarity to understand how visitors use the site so we can improve it. Clarity records how you interact with our pages, such as clicks, scrolling, mouse movement and the pages you visit, and can replay these as session recordings. It also collects device and browser details and sets cookies (such as <code>_clck</code> and <code>_clsk</code>) to recognise repeat visits.</p>
+      <p>Clarity is provided by Microsoft Corporation, which processes this data on our behalf, including on servers outside Australia (for example in the United States). Microsoft's own use of the data is described in the <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer">Microsoft Privacy Statement</a>.</p>
+      <p>Clarity does not load unless you allow it. You can change your choice at any time using the "Analytics settings" link in the footer of our website; choosing "No thanks" stops Clarity and removes its cookies from your browser.</p>
+
       <h2>Children's Data</h2>
       <p>The Services are not intended for use by children, and we do not knowingly collect personal information about children under the age of majority in your jurisdiction.</p>
 
@@ -146,13 +151,13 @@ export const POLICIES: Record<string, Policy> = {
       <p>We have made every effort to display as accurately as possible the colors and images of our products. All descriptions of products and product pricing are subject to change at any time without notice at our sole discretion. We reserve the right to discontinue any product at any time.</p>
 
       <h2>Section 3 - Orders</h2>
-      <p>When you place an order, you are making an offer to purchase. Foz Prints reserves the right to accept or decline your order for any reason at its discretion. Purchases are subject to return or replacement solely in accordance with our <a href="/policies/refund-policy">Refund Policy</a>.</p>
+      <p>When you place an order, you are making an offer to purchase. Foz Prints reserves the right to accept or decline your order for any reason at its discretion. Returns, replacements and refunds are handled under our <a href="/policies/refund-policy">Refund Policy</a> and your rights under the Australian Consumer Law.</p>
 
       <h2>Section 4 - Prices and Billing</h2>
       <p>Prices are subject to change without notice. You agree to provide valid payment details and authorize us or our payment processor (Stripe) to charge your payment method for all orders placed.</p>
 
       <h2>Section 5 - Shipping and Delivery</h2>
-      <p>All delivery times are estimates only and are not guaranteed. We are not responsible for delays caused by shipping carriers, customs processing, or events outside our control. Once products are transferred to the carrier, title and risk of loss pass to you.</p>
+      <p>Delivery times are estimates. We are not responsible for delays caused by events outside our control, but we will keep you informed if your order is held up. Title and risk of loss pass to you when your order is delivered to the address you gave us. If a parcel is lost or damaged before then, see our <a href="/policies/shipping-policy">Shipping Policy</a>.</p>
 
       <h2>Section 6 - Intellectual Property</h2>
       <p>All content, designs, logos, product models, text, graphics, and images on the Services are owned by Foz Prints and protected by Australian and international intellectual property laws. You must not reproduce, duplicate, copy, sell, or exploit any portion of our products or website without express written permission.</p>

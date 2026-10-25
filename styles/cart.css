@@ -2,6 +2,9 @@
   padding: 3rem 1rem;
   max-width: 1280px;
   margin: 0 auto;
+  /* The cart only renders after it loads from the browser; reserving the space
+     stops the footer jumping down when it appears */
+  min-height: 60vh;
 }
 
 .cart-title {
@@ -72,9 +75,12 @@
 
 .cart-item-details {
   flex: 1;
+  /* Without this, long titles stop the column shrinking and the cart overflows on small phones */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  overflow-wrap: anywhere;
 }
 
 .cart-item-title {
@@ -105,6 +111,7 @@
 
 .cart-item-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
   margin-top: auto;
@@ -329,7 +336,7 @@
 }
 
 .cart-shipping-input:focus {
-  border-color: #0284c7;
+  border-color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -346,7 +353,7 @@
 .cart-shipping-calc-btn {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  background-color: #0284c7;
+  background-color: #0369a1;
   color: white;
   border: none;
   border-radius: 0.375rem;
@@ -356,7 +363,7 @@
 }
 
 .cart-shipping-calc-btn:hover:not(:disabled) {
-  background-color: #0369a1;
+  background-color: #075985;
 }
 
 .cart-shipping-calc-btn:disabled {
@@ -366,10 +373,11 @@
 
 @media (prefers-color-scheme: dark) {
   .cart-shipping-calc-btn {
-    background-color: #0284c7;
+    background-color: #38bdf8;
+    color: #082f49;
   }
   .cart-shipping-calc-btn:hover:not(:disabled) {
-    background-color: #0ea5e9;
+    background-color: #7dd3fc;
   }
 }
 
@@ -413,7 +421,7 @@
 .cart-continue-shopping {
   display: block;
   text-align: center;
-  color: #0284c7;
+  color: #0369a1;
   padding: 0.75rem;
   font-weight: 500;
   margin-top: 1rem;
@@ -422,7 +430,7 @@
 }
 
 .cart-continue-shopping:hover {
-  color: #0369a1;
+  color: #075985;
   text-decoration: underline;
 }
 
@@ -443,7 +451,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: white;
-  background-color: #0284c7;
+  background-color: #0369a1;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -454,16 +462,17 @@
 }
 
 .cart-checkout-button:hover {
-  background-color: #0369a1;
+  background-color: #075985;
 }
 
 @media (prefers-color-scheme: dark) {
   .cart-checkout-button {
-    background-color: #0ea5e9;
+    background-color: #38bdf8;
+    color: #082f49;
   }
 
   .cart-checkout-button:hover {
-    background-color: #0284c7;
+    background-color: #7dd3fc;
   }
 }
 

@@ -13,7 +13,7 @@
 
 .header-announcement {
   position: relative;
-  background: linear-gradient(90deg, #0284c7 0%, #0369a1 50%, #0284c7 100%);
+  background: linear-gradient(90deg, #0369a1 0%, #0369a1 50%, #0369a1 100%);
   color: #ffffff;
   font-size: 0.8125rem;
   padding: 0.4rem 2.5rem 0.4rem 1rem;
@@ -117,7 +117,7 @@
     width: 100%;
   }
   .header-announcement {
-    padding: 0.4rem 2.25rem 0.4rem 0.75rem;
+    padding: 0.4rem 2.6rem 0.4rem 0.75rem;
     justify-content: center;
     text-align: center;
     display: flex;
@@ -138,7 +138,7 @@
     gap: 0.25rem;
   }
   .header-announcement-line2 {
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     color: #e0f2fe;
     font-weight: 500;
     line-height: 1.25;
@@ -149,9 +149,15 @@
     margin: 0;
   }
   .header-announcement-close {
-    right: 0.45rem;
+    right: 0.6rem;
     width: 1.35rem;
     height: 1.35rem;
+  }
+  /* Invisible padding around the small circle gives a 44px tap target */
+  .header-announcement-close::after {
+    content: '';
+    position: absolute;
+    inset: -0.7rem;
   }
   .header-container {
     height: 3.5rem;
@@ -293,6 +299,9 @@
 }
 
 .mobile-nav-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 1rem;
   font-weight: 500;
   color: #ffffff;
@@ -308,4 +317,12 @@
 
 .mobile-nav-link:hover {
   color: #0ea5e9;
+}
+
+/* Very small phones (e.g. Galaxy Fold): let the offer wrap instead of clipping */
+@media (max-width: 360px) {
+  .header-announcement-line1 {
+    white-space: normal;
+    flex-wrap: wrap;
+  }
 }

@@ -67,7 +67,7 @@
 }
 
 .product-image-nav:hover {
-  background-color: #0284c7;
+  background-color: #0369a1;
   color: white;
   transform: translateY(-50%) scale(1.1);
 }
@@ -123,7 +123,7 @@
 }
 
 .product-thumbnail-active {
-  border-color: #0284c7;
+  border-color: #0369a1;
   opacity: 1;
 }
 
@@ -171,7 +171,7 @@
 .product-price {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #0284c7;
+  color: #0369a1;
   transition: color 0.3s;
 }
 
@@ -187,11 +187,17 @@
   gap: 0.35rem;
   background-color: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #34d399;
+  color: #047857;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.55rem;
   border-radius: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-free-shipping-tag {
+    color: #34d399;
+  }
 }
 
 .product-launch-pill {
@@ -203,8 +209,22 @@
   border-radius: 0.5rem;
   padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
-  color: #e0f2fe;
+  color: #075985;
   margin-bottom: 1.25rem;
+}
+
+.product-launch-pill svg {
+  color: #0369a1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-launch-pill {
+    color: #e0f2fe;
+  }
+
+  .product-launch-pill svg {
+    color: #38bdf8;
+  }
 }
 
 .product-launch-pill code {
@@ -221,16 +241,20 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 0.85rem;
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: #4b5563;
   margin-top: 1.25rem;
 }
 
+.product-manual-compact svg {
+  color: #0369a1;
+}
+
 .product-manual-compact a {
-  color: #38bdf8;
+  color: #0369a1;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -238,7 +262,53 @@
 }
 
 .product-manual-compact a:hover {
-  color: #7dd3fc;
+  color: #075985;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-manual-compact {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #9ca3af;
+  }
+
+  .product-manual-compact svg,
+  .product-manual-compact a {
+    color: #38bdf8;
+  }
+
+  .product-manual-compact a:hover {
+    color: #7dd3fc;
+  }
+}
+
+/* OEM replacement note on individual pod parts */
+.product-oem-callout {
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 0.85rem;
+  background-color: rgba(2, 132, 199, 0.1);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #0c4a6e;
+}
+
+.product-oem-callout strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #0369a1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-oem-callout {
+    color: #94a3b8;
+  }
+
+  .product-oem-callout strong {
+    color: #38bdf8;
+  }
 }
 
 .product-description {
@@ -303,7 +373,7 @@
 }
 
 .product-description-content a {
-  color: #0284c7;
+  color: #0369a1;
   text-decoration: underline;
   transition: color 0.3s;
 }
@@ -467,7 +537,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  background-color: #0284c7;
+  background-color: #0369a1;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -476,16 +546,17 @@
 
 @media (prefers-color-scheme: dark) {
   .product-add-to-cart {
-    background-color: #0ea5e9;
+    background-color: #38bdf8;
+    color: #082f49;
   }
 
   .product-add-to-cart:hover:not(:disabled) {
-    background-color: #0284c7;
+    background-color: #7dd3fc;
   }
 }
 
 .product-add-to-cart:hover:not(:disabled) {
-  background-color: #0369a1;
+  background-color: #075985;
 }
 
 .product-add-to-cart:disabled {
@@ -519,7 +590,7 @@
 }
 
 .product-manual-icon {
-  color: #0284c7;
+  color: #0369a1;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
@@ -560,14 +631,14 @@
   align-items: center;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0284c7;
+  color: #0369a1;
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 0.2s;
 }
 
 .product-manual-link:hover {
-  color: #0369a1;
+  color: #075985;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -643,7 +714,7 @@
 }
 
 .product-highlight-icon {
-  color: #0284c7;
+  color: #0369a1;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
@@ -703,7 +774,7 @@
 }
 
 .product-faq-item-open {
-  border-color: #0284c7;
+  border-color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -735,7 +806,7 @@
 }
 
 .product-faq-question:hover {
-  color: #0284c7;
+  color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -758,7 +829,7 @@
 
 .product-faq-chevron-rotated {
   transform: rotate(180deg);
-  color: #0284c7;
+  color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {

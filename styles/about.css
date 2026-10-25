@@ -202,7 +202,7 @@
 }
 
 .faq-question-active {
-  color: #0284c7;
+  color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -349,7 +349,7 @@
   height: 4rem;
   margin: 0 auto 1rem;
   background-color: #e0f2fe;
-  color: #0284c7;
+  color: #0369a1;
   border-radius: 50%;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -377,7 +377,7 @@
 
 .contact-card a {
   display: block;
-  color: #0284c7;
+  color: #0369a1;
   font-weight: 600;
   margin-bottom: 0.5rem;
   transition: color 0.2s;
@@ -385,7 +385,7 @@
 }
 
 .contact-card a:hover {
-  color: #0369a1;
+  color: #075985;
   text-decoration: underline;
 }
 
@@ -487,7 +487,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #0284c7;
+  border-color: #0369a1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -519,5 +519,21 @@
 
   .contact-form-section {
     padding: 1.5rem;
+  }
+}
+
+/* Small phones: drop the nested side padding so the inputs get the width */
+@media (max-width: 480px) {
+  .contact-section {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .contact-form-section {
+    padding: 1rem;
+  }
+
+  .contact-form .btn {
+    width: 100%;
   }
 }

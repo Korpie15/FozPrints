@@ -43,7 +43,7 @@ const howToSchema = {
     { '@type': 'HowToSupply', name: 'Nav pod' },
     { '@type': 'HowToSupply', name: 'Left and Right Brackets' },
     { '@type': 'HowToSupply', name: 'Front cover' },
-    { '@type': 'HowToSupply', name: 'Mounting screws' },
+    { '@type': 'HowToSupply', name: '4 bracket screws (included)' },
   ],
   step: [
     {
@@ -59,7 +59,7 @@ const howToSchema = {
     {
       '@type': 'HowToStep',
       name: 'Attach the Left and Right Brackets',
-      text: 'Attach radio mount brackets to your head unit using the provided screws.',
+      text: 'Attach the left and right brackets to your head unit using the 4 screws included in the kit (2 per side).',
     },
     {
       '@type': 'HowToStep',
@@ -94,8 +94,8 @@ export default function DoubleDinPodUpgradeKitManual() {
               className="download-pdf-button"
               style={{
                 textDecoration: 'none',
-                backgroundColor: '#0284c7',
-                borderColor: '#0284c7',
+                backgroundColor: '#0369a1',
+                borderColor: '#0369a1',
                 color: '#ffffff',
               }}
             >
@@ -127,26 +127,16 @@ export default function DoubleDinPodUpgradeKitManual() {
               <li>Nav pod</li>
               <li>Left and right brackets</li>
               <li>Front cover</li>
-              <li>4 mounting screws</li>
+              <li>4 bracket screws (fix the brackets to your head unit in step 5)</li>
             </ul>
             <h3 style={{ fontSize: '1.125rem', marginTop: '1.5rem' }}>Not Included:</h3>
             <ul className="tools-list">
               <li>Aftermarket Double DIN head unit</li>
             </ul>
 
-            <div
-              style={{
-                marginTop: '1.5rem',
-                padding: '0.85rem 1rem',
-                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                border: '1px solid rgba(2, 132, 199, 0.3)',
-                borderRadius: '0.5rem',
-                fontSize: '0.875rem',
-                lineHeight: 1.5,
-              }}
-            >
-              <strong style={{ color: '#38bdf8' }}>💡 OEM Compatibility (Subaru Part # H0010SA950ML):</strong>
-              <p style={{ marginTop: '0.35rem', color: '#bae6fd' }}>
+            <div className="manual-oem-callout">
+              <strong>💡 OEM Compatibility (Subaru Part # H0010SA950ML):</strong>
+              <p>
                 All FozPrints parts are 1:1 backwards-compatible with factory Subaru USDM nav pods. If you are using this guide to replace a cracked shell, broken clips, or missing brackets on an original OEM housing, all mounting steps and hardware positions are identical.
               </p>
             </div>
@@ -172,12 +162,22 @@ export default function DoubleDinPodUpgradeKitManual() {
           </div>
         </div>
 
+        {/* Safety */}
+        <div className="info-box">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Before you start:</strong> disconnect the negative (-) battery terminal before unplugging or
+            connecting any wiring. Some head units lose their presets, or ask for a security code, after the battery
+            has been disconnected.
+          </div>
+        </div>
+
         {/* Installation Steps */}
         <div className="manual-section">
           <h2>Step-by-Step Installation Instructions</h2>
 
           {/* Section 1: Removal */}
-          <h3 style={{ marginTop: '2rem', marginBottom: '1.5rem', fontSize: '1.5rem', color: '#111827' }}>
+          <h3 style={{ marginTop: '2rem', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
             Part 1: Removal of Existing Top Storage Compartment
           </h3>
 
@@ -279,7 +279,7 @@ export default function DoubleDinPodUpgradeKitManual() {
           </div>
 
           {/* Section 2: Installation */}
-          <h3 style={{ marginTop: '3rem', marginBottom: '1.5rem', fontSize: '1.5rem', color: '#111827' }}>
+          <h3 style={{ marginTop: '3rem', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
             Part 2: Installing the Nav Pod
           </h3>
 
@@ -289,7 +289,7 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Attach Left and Right Brackets</h3>
               <p>
-                Attach the left and right radio mount brackets to your head unit by aligning the bracket holes with the head unit side mounting holes. Fasten using 2 screws per side.
+                Attach the left and right radio mount brackets to your head unit by aligning the bracket holes with the head unit side mounting holes. Fasten using the 4 screws from the kit, 2 per side.
               </p>
               <div className="step-images two-images">
                 <div className="step-image">
@@ -333,6 +333,12 @@ export default function DoubleDinPodUpgradeKitManual() {
               <p>
                 Plug all wiring into the back of your head unit before lowering it into place.
               </p>
+              <p>
+                <strong>Test before you fit it:</strong> reconnect the battery and check the head unit powers on,
+                plays sound through every speaker, picks up radio and shows the reversing camera (if fitted). It&apos;s
+                much easier to fix a loose plug now than after the pod is screwed in. Disconnect the battery again
+                before carrying on.
+              </p>
             </div>
           </div>
 
@@ -373,15 +379,15 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Secure Head Unit Mounts</h3>
               <p>
-                Insert 4 screws loosely into the mounting points. Keep them slightly loose for final adjustment.
+                Insert the car&apos;s 4 factory screws loosely into the mounting points (these are already in the car, not part of the kit). Keep them slightly loose for final adjustment.
               </p>
               <div className="step-images single-image wider panoramic-container">
                 <div className="step-image panoramic">
                   <Image
                     src="/images/step9-image.jpg"
                     alt="Screwing in head unit with brackets into car mounting points"
-                    width={600}
-                    height={400}
+                    width={773}
+                    height={214}
                     style={{ width: '100%', height: 'auto' }}
                   />
                 </div>
@@ -481,8 +487,8 @@ export default function DoubleDinPodUpgradeKitManual() {
               className="download-pdf-button"
               style={{
                 textDecoration: 'none',
-                backgroundColor: '#0284c7',
-                borderColor: '#0284c7',
+                backgroundColor: '#0369a1',
+                borderColor: '#0369a1',
                 color: '#ffffff',
                 display: 'inline-block',
               }}

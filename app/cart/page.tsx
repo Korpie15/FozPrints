@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles, Tag
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
 import { ShippingQuote, hasFullKit } from '@/lib/shipping';
+import { LAUNCH_OFFER } from '@/lib/promo';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import { PayPalCheckoutButton } from '@/components/PayPalCheckoutButton';
 import '@/styles/cart.css';
@@ -98,7 +99,7 @@ export default function CartPage() {
 
     if (code === 'LAUNCH50') {
       if (!isFullKitPresent) {
-        setPromoError('LAUNCH50 is only valid for the Full Nav Pod Upgrade Kit.');
+        setPromoError(`${LAUNCH_OFFER.code} is only valid for the ${LAUNCH_OFFER.productName}.`);
         return;
       }
       setAppliedPromo('LAUNCH50');
@@ -283,12 +284,12 @@ export default function CartPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#7dd3fc', fontSize: '0.825rem' }}>
                 <Sparkles size={15} style={{ color: '#fde047', flexShrink: 0 }} />
                 <span>
-                  <strong>Launch Deal:</strong> Use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>LAUNCH50</code> for <strong>$50 OFF</strong>!
+                  <strong>Launch offer:</strong> use code <code style={{ backgroundColor: '#ffffff', color: '#0369a1', padding: '0.1rem 0.35rem', borderRadius: '0.25rem', fontWeight: 800, fontFamily: 'monospace' }}>{LAUNCH_OFFER.code}</code> for <strong>${LAUNCH_OFFER.discount} off</strong> ({LAUNCH_OFFER.limit})
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontSize: '0.8rem', fontWeight: 500 }}>
                 <Truck size={14} style={{ flexShrink: 0 }} />
-                <span>Includes FREE Standard Australia-Wide Shipping</span>
+                <span>Includes free AU standard shipping</span>
               </div>
             </div>
           )}
@@ -435,8 +436,8 @@ export default function CartPage() {
                         cursor: 'pointer',
                         padding: '0.5rem 0.75rem',
                         borderRadius: '0.375rem',
-                        backgroundColor: isSelected ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
-                        border: isSelected ? '1px solid #0284c7' : '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: isSelected ? '#0369a1' : 'rgba(255, 255, 255, 0.05)',
+                        border: isSelected ? '1px solid #0369a1' : '1px solid rgba(255, 255, 255, 0.1)',
                         color: isSelected ? '#ffffff' : 'inherit',
                         transition: 'all 0.2s ease',
                       }}

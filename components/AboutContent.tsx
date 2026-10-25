@@ -197,22 +197,22 @@ export function AboutContent() {
               <form className="contact-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label htmlFor="name">Name</label>
-                  <input type="text" id="name" name="name" required />
+                  <input type="text" id="name" name="name" required maxLength={100} autoComplete="name" />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="email">Email</label>
-                  <input type="email" id="email" name="email" required />
+                  <input type="email" id="email" name="email" required maxLength={254} autoComplete="email" />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="subject">Subject</label>
-                  <input type="text" id="subject" name="subject" required />
+                  <input type="text" id="subject" name="subject" required maxLength={150} />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="message">Message</label>
-                  <textarea id="message" name="message" rows={6} required></textarea>
+                  <textarea id="message" name="message" rows={6} required maxLength={5000}></textarea>
                 </div>
 
                 {/* Honeypot: hidden from people, filled in by bots */}

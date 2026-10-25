@@ -78,14 +78,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #0284c7;
+  color: #0369a1;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .policy-external-link a:hover {
-  color: #0369a1;
+  color: #075985;
   text-decoration: underline;
 }
 
@@ -134,23 +134,24 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: white;
-  background-color: #0284c7;
+  background-color: #0369a1;
   border-radius: 0.5rem;
   text-decoration: none;
   transition: background-color 0.2s;
 }
 
 .policy-redirect-link:hover {
-  background-color: #0369a1;
+  background-color: #075985;
 }
 
 @media (prefers-color-scheme: dark) {
   .policy-redirect-link {
-    background-color: #0ea5e9;
+    background-color: #38bdf8;
+    color: #082f49;
   }
 
   .policy-redirect-link:hover {
-    background-color: #0284c7;
+    background-color: #7dd3fc;
   }
 }
 
@@ -212,13 +213,13 @@
 }
 
 .policy-body a {
-  color: #0284c7;
+  color: #0369a1;
   text-decoration: underline;
   transition: color 0.2s;
 }
 
 .policy-body a:hover {
-  color: #0369a1;
+  color: #075985;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -248,7 +249,7 @@
 }
 
 .policy-body blockquote {
-  border-left: 4px solid #0284c7;
+  border-left: 4px solid #0369a1;
   padding-left: 1rem;
   margin: 1.5rem 0;
   font-style: italic;

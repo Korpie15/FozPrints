@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { Menu, X, Globe, Sparkles } from 'lucide-react';
 import { CartButton } from '@/components/CartButton';
+import { useFocusTrap } from '@/lib/use-focus-trap';
+import { LAUNCH_OFFER } from '@/lib/promo';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import '../styles/header.css';
 
@@ -11,7 +13,26 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
-  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const mobileNavRef = useRef<HTMLElement>(null);
+
+  // While the mobile menu is open: keep keyboard focus in the header, close on
+  // Escape, and stop the page behind it from scrolling
+  useFocusTrap(headerRef, isMobileMenuOpen, mobileNavRef);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -55,17 +76,17 @@ export function Header() {
           <div className="header-announcement-content">
             <div className="header-announcement-desktop-only">
               <span>
-                Launch Offer: <strong>$50 OFF</strong> first 10 Full Nav Pod Kits with code
+                Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> the {LAUNCH_OFFER.productName} ({LAUNCH_OFFER.limit}) with code
               </span>
-              <code className="header-promo-code">LAUNCH50</code>
-              <span>+ Free AU Standard Shipping!</span>
+              <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
+              <span>plus free AU standard shipping</span>
             </div>
             <div className="header-announcement-mobile-only">
               <div className="header-announcement-line1">
-                Launch Offer: <strong>$50 OFF</strong> with code <code className="header-promo-code">LAUNCH50</code>
+                <strong>${LAUNCH_OFFER.discount} off</strong> with code <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
               </div>
               <div className="header-announcement-line2">
-                + Free AU Standard Shipping
+                {LAUNCH_OFFER.productName}, {LAUNCH_OFFER.limit}. Free AU standard shipping.
               </div>
             </div>
           </div>
@@ -120,10 +141,12 @@ export function Header() {
 
         <div className="header-right">
           <CartButton />
-          <button 
+          <button
             className="mobile-menu-button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -132,7 +155,7 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="mobile-nav" ref={mobileNavRef}>
+        <nav id="mobile-nav" className="mobile-nav" ref={mobileNavRef} aria-label="Mobile">
           <Link href="/products" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
             All Products
           </Link>
@@ -160,7 +183,7 @@ export function Header() {
             <Globe size={18} />
             Outside Australia? Register Interest
           </button>
-        </div>
+        </nav>
       )}
     </header>
   );

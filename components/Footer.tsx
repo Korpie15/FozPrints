@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getShopPolicies } from '@/lib/policies';
+import { AnalyticsSettingsButton } from '@/components/AnalyticsConsent';
 import '../styles/footer.css';
 
 export async function Footer() {
@@ -60,6 +61,7 @@ export async function Footer() {
                 {policies.termsOfService.title}
               </Link>
             )}
+            <AnalyticsSettingsButton />
           </div>
         </div>
 

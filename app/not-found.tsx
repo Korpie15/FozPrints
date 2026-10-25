@@ -5,6 +5,8 @@ import { ShoppingBag, BookOpen } from 'lucide-react';
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
   description: 'The requested page or Subaru Forester print could not be found.',
+  // The layout's self-canonical would point search engines at the missing URL
+  alternates: { canonical: null },
 };
 
 export default function NotFound() {
@@ -24,7 +26,7 @@ export default function NotFound() {
           style={{
             fontSize: '4rem',
             fontWeight: 800,
-            color: '#0284c7',
+            color: '#0369a1',
             marginBottom: '0.5rem',
             lineHeight: 1,
           }}
