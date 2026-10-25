@@ -1,6 +1,5 @@
-// Report-only for now: violations are logged in the browser console, nothing is blocked.
-// Once the console stays clean across the site and both checkouts, rename the header
-// to Content-Security-Policy to enforce it.
+// Enforced: anything not listed here is blocked. Add a source here before adding a new
+// third-party script, image host, iframe or API, or the browser will refuse to load it.
 const contentSecurityPolicy = [
   "default-src 'self'",
   // Next.js inlines its bootstrap scripts and styles, so 'unsafe-inline' is needed without nonces
@@ -19,7 +18,7 @@ const contentSecurityPolicy = [
 const securityHeaders = [
   // Stops other sites showing this store inside an iframe (clickjacking)
   { key: 'X-Frame-Options', value: 'DENY' },
-  { key: 'Content-Security-Policy-Report-Only', value: contentSecurityPolicy },
+  { key: 'Content-Security-Policy', value: contentSecurityPolicy },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), usb=(), interest-cohort=()' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },

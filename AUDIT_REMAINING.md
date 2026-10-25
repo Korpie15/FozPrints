@@ -24,7 +24,7 @@ The list is split into:
 
 ### Still to do
 
-- [ ] **#6 Enforce the content security policy:** rename the report-only header so it's enforced. **Do this only after** the console check in section 2C comes back clean.
+- [x] **#6 Enforce the content security policy:** console check came back clean (site pages, Clarity after Allow analytics, PayPal button), so the header is now enforced. Not yet deployed.
 
 ---
 
