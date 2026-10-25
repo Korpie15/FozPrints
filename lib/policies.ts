@@ -98,7 +98,7 @@ export const POLICIES: Record<string, Policy> = {
 
       <h2>How We Use Your Personal Information</h2>
       <ul>
-        <li><strong>Provide, Tailor, and Improve the Services:</strong> To perform our contract with you, process payments, fulfill orders, arrange shipping, facilitate customer support, and improve your shopping experience.</li>
+        <li><strong>Provide, Tailor, and Improve the Services:</strong> To perform our contract with you, process payments, fulfil orders, arrange shipping, facilitate customer support, and improve your shopping experience.</li>
         <li><strong>Marketing and Advertising:</strong> To send promotional communications and show relevant product recommendations where permitted.</li>
         <li><strong>Security and Fraud Prevention:</strong> To authenticate transactions, protect against fraud or unauthorized activity, and secure our systems.</li>
         <li><strong>Communicating with You:</strong> To provide customer support, notify you of order status, and respond to your inquiries.</li>
@@ -109,7 +109,7 @@ export const POLICIES: Record<string, Policy> = {
       <p>In certain circumstances, we may disclose your personal information to third parties for legitimate purposes:</p>
       <ul>
         <li>With vendors and service providers who perform services on our behalf (e.g. Stripe payment processing, Australia Post shipping, cloud hosting, and data analytics).</li>
-        <li>When you direct or consent to our disclosure of information to third parties to fulfill your orders.</li>
+        <li>When you direct or consent to our disclosure of information to third parties to fulfil your orders.</li>
         <li>In connection with legal obligations, regulatory compliance, or to protect and defend our rights and the safety of our users.</li>
       </ul>
 
@@ -122,7 +122,7 @@ export const POLICIES: Record<string, Policy> = {
       <p>The Services are not intended for use by children, and we do not knowingly collect personal information about children under the age of majority in your jurisdiction.</p>
 
       <h2>Security and Retention of Your Information</h2>
-      <p>We maintain reasonable security safeguards to protect your personal information. How long we retain your personal information depends on operational and legal requirements such as order fulfillment, warranty handling, accounting, and dispute resolution.</p>
+      <p>We maintain reasonable security safeguards to protect your personal information. How long we retain your personal information depends on operational and legal requirements such as order fulfilment, warranty handling, accounting, and dispute resolution.</p>
 
       <h2>Your Rights and Choices</h2>
       <p>Depending on where you live, you may have rights under applicable privacy laws to request access to, correction of, or deletion of your personal information, or to opt out of promotional communications.</p>
@@ -148,13 +148,13 @@ export const POLICIES: Record<string, Policy> = {
       <p>By agreeing to these Terms, you represent that you are at least the age of majority in your state or country of residence. You agree to provide current, complete, and accurate information for all purchases made at our store.</p>
 
       <h2>Section 2 - Our Products</h2>
-      <p>We have made every effort to display as accurately as possible the colors and images of our products. All descriptions of products and product pricing are subject to change at any time without notice at our sole discretion. We reserve the right to discontinue any product at any time.</p>
+      <p>We have made every effort to display as accurately as possible the colours and images of our products. All descriptions of products and product pricing are subject to change at any time without notice at our sole discretion. We reserve the right to discontinue any product at any time.</p>
 
       <h2>Section 3 - Orders</h2>
       <p>When you place an order, you are making an offer to purchase. Foz Prints reserves the right to accept or decline your order for any reason at its discretion. Returns, replacements and refunds are handled under our <a href="/policies/refund-policy">Refund Policy</a> and your rights under the Australian Consumer Law.</p>
 
       <h2>Section 4 - Prices and Billing</h2>
-      <p>Prices are subject to change without notice. You agree to provide valid payment details and authorize us or our payment processor (Stripe) to charge your payment method for all orders placed.</p>
+      <p>Prices are subject to change without notice. You agree to provide valid payment details and authorise us or our payment processor (Stripe) to charge your payment method for all orders placed.</p>
 
       <h2>Section 5 - Shipping and Delivery</h2>
       <p>Delivery times are estimates. We are not responsible for delays caused by events outside our control, but we will keep you informed if your order is held up. Title and risk of loss pass to you when your order is delivered to the address you gave us. If a parcel is lost or damaged before then, see our <a href="/policies/shipping-policy">Shipping Policy</a>.</p>

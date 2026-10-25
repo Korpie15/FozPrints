@@ -8,16 +8,16 @@ import { SITE_URL } from '@/lib/site';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Subaru Forester 3D Printed Parts Catalog',
+  title: 'Subaru Forester 3D Printed Parts Catalogue',
   description:
-    'Browse our complete catalog of precision 3D printed double DIN pods, storage cubbies, cable organizers, and accessories for the SG Subaru Forester.',
+    'Browse our complete catalogue of precision 3D printed double DIN pods, storage cubbies, cable organisers, and accessories for the SG Subaru Forester.',
   alternates: {
     canonical: '/products',
   },
   openGraph: {
-    title: 'Subaru Forester 3D Printed Parts Catalog | Foz Prints',
+    title: 'Subaru Forester 3D Printed Parts Catalogue | Foz Prints',
     description:
-      'Browse our complete catalog of precision 3D printed double DIN pods, storage cubbies, cable organizers, and accessories for the SG Subaru Forester.',
+      'Browse our complete catalogue of precision 3D printed double DIN pods, storage cubbies, cable organisers, and accessories for the SG Subaru Forester.',
     url: `${SITE_URL}/products`,
   },
 };
@@ -44,7 +44,7 @@ export default async function ProductsPage() {
         ) : (
           <div className="products-grid">
             {products.map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} titleLevel="h2" />
             ))}
           </div>
         )}

@@ -14,6 +14,11 @@ interface CartState {
 
 const MAX_QUANTITY = 99;
 
+/** A whole number from 1 up to the stock limit (or 99), whatever was stored. */
+function clampQuantity(quantity: unknown, maxQuantity?: number): number {
+  return Math.min(Math.max(Math.floor(Number(quantity)) || 1, 1), maxQuantity ?? MAX_QUANTITY);
+}
+
 /**
  * Repairs or drops cart items read from localStorage, which may be stale,
  * left over from the old Shopify store, or hand-edited.
@@ -28,10 +33,7 @@ function sanitizeItems(raw: unknown): CartItem[] {
 
     const maxQuantity =
       Number.isInteger(item.maxQuantity) && item.maxQuantity > 0 ? item.maxQuantity : undefined;
-    const quantity = Math.min(
-      Math.max(Math.floor(Number(item.quantity)) || 1, 1),
-      maxQuantity ?? MAX_QUANTITY
-    );
+    const quantity = clampQuantity(item.quantity, maxQuantity);
 
     return [{
       ...item,
@@ -112,13 +114,16 @@ export const useCartStore = create<CartState>()(
       getItemCount: () => {
         const rawItems = get().items;
         if (!Array.isArray(rawItems)) return 0;
-        return rawItems.reduce((total, item) => total + (item.quantity || 0), 0);
+        return rawItems.reduce((total, item) => total + clampQuantity(item.quantity, item.maxQuantity), 0);
       },
 
       getSubtotal: () => {
         const rawItems = get().items;
         if (!Array.isArray(rawItems)) return 0;
-        return rawItems.reduce((total, item) => total + (item.price || 0) * (item.quantity || 0), 0);
+        return rawItems.reduce(
+          (total, item) => total + (Number(item.price) || 0) * clampQuantity(item.quantity, item.maxQuantity),
+          0
+        );
       },
     }),
     {

@@ -9,6 +9,8 @@ export const LAUNCH_OFFER = {
   productId: 'prod_VB8PtVP327MDhq',
   productName: 'Nav Pod Kit',
   limit: 'first 10 orders',
+  /** The free-shipping rule, worded the same everywhere */
+  freeShipping: 'Free Australia Post standard shipping',
 } as const;
 
 /** Whether a product qualifies for the launch offer and free standard shipping. */

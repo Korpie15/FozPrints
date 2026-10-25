@@ -349,6 +349,12 @@
   background-color: #f3f4f6;
 }
 
+@media (prefers-color-scheme: dark) {
+  .step-image {
+    background-color: #1f2937;
+  }
+}
+
 .step-image img {
   width: 100% !important;
   height: 100% !important;

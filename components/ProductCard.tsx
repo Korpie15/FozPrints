@@ -11,9 +11,11 @@ import '../styles/product-card.css';
 
 interface ProductCardProps {
   product: Product;
+  /** Heading level for the title: one below the heading of the section the card sits in */
+  titleLevel?: 'h2' | 'h3';
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardProps) {
   const image = product.images[0];
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="product-card-content">
           <Link href={`/products/${product.handle}`} style={{ textDecoration: 'none' }}>
-            <h3 className="product-card-title">{product.title}</h3>
+            <Title className="product-card-title">{product.title}</Title>
           </Link>
           <p className="product-card-description">{product.shortDescription || stripHtml(product.description)}</p>
 

@@ -6,6 +6,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { toJsonLd } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { getProductSeoData, NAV_POD_FAQS, isNavPodProduct } from '@/lib/product-seo';
+import { getLiveShippingQuotes } from '@/lib/shipping';
 
 export const revalidate = 300;
 
@@ -79,6 +80,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const isNavPod = isNavPodProduct(product);
     const { title: seoTitle, description: seoDescription } = getProductSeoData(product);
 
+    // Same Australia Post standard quote the cart gives for one of this product
+    // (free for the Nav Pod Kit), so the price shown to Google matches checkout
+    const quotes = await getLiveShippingQuotes(
+      [{
+        id: product.variants[0]?.id ?? '',
+        productId: product.id,
+        title: product.title,
+        handle: product.handle,
+        price: product.price,
+        priceCents: Math.round(product.price * 100),
+        currencyCode: product.currencyCode,
+        quantity: 1,
+      }],
+      '2000'
+    );
+    const standardShipping = quotes.find((q) => q.serviceCode === 'AUS_PARCEL_REGULAR') ?? quotes[0];
+
     const productSchema = {
       '@context': 'https://schema.org',
       '@type': 'Product',
@@ -132,7 +150,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           '@type': 'OfferShippingDetails',
           shippingRate: {
             '@type': 'MonetaryAmount',
-            value: isNavPod ? '18.25' : '10.95',
+            value: standardShipping.price.toFixed(2),
             currency: 'AUD',
           },
           shippingDestination: {

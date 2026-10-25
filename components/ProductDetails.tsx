@@ -11,6 +11,8 @@ import { isNavPodProduct, NAV_POD_FAQS } from '@/lib/product-seo';
 import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
+import { ImageLightbox } from './ImageLightbox';
+import { useSwipe } from '@/lib/use-swipe';
 import '../styles/product-details.css';
 
 interface ProductDetailsProps {
@@ -33,7 +35,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showToast, setShowToast] = useState(false);
+  // Shown in the toast and read out by screen readers via the live region below
+  const [cartMessage, setCartMessage] = useState('');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   const { addItem } = useCartStore();
   const isNavPod = isNavPodProduct(product);
@@ -132,6 +137,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const handleAddToCart = () => {
     if (!selectedVariant) return;
 
+    // The cart caps quantities at stock, so say so instead of silently adding fewer
+    const stock = selectedVariant.quantityAvailable;
+    const alreadyInCart = useCartStore.getState().items.find((item) => item.id === selectedVariant.id)?.quantity ?? 0;
+    let message = 'Item added to cart!';
+    if (stock !== undefined && alreadyInCart >= stock) {
+      message = `Your cart already has all ${stock} in stock.`;
+    } else if (stock !== undefined && alreadyInCart + quantity > stock) {
+      message = `Only ${stock} in stock, so your cart now has ${stock}.`;
+    }
+
     addItem({
       id: selectedVariant.id,
       productId: product.id,
@@ -146,6 +161,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       maxQuantity: selectedVariant.quantityAvailable,
     });
 
+    setCartMessage(message);
     setShowToast(true);
   };
 
@@ -162,6 +178,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     handleImageSelect(nextIndex);
   };
 
+  // Swiping the main photo changes photo; a plain tap opens the full-screen viewer
+  const mainImageSwipe = useSwipe(goToNextImage, goToPreviousImage);
+
   const isAvailable = Boolean(selectedVariant?.availableForSale);
   const maxQuantity = selectedVariant?.quantityAvailable ?? 1;
 
@@ -169,24 +188,42 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     <>
       {showToast && (
         <Toast
-          message="Item added to cart!"
+          message={cartMessage}
           onClose={() => setShowToast(false)}
+        />
+      )}
+      <p className="sr-only" aria-live="polite">{cartMessage}</p>
+      {isZoomOpen && (
+        <ImageLightbox
+          images={product.images}
+          index={selectedImageIndex}
+          onIndexChange={handleImageSelect}
+          onClose={() => setIsZoomOpen(false)}
         />
       )}
       <div className="product-details">
         {/* Product Images */}
         <div className="product-images">
-          <div className="product-main-image">
+          <div className="product-main-image" {...mainImageSwipe.handlers}>
             {selectedImage ? (
               <>
-                <Image
-                  src={selectedImage.url}
-                  alt={selectedImage.altText || `${product.title} - ${selectedVariant?.title || 'View'}`}
-                  fill
-                  sizes={MAIN_IMAGE_SIZES}
-                  style={{ objectFit: 'cover' }}
-                  priority
-                />
+                <button
+                  type="button"
+                  className="product-zoom-button"
+                  onClick={() => {
+                    if (!mainImageSwipe.consumeSwipe()) setIsZoomOpen(true);
+                  }}
+                  aria-label="View photo full screen"
+                >
+                  <Image
+                    src={selectedImage.url}
+                    alt={selectedImage.altText || `${product.title} - ${selectedVariant?.title || 'View'}`}
+                    fill
+                    sizes={MAIN_IMAGE_SIZES}
+                    style={{ objectFit: 'cover' }}
+                    priority
+                  />
+                </button>
                 {totalImages > 1 && (
                   <>
                     <button
@@ -255,7 +292,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
             {isFullKit && (
               <span className="product-free-shipping-tag">
-                <Truck size={13} /> Free AU standard shipping
+                <Truck size={13} /> {LAUNCH_OFFER.freeShipping}
               </span>
             )}
           </div>
@@ -458,6 +495,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                       className="product-faq-question"
                       onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
                       aria-expanded={isOpen}
+                      aria-controls={`product-faq-answer-${idx}`}
                     >
                       <span>{faq.question}</span>
                       <ChevronDown
@@ -466,7 +504,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                       />
                     </button>
                     {isOpen && (
-                      <div className="product-faq-answer">
+                      <div className="product-faq-answer" id={`product-faq-answer-${idx}`}>
                         <p>{faq.answer}</p>
                       </div>
                     )}

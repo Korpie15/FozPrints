@@ -58,6 +58,38 @@ a {
   text-decoration: none;
 }
 
+/* Hidden on screen but still read by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard users can jump past the header; it appears when focused */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10000;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  color: #0369a1;
+  font-weight: 600;
+  border: 2px solid #0369a1;
+  border-radius: 0.5rem;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 /* Container */
 .container {
   width: 100%;
@@ -154,4 +186,74 @@ p {
 .btn-lg {
   padding: 1rem 2rem;
   font-size: 1.125rem;
+}
+
+/* <main> only takes focus from the skip link; no outline needed */
+main:focus {
+  outline: none;
+}
+
+/* Touch screens: at least 44px tap targets on small controls.
+   Placed last so it wins over the compact mobile sizes elsewhere. */
+@media (pointer: coarse) {
+  .footer-section a,
+  .footer-section .footer-link-button {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin-bottom: 0;
+  }
+
+  .cart-quantity-button,
+  .product-image-nav,
+  .toast-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .cart-item-remove,
+  .cart-button {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Windows high-contrast (forced colours) mode drops backgrounds and shadows,
+   so give buttons and icons visible outlines in the system colours */
+@media (forced-colors: active) {
+  .btn,
+  .cart-checkout-button,
+  .product-add-to-cart,
+  .product-card-button,
+  .cart-quantity-button,
+  .carousel-button,
+  .consent-button,
+  .header-promo-code {
+    border: 1px solid ButtonText;
+  }
+
+  .cart-button svg,
+  .mobile-menu-button svg,
+  .carousel-button svg {
+    color: ButtonText;
+  }
+
+  .carousel-dot::before {
+    background-color: ButtonText;
+  }
+
+  .carousel-dot-active::before {
+    background-color: Highlight;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid Highlight;
+  }
 }

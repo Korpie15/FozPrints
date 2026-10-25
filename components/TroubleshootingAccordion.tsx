@@ -58,6 +58,8 @@ export function TroubleshootingAccordion() {
           <button
             className={`troubleshooting-question ${openItem === item.id ? 'troubleshooting-question-active' : ''}`}
             onClick={() => setOpenItem(openItem === item.id ? null : item.id)}
+            aria-expanded={openItem === item.id}
+            aria-controls={`troubleshooting-answer-${item.id}`}
           >
             <span>{item.question}</span>
             <ChevronDown
@@ -66,7 +68,7 @@ export function TroubleshootingAccordion() {
             />
           </button>
           {openItem === item.id && (
-            <div className="troubleshooting-answer">
+            <div className="troubleshooting-answer" id={`troubleshooting-answer-${item.id}`}>
               <p>{item.answer}</p>
             </div>
           )}

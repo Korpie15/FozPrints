@@ -70,7 +70,6 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin-bottom: 1rem;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -87,6 +86,8 @@
 }
 
 .product-card-footer {
+  /* Pins the price row to the bottom; the clamped description must not stretch instead */
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;

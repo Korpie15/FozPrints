@@ -12,6 +12,8 @@ import { openInternationalWaitlist } from '@/components/InternationalInterestMod
 import { PayPalCheckoutButton } from '@/components/PayPalCheckoutButton';
 import '@/styles/cart.css';
 
+const isValidPostcode = (value: string) => /^\d{4}$/.test(value.trim());
+
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -49,7 +51,7 @@ export default function CartPage() {
 
   // Recalculate shipping whenever cart items change if postcode is entered
   useEffect(() => {
-    if (postcode && postcode.trim().length >= 3 && items.length > 0) {
+    if (isValidPostcode(postcode) && items.length > 0) {
       calculateShipping(postcode.trim());
     }
   }, [items]);
@@ -85,7 +87,11 @@ export default function CartPage() {
 
   const handleEstimateShipping = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!postcode || postcode.trim().length < 3 || items.length === 0) return;
+    if (items.length === 0) return;
+    if (!isValidPostcode(postcode)) {
+      setShippingError('Please enter a valid Australian postcode.');
+      return;
+    }
     await calculateShipping(postcode.trim());
   };
 
@@ -152,6 +158,7 @@ export default function CartPage() {
   if (!mounted) {
     return (
       <div className="cart-page">
+        <h1 className="cart-title">Shopping Cart</h1>
         <div className="cart-empty">
           <p>Loading cart...</p>
         </div>
@@ -164,7 +171,7 @@ export default function CartPage() {
       <div className="cart-page">
         <div className="cart-empty">
           <ShoppingCart size={64} style={{ margin: '0 auto 1rem', color: '#9ca3af' }} />
-          <h2>Your cart is empty</h2>
+          <h1 className="cart-empty-title">Your cart is empty</h1>
           <p>
             Start adding some FozPrints products to your cart!
           </p>
@@ -226,8 +233,10 @@ export default function CartPage() {
 
                 <div className="cart-item-actions">
                   <div className="cart-item-quantity">
+                    {/* Stops at 1 so an item is never removed by accident; the bin button removes it */}
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
                       className="cart-quantity-button"
                       aria-label="Decrease quantity"
                     >
@@ -257,6 +266,11 @@ export default function CartPage() {
                   >
                     <Trash2 size={20} />
                   </button>
+                  {item.maxQuantity !== undefined && item.quantity >= item.maxQuantity && (
+                    <p className="cart-item-stock-note" role="status">
+                      Only {item.maxQuantity} in stock
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -289,7 +303,7 @@ export default function CartPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#34d399', fontSize: '0.8rem', fontWeight: 500 }}>
                 <Truck size={14} style={{ flexShrink: 0 }} />
-                <span>Includes free AU standard shipping</span>
+                <span>Includes {LAUNCH_OFFER.freeShipping.toLowerCase()}</span>
               </div>
             </div>
           )}
@@ -406,9 +420,12 @@ export default function CartPage() {
               <input
                 type="text"
                 placeholder="Postcode (e.g. 3000)"
+                aria-label="Postcode"
                 value={postcode}
                 onChange={(e) => setPostcode(e.target.value)}
                 maxLength={4}
+                inputMode="numeric"
+                autoComplete="postal-code"
                 className="cart-shipping-input"
               />
               <button

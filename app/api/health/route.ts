@@ -3,34 +3,29 @@ import { getDb } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Public uptime check. Only says whether the site can reach its database;
+ * details (timings, errors) go to the server log, not to visitors.
+ */
 export async function GET() {
-  const startTime = Date.now();
-  let dbStatus = 'unconfigured';
+  let healthy = false;
 
   const sql = getDb();
   if (sql) {
     try {
       await sql`SELECT 1`;
-      dbStatus = 'connected';
+      healthy = true;
     } catch (err) {
-      // Logged only: the raw error can reveal connection details
       console.error('Health check database error:', err);
-      dbStatus = 'error';
     }
+  } else {
+    console.error('Health check: DATABASE_URL is not configured.');
   }
 
-  const durationMs = Date.now() - startTime;
-  const isHealthy = dbStatus === 'connected';
-
   return NextResponse.json(
+    { status: healthy ? 'ok' : 'degraded' },
     {
-      status: isHealthy ? 'healthy' : 'degraded',
-      database: dbStatus,
-      durationMs,
-      timestamp: new Date().toISOString(),
-    },
-    {
-      status: isHealthy ? 200 : 503,
+      status: healthy ? 200 : 503,
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate',
       },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { Product } from '@/types/product';
@@ -10,53 +10,53 @@ interface FeaturedCarouselProps {
   products: Product[];
 }
 
+/**
+ * One list of product cards: a grid on wider screens, and on phones a
+ * horizontal row that snaps card by card. Swiping scrolls the row natively;
+ * the arrows and dots scroll it to a card.
+ */
 export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [resetTimer, setResetTimer] = useState(0);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Show only first 4 products
   const displayProducts = products.slice(0, 4);
-  const maxIndex = displayProducts.length - 1;
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => {
-      if (prev <= 0) return maxIndex;
-      return prev - 1;
-    });
-    setResetTimer((prev) => prev + 1);
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => {
-      if (prev >= maxIndex) return 0;
-      return prev + 1;
-    });
-    setResetTimer((prev) => prev + 1);
-  };
 
   if (!products || products.length === 0) {
     return null;
   }
 
+  const cards = () => Array.from(trackRef.current?.children ?? []) as HTMLElement[];
+
+  const scrollToIndex = (index: number) => {
+    const track = trackRef.current;
+    const items = cards();
+    if (!track || items.length === 0) return;
+
+    const target = (index + items.length) % items.length;
+    track.scrollTo({ left: items[target].offsetLeft - items[0].offsetLeft, behavior: 'smooth' });
+  };
+
+  const handleScroll = () => {
+    const track = trackRef.current;
+    const items = cards();
+    if (!track || items.length < 2) return;
+
+    const step = items[1].offsetLeft - items[0].offsetLeft;
+    setCurrentIndex(Math.round(track.scrollLeft / step));
+  };
+
   return (
-    <>
-      {/* Desktop: show all products in a static grid */}
-      <div className="featured-grid">
+    <div className="featured-carousel">
+      <button
+        onClick={() => scrollToIndex(currentIndex - 1)}
+        className="carousel-button carousel-button-prev"
+        aria-label="Previous product"
+      >
+        <ChevronLeft size={24} />
+      </button>
+
+      <div className="featured-grid" ref={trackRef} onScroll={handleScroll}>
         {displayProducts.map((product) => (
           <div key={product.id} className="featured-grid-item">
             <ProductCard product={product} />
@@ -64,52 +64,25 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
         ))}
       </div>
 
-      {/* Mobile: carousel with one product at a time */}
-      <div className="carousel-container">
-        <button
-          onClick={goToPrevious}
-          className="carousel-button carousel-button-prev"
-          aria-label="Previous product"
-        >
-          <ChevronLeft size={24} />
-        </button>
+      <button
+        onClick={() => scrollToIndex(currentIndex + 1)}
+        className="carousel-button carousel-button-next"
+        aria-label="Next product"
+      >
+        <ChevronRight size={24} />
+      </button>
 
-        <div className="carousel-content">
-          <div
-            className="carousel-track"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {displayProducts.map((product) => (
-              <div key={product.id} className="carousel-item">
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <button
-          onClick={goToNext}
-          className="carousel-button carousel-button-next"
-          aria-label="Next product"
-        >
-          <ChevronRight size={24} />
-        </button>
-
-        {/* Dots indicator */}
-        <div className="carousel-dots">
-          {displayProducts.map((_, index) => (
-            <button
-              key={`dot-${index}`}
-              onClick={() => {
-                setCurrentIndex(index);
-                setResetTimer((prev) => prev + 1);
-              }}
-              className={`carousel-dot ${index === currentIndex ? 'carousel-dot-active' : ''}`}
-              aria-label={`Go to position ${index + 1}`}
-            />
-          ))}
-        </div>
+      <div className="carousel-dots">
+        {displayProducts.map((product, index) => (
+          <button
+            key={`dot-${product.id}`}
+            onClick={() => scrollToIndex(index)}
+            className={`carousel-dot ${index === currentIndex ? 'carousel-dot-active' : ''}`}
+            aria-label={`Show product ${index + 1} of ${displayProducts.length}`}
+            aria-current={index === currentIndex ? 'true' : undefined}
+          />
+        ))}
       </div>
-    </>
+    </div>
   );
 }

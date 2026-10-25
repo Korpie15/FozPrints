@@ -50,7 +50,7 @@ const faqSchema = {
       name: 'Do you ship internationally?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Currently shipping is within Australia only via Australia Post. Rates and estimated delivery times calculate automatically at checkout based on your postcode.',
+        text: 'We currently ship within Australia only, via Australia Post. The Nav Pod Kit ships free with Australia Post standard shipping. For everything else, the shipping cost and delivery estimate are calculated at checkout from your postcode.',
       },
     },
   ],

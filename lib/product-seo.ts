@@ -41,7 +41,7 @@ export const NAV_POD_FAQS = [
   {
     question: 'What is the difference between the USDM spec and JDM spec nav pod?',
     answer:
-      'The USDM spec (OEM # H0010SA950ML) features a recessed, streamlined housing that sits further back into the dash cavity for a clean, factory-integrated look that preserves full windshield visibility. The JDM spec (OEM # H0017SA908) sits further forward with a steeper hood. Because the center SG Forester dash pocket footprint is identical, our USDM spec pod fits both RHD (Australia, UK, Japan) and LHD (USA, Canada, Europe) Foresters.',
+      'The USDM spec (OEM # H0010SA950ML) features a recessed, streamlined housing that sits further back into the dash cavity for a clean, factory-integrated look that preserves full windscreen visibility. The JDM spec (OEM # H0017SA908) sits further forward with a steeper hood. Because the centre SG Forester dash pocket footprint is identical, our USDM spec pod fits both RHD (Australia, UK, Japan) and LHD (USA, Canada, Europe) Foresters.',
   },
 ];
 

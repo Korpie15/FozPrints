@@ -79,14 +79,14 @@ export function Header() {
                 Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> the {LAUNCH_OFFER.productName} ({LAUNCH_OFFER.limit}) with code
               </span>
               <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
-              <span>plus free AU standard shipping</span>
+              <span>{LAUNCH_OFFER.freeShipping} on the kit.</span>
             </div>
             <div className="header-announcement-mobile-only">
               <div className="header-announcement-line1">
                 <strong>${LAUNCH_OFFER.discount} off</strong> with code <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
               </div>
               <div className="header-announcement-line2">
-                {LAUNCH_OFFER.productName}, {LAUNCH_OFFER.limit}. Free AU standard shipping.
+                {LAUNCH_OFFER.productName}, {LAUNCH_OFFER.limit}. Free standard shipping on the kit.
               </div>
             </div>
           </div>

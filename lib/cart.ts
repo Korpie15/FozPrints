@@ -82,8 +82,17 @@ export async function shippingShortfall(
   return Math.max(0, quote.priceCents - chargedCents);
 }
 
-/** Australian postcode from the request, or Sydney CBD when missing or malformed. */
+/**
+ * Australian postcode from the request. Missing means "not entered yet", so it
+ * quotes for Sydney CBD; anything else must be 4 digits.
+ */
 export function parsePostcode(raw: unknown): string {
   const postcode = typeof raw === 'string' ? raw.trim() : '';
-  return /^\d{4}$/.test(postcode) ? postcode : '2000';
+  if (postcode === '') {
+    return '2000';
+  }
+  if (!/^\d{4}$/.test(postcode)) {
+    throw new CheckoutError('Please enter a valid Australian postcode.');
+  }
+  return postcode;
 }

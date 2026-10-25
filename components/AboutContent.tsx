@@ -112,12 +112,14 @@ export function AboutContent() {
                 <button 
                   className={`faq-question ${openFaq === 1 ? 'faq-question-active' : ''}`}
                   onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+                  aria-expanded={openFaq === 1}
+                  aria-controls="faq-answer-1"
                 >
                   <span>Will these parts melt in the Australian sun?</span>
                   <ChevronDown className={`faq-icon ${openFaq === 1 ? 'faq-icon-active' : ''}`} size={20} />
                 </button>
                 {openFaq === 1 && (
-                  <div className="faq-answer">
+                  <div className="faq-answer" id="faq-answer-1">
                     <p>
                       No. The parts are printed in <strong>ASA (Acrylonitrile Styrene Acrylate)</strong>, an automotive-grade thermoplastic with heat resistance up to ~95°C and full UV stability. It won't soften or sag sitting on an Australian dashboard in mid-summer.
                     </p>
@@ -130,12 +132,14 @@ export function AboutContent() {
                 <button 
                   className={`faq-question ${openFaq === 2 ? 'faq-question-active' : ''}`}
                   onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
+                  aria-expanded={openFaq === 2}
+                  aria-controls="faq-answer-2"
                 >
                   <span>What is the difference between Smooth and Textured?</span>
                   <ChevronDown className={`faq-icon ${openFaq === 2 ? 'faq-icon-active' : ''}`} size={20} />
                 </button>
                 {openFaq === 2 && (
-                  <div className="faq-answer">
+                  <div className="faq-answer" id="faq-answer-2">
                     <p>
                       <strong>Textured:</strong> Uses a fuzzy skin finish that closely matches the grain and matte look of the factory SG Subaru dashboard, so it blends straight into the cabin.
                       <br /><br />
@@ -150,12 +154,14 @@ export function AboutContent() {
                 <button 
                   className={`faq-question ${openFaq === 3 ? 'faq-question-active' : ''}`}
                   onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
+                  aria-expanded={openFaq === 3}
+                  aria-controls="faq-answer-3"
                 >
                   <span>How do I install the kit?</span>
                   <ChevronDown className={`faq-icon ${openFaq === 3 ? 'faq-icon-active' : ''}`} size={20} />
                 </button>
                 {openFaq === 3 && (
-                  <div className="faq-answer">
+                  <div className="faq-answer" id="faq-answer-3">
                     <p>
                       Step-by-step digital install guides with photos are available in the <a href="/manuals">Manuals section</a>.
                     </p>
@@ -168,14 +174,16 @@ export function AboutContent() {
                 <button 
                   className={`faq-question ${openFaq === 4 ? 'faq-question-active' : ''}`}
                   onClick={() => setOpenFaq(openFaq === 4 ? null : 4)}
+                  aria-expanded={openFaq === 4}
+                  aria-controls="faq-answer-4"
                 >
                   <span>Do you ship internationally?</span>
                   <ChevronDown className={`faq-icon ${openFaq === 4 ? 'faq-icon-active' : ''}`} size={20} />
                 </button>
                 {openFaq === 4 && (
-                  <div className="faq-answer">
+                  <div className="faq-answer" id="faq-answer-4">
                     <p>
-                      Currently shipping is within Australia only via Australia Post. Rates and estimated delivery times calculate automatically at checkout based on your postcode.
+                      We currently ship within Australia only, via Australia Post. The Nav Pod Kit ships free with Australia Post standard shipping. For everything else, the shipping cost and delivery estimate are calculated at checkout from your postcode.
                     </p>
                   </div>
                 )}
