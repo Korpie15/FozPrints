@@ -15,6 +15,8 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'OnlineStore',
   name: 'Foz Prints',
+  // Australian Business Number
+  taxID: '21146926791',
   url: SITE_URL,
   logo: `${SITE_URL}/icon.png`,
   description:
@@ -75,7 +77,7 @@ export default async function HomePage() {
         <div className="home-hero-bg">
           <Image
             src={HERO_BACKGROUND_IMAGE}
-            alt="Subaru Forester SG Double DIN Nav Pod Kit Installed in Dash"
+            alt="Nav Pod Kit installed in a Subaru Forester SG dash"
             fill
             sizes="100vw"
             priority

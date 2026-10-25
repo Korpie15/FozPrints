@@ -10,6 +10,7 @@ import { ShippingQuote, hasFullKit } from '@/lib/shipping';
 import { LAUNCH_OFFER } from '@/lib/promo';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import { PayPalCheckoutButton } from '@/components/PayPalCheckoutButton';
+import { GST_NOTE } from '@/lib/site';
 import '@/styles/cart.css';
 
 const isValidPostcode = (value: string) => /^\d{4}$/.test(value.trim());
@@ -494,6 +495,7 @@ export default function CartPage() {
               {formatPrice(grandTotal.toString(), currencyCode)}
             </span>
           </div>
+          <p className="cart-gst-note">{GST_NOTE}</p>
 
           {checkoutError && (
             <div style={{ color: '#dc2626', fontSize: '0.875rem', marginTop: '0.5rem', textAlign: 'center' }}>

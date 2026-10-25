@@ -1,3 +1,5 @@
+import { NAV_POD_SHORT_NAME } from './product-seo';
+
 /**
  * The launch offer, defined once so every banner, pill and cart message says
  * the same thing. The LAUNCH50 coupon is also restricted to this product, and
@@ -7,7 +9,7 @@ export const LAUNCH_OFFER = {
   code: 'LAUNCH50',
   discount: 50,
   productId: 'prod_VB8PtVP327MDhq',
-  productName: 'Nav Pod Kit',
+  productName: NAV_POD_SHORT_NAME,
   limit: 'first 10 orders',
   /** The free-shipping rule, worded the same everywhere */
   freeShipping: 'Free Australia Post standard shipping',

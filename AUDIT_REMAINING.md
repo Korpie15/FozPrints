@@ -2,17 +2,25 @@
 
 Remaining items from the 24 October 2026 site audit (`FOZPRINTS_HITLIST.md`), updated 25 October 2026.
 
-Numbered items done on the `security-fixes` branch: #1, #3, #7 to #17, #19 to #21, #23, #24. #4, #5, #6 and #22 are partly done and need steps from you (section 2). #2 and #18 are parked (section 3).
+Numbered items done on the `security-fixes` branch: #1 to #3, #7 to #21, #23, #24. #4, #5, #6 and #22 are partly done and need steps from you (section 2).
 
 The list is split into:
 
 1. **Code fixes:** what's been done in the code, and what's left for Claude.
 2. **Needs steps from you:** accounts, decisions, content or checks only you can do, with steps to follow.
-3. **Parked:** items you asked to leave for now.
 
 ---
 
 ## 1. Code fixes
+
+### Done since the last update
+
+- [x] **#2 Nav Pod opens on an out-of-stock finish:** the product page now preselects the first finish that's in stock (and shows its photo).
+- [x] **#18 Next.js upgrade:** 16.0.8 → 16.4.3. Type check and full build pass; the Next.js security advisories no longer show in `npm audit`.
+- [x] **ABN and GST:** footer shows "Foz Prints, ABN 21 146 926 791" and "No GST applies"; the cart and the Stripe checkout page show the GST note too.
+- [x] **One name for the Nav Pod:** site and manual now use "Subaru Forester SG Double DIN Nav Pod Kit (2003 to 2008)" for titles and Google, and "Nav Pod Kit" for banners, buttons and the manual.
+- [x] **Stripe products:** Nav Pod renamed; "2025 vehicle" and "Top Mount Pod" wording fixed. Every product now has a `handle` in its Stripe metadata, so renaming a product no longer changes its web address. (`shopify_handle` is left over from Shopify and isn't used.)
+- [x] **Phone carousel dropdown:** opening the finish dropdown on a card no longer scrolls the card up inside the row; the dropdown shows under the card.
 
 ### Still to do
 
@@ -22,7 +30,7 @@ The list is split into:
 
 ## 2. Needs steps from you
 
-### A. Clarity masking (#4)
+### A. Clarity masking (#4) ✅ Done (set to Strict)
 
 Without this, Clarity's session recordings can include what people type into the contact form.
 
@@ -107,7 +115,7 @@ The manual doesn't yet explain removing the old stereo or getting the wiring up 
 2. Take a photo of each step if you can (landscape, good light).
 3. Send Claude the notes and photos. Claude will turn them into numbered steps with images, matching the rest of the manual.
 
-### G. ABN and GST statement
+### G. ABN and GST statement ✅ Done
 
 Australian businesses should show their ABN, and prices should say whether they include GST.
 
@@ -123,7 +131,7 @@ Australian businesses should show their ABN, and prices should say whether they 
 
 Claude will add this to the footer and the checkout pages.
 
-### H. One name for the Nav Pod
+### H. One name for the Nav Pod ✅ Done (site and Stripe)
 
 The same product is called different things in different places, which confuses buyers and search engines. Names currently used include:
 
@@ -215,7 +223,7 @@ These changed how things work on phones, so give them a quick try on a real phon
    4. Type "abc" as the postcode and press Calculate. It should say "Please enter a valid Australian postcode".
 5. Tell Claude anything that feels wrong, with a screenshot or screen recording if you can.
 
-### M. Spelling in Stripe product text
+### M. Spelling in Stripe product text ✅ Checked: already Australian spelling
 
 Product names and descriptions come from Stripe, so the site's spelling fixes don't cover them.
 
@@ -230,15 +238,3 @@ Product names and descriptions come from Stripe, so the site's spelling fixes do
    - gray → grey
 4. Click **Save**. The site picks up the change within 5 minutes.
 5. Don't change the product's **metadata** `handle` field, or its page address will change.
-
----
-
-## 3. Parked (you asked to leave these)
-
-- **#2 Nav Pod defaults to an out-of-stock variant:**
-  - Restoring the test stock (Smooth back to 2) makes it buyable again straight away.
-  - The longer-term fix is preselecting an in-stock variant on the product page (quick code fix).
-- **#18 Next.js upgrade:**
-  - Upgrade from 16.0.8 to the latest 16.x.
-  - The critical image-optimisation advisory still applies to the live site because AVIF images are enabled.
-  - This is a quick code fix with a full build check, whenever you're ready.

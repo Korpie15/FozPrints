@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getShopPolicies } from '@/lib/policies';
 import { AnalyticsSettingsButton } from '@/components/AnalyticsConsent';
+import { BUSINESS_ABN, GST_NOTE } from '@/lib/site';
 import '../styles/footer.css';
 
 export async function Footer() {
@@ -67,8 +68,9 @@ export async function Footer() {
 
         <div className="footer-bottom">
           <p>
-            © {new Date().getFullYear()} Foz Prints. All rights reserved.
+            © {new Date().getFullYear()} Foz Prints, ABN {BUSINESS_ABN}. All rights reserved.
           </p>
+          <p>{GST_NOTE}</p>
         </div>
       </div>
     </footer>

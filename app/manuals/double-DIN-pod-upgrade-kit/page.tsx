@@ -5,11 +5,12 @@ import { Download, ChevronRight, AlertCircle } from 'lucide-react';
 import { TroubleshootingAccordion } from '@/components/TroubleshootingAccordion';
 import '../../../styles/manual-detail.css';
 import { SITE_URL } from '@/lib/site';
+import { NAV_POD_NAME } from '@/lib/product-seo';
 
 export const metadata: Metadata = {
-  title: 'Subaru Forester SG Double DIN Nav Pod Installation Guide',
+  title: 'Nav Pod Kit Installation Guide: Subaru Forester SG (2003 to 2008)',
   description:
-    'Complete step-by-step DIY installation manual with photos for the Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit (USDM Spec).',
+    `Complete step-by-step DIY installation manual with photos for the ${NAV_POD_NAME}.`,
   keywords: [
     'SG Forester Nav Pod Install',
     'Subaru Forester Navigation Pod Installation Guide',
@@ -20,20 +21,20 @@ export const metadata: Metadata = {
     canonical: '/manuals/double-DIN-pod-upgrade-kit',
   },
   openGraph: {
-    title: 'Subaru Forester SG Double DIN Nav Pod Installation Guide | Foz Prints',
+    title: 'Nav Pod Kit Installation Guide: Subaru Forester SG (2003 to 2008) | Foz Prints',
     description:
-      'Complete step-by-step DIY installation manual with photos for the Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit (USDM Spec).',
+      `Complete step-by-step DIY installation manual with photos for the ${NAV_POD_NAME}.`,
     url: `${SITE_URL}/manuals/double-DIN-pod-upgrade-kit`,
-    images: [{ url: '/images/parts-layout.jpg', alt: 'Double DIN Nav Pod Upgrade Kit Parts' }],
+    images: [{ url: '/images/parts-layout.jpg', alt: 'Nav Pod Kit parts' }],
   },
 };
 
 const howToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: 'Subaru Forester (SG 2003-2008) Double DIN Nav Pod Upgrade Kit Installation',
+  name: `Installing the ${NAV_POD_NAME}`,
   description:
-    'Complete step-by-step DIY installation guide for installing a Double DIN Nav Pod Upgrade Kit in a Subaru Forester SG (2003-2008).',
+    'Complete step-by-step DIY guide to installing the Nav Pod Kit in a Subaru Forester SG (2003 to 2008).',
   totalTime: 'PT20M',
   tool: [
     { '@type': 'HowToTool', name: 'Phillips head screwdriver' },
@@ -81,12 +82,12 @@ export default function DoubleDinPodUpgradeKitManual() {
         <div className="breadcrumb">
           <Link href="/manuals">Manuals</Link>
           <ChevronRight size={16} />
-          <span>SG Forester Nav Pod Upgrade Kit</span>
+          <span>Nav Pod Kit</span>
         </div>
 
         {/* Header */}
         <div className="manual-header">
-          <h1>SG Forester Double DIN Nav Pod Installation Guide</h1>
+          <h1>Nav Pod Kit Installation Guide</h1>
           <p className="manual-subtitle">For Subaru Forester SG (2003-2008), USDM Spec</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
@@ -99,7 +100,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                 color: '#ffffff',
               }}
             >
-              Order the SG Forester Nav Pod Kit &rarr;
+              Order the Nav Pod Kit &rarr;
             </Link>
             <a
               href="/manuals/double-din-pod-upgrade-kit-guide.pdf"
@@ -144,7 +145,7 @@ export default function DoubleDinPodUpgradeKitManual() {
           <div className="manual-section-image">
             <Image
               src="/images/parts-layout.jpg"
-              alt="Parts and tools layout for Subaru Forester Double DIN Pod kit installation"
+              alt="Nav Pod Kit parts and the tools needed to install it"
               width={600}
               height={600}
               style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
@@ -493,7 +494,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                 display: 'inline-block',
               }}
             >
-              Shop SG Forester Double DIN Nav Pod Kit &rarr;
+              Shop the Nav Pod Kit &rarr;
             </Link>
           </div>
         </div>

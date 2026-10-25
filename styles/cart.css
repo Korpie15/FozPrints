@@ -264,6 +264,19 @@
   font-weight: 700;
 }
 
+.cart-gst-note {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  text-align: right;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-gst-note {
+    color: #9ca3af;
+  }
+}
+
 .cart-summary-total {
   display: flex;
   justify-content: space-between;

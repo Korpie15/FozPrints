@@ -60,7 +60,7 @@ export const metadata: Metadata = {
         url: '/images/hero-bg-installed.png',
         width: 1200,
         height: 630,
-        alt: 'Subaru Forester Double DIN Pod Upgrade Kit Installed',
+        alt: 'Nav Pod Kit installed in a Subaru Forester SG dash',
       },
     ],
   },

@@ -7,7 +7,7 @@ import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2, Truck, 
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
-import { isNavPodProduct, NAV_POD_FAQS } from '@/lib/product-seo';
+import { isNavPodProduct, NAV_POD_FAQS, NAV_POD_NAME, NAV_POD_SHORT_NAME } from '@/lib/product-seo';
 import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
@@ -30,10 +30,41 @@ function preloadMainImage(url: string) {
   img.src = props.src;
 }
 
+// Index of the gallery photo showing a variant, or -1 if none matches
+function findImageForVariant(product: Product, variant: ProductVariant): number {
+  // 1. Check direct image URL match
+  if (variant.image?.url) {
+    const idx = product.images.findIndex((img) => img.url === variant.image?.url);
+    if (idx !== -1) return idx;
+  }
+
+  // 2. Keyword match by variant title (e.g. "textured", "smooth") against altText or filename
+  if (variant.title && variant.title.toLowerCase() !== 'default') {
+    const titleLower = variant.title.toLowerCase();
+    const idx = product.images.findIndex((img) => {
+      const altLower = (img.altText || '').toLowerCase();
+      const urlLower = img.url.toLowerCase();
+      return (
+        (titleLower.includes('textured') && (altLower.includes('textured') || urlLower.includes('textured'))) ||
+        (titleLower.includes('smooth') && (altLower.includes('smooth') || urlLower.includes('smooth')))
+      );
+    });
+    if (idx !== -1) return idx;
+  }
+
+  return -1;
+}
+
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  // Start on a finish that's in stock, so the page doesn't open on "Out of stock"
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
+    () => product.variants.find((v) => v.availableForSale) ?? product.variants[0]
+  );
+  // Show the photo of that finish if it isn't the first variant
+  const [selectedImageIndex, setSelectedImageIndex] = useState(() =>
+    selectedVariant === product.variants[0] ? 0 : Math.max(0, findImageForVariant(product, selectedVariant))
+  );
   const [showToast, setShowToast] = useState(false);
   // Shown in the toast and read out by screen readers via the live region below
   const [cartMessage, setCartMessage] = useState('');
@@ -83,31 +114,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     return undefined;
   };
 
-  // Helper to find image index matching a variant
-  const findImageForVariant = (variant: ProductVariant): number => {
-    // 1. Check direct image URL match
-    if (variant.image?.url) {
-      const idx = product.images.findIndex((img) => img.url === variant.image?.url);
-      if (idx !== -1) return idx;
-    }
-
-    // 2. Keyword match by variant title (e.g. "textured", "smooth") against altText or filename
-    if (variant.title && variant.title.toLowerCase() !== 'default') {
-      const titleLower = variant.title.toLowerCase();
-      const idx = product.images.findIndex((img) => {
-        const altLower = (img.altText || '').toLowerCase();
-        const urlLower = img.url.toLowerCase();
-        return (
-          (titleLower.includes('textured') && (altLower.includes('textured') || urlLower.includes('textured'))) ||
-          (titleLower.includes('smooth') && (altLower.includes('smooth') || urlLower.includes('smooth')))
-        );
-      });
-      if (idx !== -1) return idx;
-    }
-
-    return -1;
-  };
-
   // When user selects a different image (via thumbnail or nav arrow)
   const handleImageSelect = (newIndex: number) => {
     setSelectedImageIndex(newIndex);
@@ -128,7 +134,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     const stock = variant.quantityAvailable ?? 1;
     setQuantity((prev) => Math.min(Math.max(1, prev), Math.max(1, stock)));
 
-    const imageIndex = findImageForVariant(variant);
+    const imageIndex = findImageForVariant(product, variant);
     if (imageIndex !== -1) {
       setSelectedImageIndex(imageIndex);
     }
@@ -280,7 +286,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         {/* Product Info */}
         <div className="product-info">
           <h1 className="product-title">
-            {isNavPod ? 'Subaru Forester SG Double DIN Nav Pod Kit (2003–2008) – USDM Spec' : product.title}
+            {isNavPod ? NAV_POD_NAME : product.title}
           </h1>
 
           <div className="product-price-container">
@@ -430,7 +436,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {isNavPod && (
         <div className="product-extended-details">
           <div className="product-seo-highlights">
-            <h2>SG Forester Double DIN Nav Pod Kit Features</h2>
+            <h2>{NAV_POD_SHORT_NAME} Features</h2>
             <div className="product-highlights-grid">
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
@@ -481,7 +487,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <div className="product-faq-section">
-            <h2>Frequently Asked Questions: SG Forester Nav Pod</h2>
+            <h2>Frequently Asked Questions: {NAV_POD_SHORT_NAME}</h2>
             <div className="product-faq-list">
               {NAV_POD_FAQS.map((faq, idx) => {
                 const isOpen = openFaqIndex === idx;

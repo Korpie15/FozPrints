@@ -4,6 +4,7 @@ import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { getInventoryMap } from '@/lib/db';
 import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
+import { GST_NOTE } from '@/lib/site';
 
 export async function POST(req: Request) {
   try {
@@ -90,6 +91,7 @@ export async function POST(req: Request) {
       shipping_options,
       // The webhook compares this with the address the buyer enters
       metadata: { quoted_postcode: destinationPostcode },
+      custom_text: { submit: { message: GST_NOTE } },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,
       ...(isLaunchPromo

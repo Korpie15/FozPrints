@@ -1,5 +1,10 @@
 import { Product } from '@/types/product';
 
+/** The Nav Pod's name for page titles, Stripe and Google */
+export const NAV_POD_NAME = 'Subaru Forester SG Double DIN Nav Pod Kit (2003 to 2008)';
+/** The Nav Pod's name for banners, buttons and the manual */
+export const NAV_POD_SHORT_NAME = 'Nav Pod Kit';
+
 export function isNavPodProduct(product: { handle?: string; title?: string }): boolean {
   const h = (product.handle || '').toLowerCase();
   const t = (product.title || '').toLowerCase();
@@ -50,7 +55,7 @@ export function getProductSeoData(product: Product) {
 
   const title =
     product.metadata?.seo_title ||
-    (isNavPod ? 'SG Forester Nav Pod - Double DIN Upgrade Kit (2003-2008)' : product.title);
+    (isNavPod ? NAV_POD_NAME : product.title);
 
   const description =
     product.metadata?.seo_description ||

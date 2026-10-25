@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FileText } from 'lucide-react';
 import '../../styles/manuals.css';
 import { SITE_URL } from '@/lib/site';
+import { NAV_POD_NAME } from '@/lib/product-seo';
 
 export const metadata: Metadata = {
   title: 'Subaru Forester Installation Manuals & Guides',
@@ -34,9 +35,9 @@ export default function ManualsPage() {
             <div className="manual-icon">
               <FileText size={48} />
             </div>
-            <h2>Subaru Forester SG Double DIN Nav Pod Kit (2003–2008) – USDM Spec</h2>
+            <h2>{NAV_POD_NAME}</h2>
             <p className="manual-description">
-              Complete step-by-step installation guide for the SG Forester Double DIN Nav Pod Kit with photos, wiring notes, tool requirements, and detailed instructions.
+              Complete step-by-step installation guide for the Nav Pod Kit with photos, wiring notes, tool requirements, and detailed instructions.
             </p>
             <div className="manual-actions">
               <span className="view-button">
