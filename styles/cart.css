@@ -210,6 +210,17 @@
   }
 }
 
+/* Single-column (tablet) layout: PayPal's buttons never grow past 750px, so cap the
+   summary at 750px of content (plus padding and border) to keep them as wide as
+   the checkout button. */
+@media (max-width: 1023px) {
+  .cart-summary {
+    width: 100%;
+    max-width: calc(750px + 3rem + 2px);
+    justify-self: end;
+  }
+}
+
 .cart-summary h2 {
   font-size: 1.5rem;
   font-weight: 700;
