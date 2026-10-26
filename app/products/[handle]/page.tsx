@@ -7,13 +7,15 @@ import { toJsonLd } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { getProductSeoData, NAV_POD_FAQS, isNavPodProduct } from '@/lib/product-seo';
 import { getLiveShippingQuotes } from '@/lib/shipping';
+import { KitBuilder } from '@/components/KitBuilder';
+import { componentType, isCompatible, isHiddenProduct, isKitBuilder, kitComponents, partInStock, partPriceCents } from '@/lib/kit';
 
 export const revalidate = 300;
 
 export async function generateStaticParams() {
   try {
     const products = await getProducts();
-    return products.map((product) => ({
+    return products.filter((product) => !isHiddenProduct(product)).map((product) => ({
       handle: product.handle,
     }));
   } catch (error) {
@@ -34,7 +36,7 @@ export async function generateMetadata({
   const { handle } = await params;
   const product = await getProduct(handle);
 
-  if (!product) {
+  if (!product || isHiddenProduct(product)) {
     notFound();
   }
 
@@ -71,9 +73,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const { handle } = await params;
     const product = await getProduct(handle);
 
-    if (!product) {
+    if (!product || isHiddenProduct(product)) {
       notFound();
     }
+
+    // Kit pages sell their parts together: find the parts and check there's something to choose
+    const kitBuilder = isKitBuilder(product);
+    const parts = kitBuilder ? kitComponents(await getProducts(), product.handle) : [];
+    const arms = parts.filter((p) => componentType(p) === 'arm');
+    const holders = parts.filter((p) => componentType(p) === 'holder');
+    if (kitBuilder && (arms.length === 0 || holders.length === 0)) {
+      notFound();
+    }
+    const pairs = arms.flatMap((arm) => holders.filter((h) => isCompatible(arm, h)).map((h) => [arm, h] as const));
+    const bundleInStock = pairs.some(([arm, h]) => partInStock(arm) && partInStock(h));
+    const bundleCents = Math.min(...pairs.map(([arm, h]) => partPriceCents(arm) + partPriceCents(h)));
 
     const siteUrl = SITE_URL;
     const productUrl = `${siteUrl}/products/${encodeURIComponent(product.handle)}`;
@@ -122,7 +136,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
         name: 'Foz Prints',
       },
       // One offer per variant so each price/availability is described accurately
-      offers: product.variants.map((variant) => ({
+      offers: (kitBuilder
+        ? [{
+            title: 'Arm and cup holder',
+            price: { amount: (bundleCents / 100).toFixed(2), currencyCode: product.currencyCode },
+            availableForSale: bundleInStock,
+          }]
+        : product.variants
+      ).map((variant) => ({
         '@type': 'Offer',
         name: variant.title,
         url: productUrl,
@@ -154,7 +175,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           '@type': 'OfferShippingDetails',
           shippingRate: {
             '@type': 'MonetaryAmount',
-            value: standardShipping.price.toFixed(2),
+            value: (kitBuilder ? 0 : standardShipping.price).toFixed(2),
             currency: 'AUD',
           },
           shippingDestination: {
@@ -243,7 +264,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             { label: seoTitle },
           ]}
         />
-        <ProductDetails product={product} />
+        {kitBuilder ? <KitBuilder product={product} parts={parts} /> : <ProductDetails product={product} />}
       </div>
     );
   } catch (error) {

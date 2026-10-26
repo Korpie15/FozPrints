@@ -3,6 +3,7 @@ import { cache } from 'react';
 import { Product, ProductVariant } from '@/types/product';
 import { getInventoryMap } from '@/lib/db';
 import imageManifest from '@/lib/product-images.json';
+import { componentType, isKitBuilder, kitComponents, partPriceCents } from '@/lib/kit';
 
 /**
  * Lazy initializer for Stripe server instance
@@ -210,7 +211,7 @@ export const getProducts = cache(async (): Promise<Product[]> => {
       }),
     ]);
 
-    return catalogue.map((product) => ({
+    const products = catalogue.map((product) => ({
       ...product,
       variants: product.variants.map((variant) => {
         const stockCount = inventoryMap[variant.id] ?? 0;
@@ -221,6 +222,17 @@ export const getProducts = cache(async (): Promise<Product[]> => {
         };
       }),
     }));
+
+    // A kit page has no price of its own: show the cheapest arm plus the cheapest holder
+    return products.map((product) => {
+      if (!isKitBuilder(product)) return product;
+      const parts = kitComponents(products, product.handle);
+      const cheapest = (type: string) => {
+        const group = parts.filter((p) => componentType(p) === type);
+        return group.length > 0 ? Math.min(...group.map(partPriceCents)) : 0;
+      };
+      return { ...product, price: (cheapest('arm') + cheapest('holder')) / 100 };
+    });
   } catch (error) {
     console.error('Error fetching products from Stripe:', error);
     return [];

@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem } from '@/types/product';
+import { cartLineKey, cleanPersonalisation } from '@/lib/kit';
 
 interface CartState {
   items: CartItem[];
   addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  /** Lines are identified by cartLineKey: a part with a different name is a separate line */
+  removeItem: (lineKey: string) => void;
+  updateQuantity: (lineKey: string, quantity: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
   getSubtotal: () => number;
@@ -34,6 +36,12 @@ function sanitizeItems(raw: unknown): CartItem[] {
     const maxQuantity =
       Number.isInteger(item.maxQuantity) && item.maxQuantity > 0 ? item.maxQuantity : undefined;
     const quantity = clampQuantity(item.quantity, maxQuantity);
+    let personalisation: string | undefined;
+    try {
+      personalisation = cleanPersonalisation(item.personalisation, 40);
+    } catch {
+      personalisation = undefined;
+    }
 
     return [{
       ...item,
@@ -44,6 +52,7 @@ function sanitizeItems(raw: unknown): CartItem[] {
       currencyCode: typeof item.currencyCode === 'string' && item.currencyCode ? item.currencyCode : 'AUD',
       quantity,
       maxQuantity,
+      personalisation,
     }];
   });
 }
@@ -56,7 +65,8 @@ export const useCartStore = create<CartState>()(
       addItem: (newItem) => {
         const rawItems = get().items;
         const currentItems = Array.isArray(rawItems) ? rawItems : [];
-        const existingIndex = currentItems.findIndex((item) => item.id === newItem.id);
+        const newKey = cartLineKey(newItem);
+        const existingIndex = currentItems.findIndex((item) => cartLineKey(item) === newKey);
         const addQty = newItem.quantity || 1;
         const maxStock = newItem.maxQuantity ?? Infinity;
 
@@ -83,28 +93,28 @@ export const useCartStore = create<CartState>()(
         }
       },
 
-      removeItem: (id) => {
+      removeItem: (lineKey) => {
         const rawItems = get().items;
         const currentItems = Array.isArray(rawItems) ? rawItems : [];
         set({
-          items: currentItems.filter((item) => item.id !== id),
+          items: currentItems.filter((item) => cartLineKey(item) !== lineKey),
         });
       },
 
-      updateQuantity: (id, quantity) => {
+      updateQuantity: (lineKey, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(id);
+          get().removeItem(lineKey);
           return;
         }
         const rawItems = get().items;
         const currentItems = Array.isArray(rawItems) ? rawItems : [];
-        const existingItem = currentItems.find((item) => item.id === id);
+        const existingItem = currentItems.find((item) => cartLineKey(item) === lineKey);
         const maxStock = existingItem?.maxQuantity ?? Infinity;
         const cappedQty = Math.min(maxStock, quantity);
 
         set({
           items: currentItems.map((item) =>
-            item.id === id ? { ...item, quantity: cappedQty } : item
+            cartLineKey(item) === lineKey ? { ...item, quantity: cappedQty } : item
           ),
         });
       },

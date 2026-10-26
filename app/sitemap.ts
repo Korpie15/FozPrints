@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getProducts } from '@/lib/stripe';
 import { SITE_URL } from '@/lib/site';
+import { isHiddenProduct } from '@/lib/kit';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
@@ -65,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let productRoutes: MetadataRoute.Sitemap = [];
   try {
     const products = await getProducts();
-    productRoutes = products.map((product) => ({
+    productRoutes = products.filter((product) => !isHiddenProduct(product)).map((product) => ({
       url: `${baseUrl}/products/${encodeURIComponent(product.handle)}`,
       lastModified: new Date(),
       changeFrequency: 'weekly',

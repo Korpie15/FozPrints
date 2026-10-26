@@ -15,7 +15,9 @@ export interface OrderSummary {
   dashboardUrl?: string;
   customer: { name: string; email: string; phone?: string };
   shipTo: { name: string; lines: string[] };
-  items: Array<{ title: string; variant?: string; quantity: number; totalCents: number; isNavPod: boolean }>;
+  items: Array<{ title: string; variant?: string; personalisation?: string; quantity: number; totalCents: number; isNavPod: boolean }>;
+  /** Names to engrave on Stripe orders, which Stripe keeps per order rather than per line */
+  engravings: string[];
   subtotalCents: number;
   discountCents: number;
   shippingCents: number;
@@ -33,14 +35,15 @@ const SERVICE_NAMES: Record<string, string> = {
 const money = (cents: number) => formatPrice((cents / 100).toFixed(2), 'AUD');
 
 /** Product and finish names for each Stripe Price ID in the order */
-async function describeLines(lines: Array<{ priceId: string; quantity: number }>) {
+async function describeLines(lines: Array<{ priceId: string; quantity: number; personalisation?: string }>) {
   const products = await getProducts();
-  return lines.map(({ priceId, quantity }) => {
+  return lines.map(({ priceId, quantity, personalisation }) => {
     const product = products.find((p) => p.variants.some((v) => v.id === priceId));
     const variant = product?.variants.find((v) => v.id === priceId);
     return {
       priceId,
       quantity,
+      personalisation,
       title: product?.title ?? `Unknown item (${priceId})`,
       variant: variant && variant.title !== 'Default' ? variant.title : undefined,
       unitCents: variant?.priceCents ?? 0,
@@ -96,6 +99,10 @@ export async function buildStripeOrderSummary(
       ].filter((line): line is string => Boolean(line)),
     },
     items,
+    engravings: Object.entries(session.metadata ?? {})
+      .filter(([key]) => key.startsWith('engrave_'))
+      .sort(([a], [b]) => parseInt(a.slice(8), 10) - parseInt(b.slice(8), 10))
+      .map(([, value]) => value),
     subtotalCents: session.amount_subtotal ?? 0,
     discountCents: session.total_details?.amount_discount ?? 0,
     shippingCents: session.total_details?.amount_shipping ?? 0,
@@ -140,9 +147,11 @@ export async function buildPayPalOrderSummary(
         [address?.admin_area_2, address?.admin_area_1, address?.postal_code].filter(Boolean).join(' '),
       ].filter((line): line is string => Boolean(line)),
     },
+    engravings: [],
     items: described.map((line) => ({
       title: line.title,
       variant: line.variant,
+      personalisation: line.personalisation,
       quantity: line.quantity,
       totalCents: line.unitCents * line.quantity,
       isNavPod: line.isNavPod,
@@ -159,7 +168,8 @@ export async function buildPayPalOrderSummary(
 /* ---------- Rendering ---------- */
 
 const itemName = (item: OrderSummary['items'][number]) =>
-  item.variant ? `${item.title} (${item.variant})` : item.title;
+  (item.variant ? `${item.title} (${item.variant})` : item.title) +
+  (item.personalisation ? ` - Name: ${item.personalisation}` : '');
 
 function itemsTableHtml(order: OrderSummary): string {
   const cell = 'padding:6px 0;border-bottom:1px solid #e5e7eb;vertical-align:top;';
@@ -185,7 +195,12 @@ function itemsTableHtml(order: OrderSummary): string {
     (order.discountCents > 0 ? total('Discount', `-${money(order.discountCents)}`) : '') +
     total(escapeHtml(order.shippingService), order.shippingCents === 0 ? 'FREE' : money(order.shippingCents)) +
     total('Total paid', money(order.totalCents), true) +
-    '</table>'
+    '</table>' +
+    (order.engravings.length
+      ? '<p style="margin:12px 0 0;font-size:14px;"><strong>Names to engrave:</strong><br>' +
+        order.engravings.map(escapeHtml).join('<br>') +
+        '</p>'
+      : '')
   );
 }
 
@@ -197,6 +212,7 @@ function itemsText(order: OrderSummary): string {
     ...(order.discountCents > 0 ? [`Discount: -${money(order.discountCents)}`] : []),
     `${order.shippingService}: ${order.shippingCents === 0 ? 'FREE' : money(order.shippingCents)}`,
     `Total paid: ${money(order.totalCents)}`,
+    ...(order.engravings.length ? ['', 'Names to engrave:', ...order.engravings] : []),
   ].join('\n');
 }
 

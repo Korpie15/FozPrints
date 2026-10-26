@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles, Tag
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
 import { ShippingQuote, hasFullKit } from '@/lib/shipping';
+import { cartLineKey } from '@/lib/kit';
 import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
 import { useLaunchOfferAvailable } from '@/lib/use-launch-offer';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
@@ -213,7 +214,7 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="cart-items">
           {items.map((item) => (
-            <div key={item.id} className="cart-item">
+            <div key={cartLineKey(item)} className="cart-item">
               <div className="cart-item-image">
                 {item.image ? (
                   <Image
@@ -242,12 +243,17 @@ export default function CartPage() {
                     {item.variantTitle}
                   </p>
                 )}
+                {item.personalisation && (
+                  <p className="cart-item-variant">
+                    Name: {item.personalisation}
+                  </p>
+                )}
 
                 <div className="cart-item-actions">
                   <div className="cart-item-quantity">
                     {/* Stops at 1 so an item is never removed by accident; the bin button removes it */}
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(cartLineKey(item), item.quantity - 1)}
                       disabled={item.quantity <= 1}
                       className="cart-quantity-button"
                       aria-label="Decrease quantity"
@@ -258,7 +264,7 @@ export default function CartPage() {
                       {item.quantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(cartLineKey(item), item.quantity + 1)}
                       disabled={item.maxQuantity !== undefined && item.quantity >= item.maxQuantity}
                       className="cart-quantity-button"
                       aria-label="Increase quantity"
@@ -272,7 +278,7 @@ export default function CartPage() {
                   </span>
 
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeItem(cartLineKey(item))}
                     className="cart-item-remove"
                     aria-label="Remove item"
                   >

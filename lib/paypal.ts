@@ -1,7 +1,7 @@
 import { CartItem } from '@/types/product';
 import { getInventoryMap, decrementInventoryOnce, getPayPalOrder, savePayPalOrder } from '@/lib/db';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
-import { CheckoutError, shippingShortfall } from '@/lib/cart';
+import { CheckoutError, assertInStock, shippingShortfall } from '@/lib/cart';
 import { isLaunchOfferAvailable } from '@/lib/promo-server';
 import { isLaunchKit } from '@/lib/promo';
 import { buildPayPalOrderSummary, sendOrderEmailsOnce } from '@/lib/order-email';
@@ -71,19 +71,7 @@ export async function createPayPalOrderService(params: {
 
   // Verify stock in Neon before allowing order creation
   const inventoryMap = await getInventoryMap();
-  for (const item of items) {
-    const stock = inventoryMap[item.id] ?? 0;
-    if (item.quantity > stock) {
-      const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
-        ? `${item.title} (${item.variantTitle})`
-        : item.title;
-      throw new CheckoutError(
-        stock <= 0
-          ? `"${itemLabel}" is out of stock.`
-          : `Only ${stock} units available for "${itemLabel}". Please update your cart.`
-      );
-    }
-  }
+  assertInStock(items, inventoryMap);
 
   const quotes = await getLiveShippingQuotes(items, toPostcode);
   const quote = quotes.find((q) => q.serviceCode === serviceCode) ?? quotes[0];
@@ -113,10 +101,13 @@ export async function createPayPalOrderService(params: {
 
   // Map PayPal line items
   const paypalItems = items.map((item) => ({
-    name: (item.variantTitle && item.variantTitle !== 'Default'
-      ? `${item.title} - ${item.variantTitle}`
-      : item.title
-    ).slice(0, 127),
+    name: [
+      item.variantTitle && item.variantTitle !== 'Default' ? `${item.title} - ${item.variantTitle}` : item.title,
+      item.personalisation ? `Name: ${item.personalisation}` : '',
+    ]
+      .filter(Boolean)
+      .join(' | ')
+      .slice(0, 127),
     sku: item.id,
     unit_amount: {
       currency_code: 'AUD',
@@ -182,7 +173,7 @@ export async function createPayPalOrderService(params: {
 
   // Remember exactly what this order charges; capture refuses orders we didn't record
   await savePayPalOrder(order.id, {
-    lines: items.map((item) => ({ priceId: item.id, quantity: item.quantity })),
+    lines: items.map((item) => ({ priceId: item.id, quantity: item.quantity, personalisation: item.personalisation })),
     amount: toValue(totalCents),
     postcode: toPostcode,
     serviceCode: quote.serviceCode,

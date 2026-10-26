@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { getProducts } from '@/lib/stripe';
+import { isHiddenProduct } from '@/lib/kit';
 import { Product } from '@/types/product';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
@@ -41,7 +42,7 @@ export default async function HomePage() {
     'rooftop-tent-cable-organiser-t-slot-wire-router',
   ];
 
-  const allProducts = await getProducts();
+  const allProducts = (await getProducts()).filter((product) => !isHiddenProduct(product));
 
   const featuredProducts: Product[] = [];
   for (const handle of featuredHandles) {

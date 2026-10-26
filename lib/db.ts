@@ -120,7 +120,7 @@ export async function releaseClaim(key: string): Promise<void> {
 }
 
 export interface PayPalOrderRecord {
-  lines: Array<{ priceId: string; quantity: number }>;
+  lines: Array<{ priceId: string; quantity: number; /** Name to engrave, if any */ personalisation?: string }>;
   amount: string;
   postcode: string;
   serviceCode: string;

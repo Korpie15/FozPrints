@@ -32,6 +32,21 @@ npm run sync-images
 then commit `public/product-images/` and `lib/product-images.json` and deploy. Photos that haven't been
 synced still load (from Stripe) but more slowly.
 
+## Build-your-own kits (e.g. the chair cup holder)
+
+A kit page is a Stripe product with metadata `kit_builder=true` and no price. Its parts are separate Stripe
+products (each with one price and its own Neon `inventory` row) with metadata:
+
+- `kit`: the kit page's `handle`
+- `component_type`: the group the buyer picks one from (`arm` or `holder`)
+- `component_key`, `component_label`: the part's id and display name
+- `compatible_with`: comma-separated `component_key`s it works with (blank = all)
+- `hidden=true`: keeps the part out of the shop grid and sitemap
+- `personalisation=text` (plus optional `personalisation_label`, `personalisation_max_length`): lets the buyer add a name
+
+A cart with an arm and a holder from the same kit ships free on Australia Post Standard. To add a new part,
+create the Stripe product and price, add an inventory row and set the metadata. No code change is needed.
+
 ## Environment Variables
 
 Copy `.env.example` to `.env.local` and add your keys:

@@ -46,4 +46,9 @@ export interface CartItem {
   handle: string;
   quantity: number;
   maxQuantity?: number;
+  /** Text to engrave (e.g. a name), for products that allow it */
+  personalisation?: string;
+  /** Handle of the kit this part belongs to, and its role in it (e.g. 'arm') */
+  kit?: string;
+  componentType?: string;
 }

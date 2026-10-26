@@ -1,5 +1,6 @@
 import { CartItem } from '@/types/product';
 import { isLaunchKit } from '@/lib/promo';
+import { hasKitBundle } from '@/lib/kit';
 
 export interface ProductDimensions {
   weightGrams: number;
@@ -44,6 +45,8 @@ const ITEM_WEIGHTS = {
   bracket: 60,
   anderson: 100,
   cable: 80,
+  // TODO: placeholder until the cup holder parts are weighed and boxed
+  cupHolderPart: 150,
   defaultSmall: 100,
 };
 
@@ -88,6 +91,9 @@ export function estimateParcel(items: CartItem[]): {
     } else if (handleLower.includes('anderson') || handleLower.includes('plug')) {
       smallItemsCount += qty;
       itemsWeightGrams += ITEM_WEIGHTS.anderson * qty;
+    } else if (handleLower.includes('cup-holder')) {
+      smallItemsCount += qty;
+      itemsWeightGrams += ITEM_WEIGHTS.cupHolderPart * qty;
     } else if (handleLower.includes('cable') || handleLower.includes('wire')) {
       smallItemsCount += qty;
       itemsWeightGrams += ITEM_WEIGHTS.cable * qty;
@@ -158,6 +164,11 @@ export function hasFullKit(items: CartItem[]): boolean {
   return items.some((item) => isLaunchKit(item.productId));
 }
 
+/** Orders that ship free on Australia Post Standard: the Nav Pod Kit, or a full cup holder bundle */
+export function qualifiesForFreeShipping(items: CartItem[]): boolean {
+  return hasFullKit(items) || hasKitBundle(items);
+}
+
 /**
  * Fetch live rates from Australia Post PAC API with billable weight & item quantity scaling.
  * Orders containing a Full Pod Kit receive Free Standard Shipping.
@@ -169,7 +180,7 @@ export async function getLiveShippingQuotes(
   const parcel = estimateParcel(items);
   const apiKey = process.env.AUSPOST_API_KEY;
   const fromPostcode = process.env.AUSPOST_FROM_POSTCODE || '3000';
-  const freeKitShipping = hasFullKit(items);
+  const freeKitShipping = qualifiesForFreeShipping(items);
 
   if (apiKey) {
     try {

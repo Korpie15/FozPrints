@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { getInventoryMap } from '@/lib/db';
-import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
+import { CheckoutError, assertInStock, parsePostcode, resolveCart } from '@/lib/cart';
 import { GST_NOTE, SITE_URL } from '@/lib/site';
 import { isLaunchOfferAvailable } from '@/lib/promo-server';
 
@@ -47,22 +47,7 @@ export async function POST(req: Request) {
       );
     }
 
-    for (const item of items) {
-      const stock = inventoryMap[item.id] ?? 0;
-      if (item.quantity > stock) {
-        const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
-          ? `${item.title} (${item.variantTitle})`
-          : item.title;
-        return NextResponse.json(
-          {
-            error: stock <= 0
-              ? `"${itemLabel}" is out of stock.`
-              : `Only ${stock} units available for "${itemLabel}". Please update your cart.`,
-          },
-          { status: 400 }
-        );
-      }
-    }
+    assertInStock(items, inventoryMap);
 
     const origin = returnOrigin(req);
 
@@ -111,7 +96,17 @@ export async function POST(req: Request) {
       },
       shipping_options,
       // The webhook compares this with the address the buyer enters
-      metadata: { quoted_postcode: destinationPostcode },
+      // Names to engrave, one entry per line, shown in the order emails and the Stripe Dashboard
+      metadata: {
+        quoted_postcode: destinationPostcode,
+        ...Object.fromEntries(
+          items.flatMap((item, i) =>
+            item.personalisation
+              ? [[`engrave_${i + 1}`, `${item.quantity} x ${item.title}: ${item.personalisation}`.slice(0, 500)]]
+              : []
+          )
+        ),
+      },
       custom_text: { submit: { message: GST_NOTE } },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cart`,

@@ -4,6 +4,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { Product } from '@/types/product';
 import '@/styles/products.css';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
+import { isHiddenProduct } from '@/lib/kit';
 
 export const revalidate = 300;
 
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const products = (await getProducts()).filter((product) => !isHiddenProduct(product));
 
   return (
     <div className="products-page">

@@ -1,6 +1,13 @@
 import { CartItem } from '@/types/product';
 import { getProducts } from '@/lib/stripe';
 import { getLiveShippingQuotes } from '@/lib/shipping';
+import {
+  PersonalisationError,
+  allowsPersonalisation,
+  cartLineKey,
+  cleanPersonalisation,
+  personalisationMaxLength,
+} from '@/lib/kit';
 
 const MAX_LINE_ITEMS = 20;
 const MAX_QUANTITY = 99;
@@ -10,8 +17,8 @@ export class CheckoutError extends Error {}
 
 /**
  * Turns an untrusted cart from the browser into trusted line items.
- * Only the Price ID and quantity are read from the request; price, title and
- * handle come from the live Stripe catalogue so they can't be spoofed.
+ * Only the Price ID, quantity and any name to engrave are read from the request; price,
+ * title and handle come from the live Stripe catalogue so they can't be spoofed.
  */
 export async function resolveCart(raw: unknown): Promise<CartItem[]> {
   if (!Array.isArray(raw) || raw.length === 0) {
@@ -21,7 +28,8 @@ export async function resolveCart(raw: unknown): Promise<CartItem[]> {
     throw new CheckoutError('Too many items in cart.');
   }
 
-  const quantities = new Map<string, number>();
+  // Lines stay separate when the same part has different names, so each name is kept
+  const lines = new Map<string, { id: string; quantity: number; personalisation?: unknown }>();
   for (const entry of raw) {
     const id = entry?.id;
     const quantity = entry?.quantity;
@@ -31,7 +39,13 @@ export async function resolveCart(raw: unknown): Promise<CartItem[]> {
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
       throw new CheckoutError('Invalid item quantity.');
     }
-    quantities.set(id, (quantities.get(id) || 0) + quantity);
+    const key = cartLineKey({ id, personalisation: typeof entry?.personalisation === 'string' ? entry.personalisation.trim() : '' });
+    const existing = lines.get(key);
+    lines.set(key, {
+      id,
+      quantity: (existing?.quantity || 0) + quantity,
+      personalisation: entry?.personalisation,
+    });
   }
 
   const products = await getProducts();
@@ -40,7 +54,7 @@ export async function resolveCart(raw: unknown): Promise<CartItem[]> {
   }
 
   const items: CartItem[] = [];
-  for (const [id, quantity] of quantities) {
+  for (const { id, quantity, personalisation } of lines.values()) {
     const product = products.find((p) => p.variants.some((v) => v.id === id));
     const variant = product?.variants.find((v) => v.id === id);
     if (!product || !variant) {
@@ -48,6 +62,17 @@ export async function resolveCart(raw: unknown): Promise<CartItem[]> {
     }
     if (quantity > MAX_QUANTITY) {
       throw new CheckoutError('Invalid item quantity.');
+    }
+
+    let engraving: string | undefined;
+    try {
+      engraving = cleanPersonalisation(personalisation, personalisationMaxLength(product));
+    } catch (err) {
+      if (err instanceof PersonalisationError) throw new CheckoutError(err.message);
+      throw err;
+    }
+    if (engraving && !allowsPersonalisation(product)) {
+      throw new CheckoutError(`"${product.title}" can't be personalised. Please remove the name and try again.`);
     }
 
     items.push({
@@ -60,10 +85,38 @@ export async function resolveCart(raw: unknown): Promise<CartItem[]> {
       currencyCode: variant.price.currencyCode,
       handle: product.handle,
       quantity,
+      personalisation: engraving,
+      kit: product.metadata?.kit,
+      componentType: product.metadata?.component_type,
     });
   }
 
   return items;
+}
+
+/**
+ * Throws if the cart wants more of a part than is in stock. Lines for the same part
+ * (e.g. arms with different names) are added together first.
+ */
+export function assertInStock(items: CartItem[], inventoryMap: Record<string, number>): void {
+  const wanted = new Map<string, { quantity: number; item: CartItem }>();
+  for (const item of items) {
+    const entry = wanted.get(item.id);
+    wanted.set(item.id, { quantity: (entry?.quantity ?? 0) + item.quantity, item });
+  }
+  for (const [id, { quantity, item }] of wanted) {
+    const stock = inventoryMap[id] ?? 0;
+    if (quantity > stock) {
+      const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
+        ? `${item.title} (${item.variantTitle})`
+        : item.title;
+      throw new CheckoutError(
+        stock <= 0
+          ? `"${itemLabel}" is out of stock.`
+          : `Only ${stock} units available for "${itemLabel}". Please update your cart.`
+      );
+    }
+  }
 }
 
 /**
