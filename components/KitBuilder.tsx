@@ -153,21 +153,23 @@ export function KitBuilder({ product, parts }: KitBuilderProps) {
 
           <p className="product-lead-time">{LEAD_TIME}</p>
 
-          <fieldset className="kit-group">
-            <legend>1. Choose your arm</legend>
-            {arms.map((a) => {
-              const key = componentKey(a);
-              return (
-                <label key={key} className={`kit-option ${key === armKey ? 'kit-option-selected' : ''} ${inStock(a) ? '' : 'kit-option-disabled'}`}>
-                  <input type="radio" name="kit-arm" value={key} checked={key === armKey} disabled={!inStock(a)} onChange={() => selectArm(key)} />
-                  <span>{componentLabel(a)}{inStock(a) ? '' : ' (out of stock)'}</span>
-                </label>
-              );
-            })}
-          </fieldset>
+          {arms.length > 1 && (
+            <fieldset className="kit-group">
+              <legend>1. Choose your arm</legend>
+              {arms.map((a) => {
+                const key = componentKey(a);
+                return (
+                  <label key={key} className={`kit-option ${key === armKey ? 'kit-option-selected' : ''} ${inStock(a) ? '' : 'kit-option-disabled'}`}>
+                    <input type="radio" name="kit-arm" value={key} checked={key === armKey} disabled={!inStock(a)} onChange={() => selectArm(key)} />
+                    <span>{componentLabel(a)}{inStock(a) ? '' : ' (out of stock)'}</span>
+                  </label>
+                );
+              })}
+            </fieldset>
+          )}
 
           <fieldset className="kit-group">
-            <legend>2. Choose your cup holder layout</legend>
+            <legend>{arms.length > 1 ? '2. ' : ''}Choose your cup holder layout</legend>
             {holders.map((h) => {
               const key = componentKey(h);
               const fits = isCompatible(arm, h);
