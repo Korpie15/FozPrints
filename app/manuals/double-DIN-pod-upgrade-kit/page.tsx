@@ -6,6 +6,7 @@ import { TroubleshootingAccordion } from '@/components/TroubleshootingAccordion'
 import '../../../styles/manual-detail.css';
 import { SITE_URL } from '@/lib/site';
 import { NAV_POD_NAME } from '@/lib/product-seo';
+import { NAV_POD_SAFETY } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Nav Pod Kit Installation Guide: Subaru Forester SG (2003 to 2008)',
@@ -64,8 +65,8 @@ const howToSchema = {
     },
     {
       '@type': 'HowToStep',
-      name: 'Install the navpod',
-      text: 'Press down on the nav pod until it fits snugly in place.',
+      name: 'Install the Nav Pod',
+      text: 'Press down on the Nav Pod until it fits snugly in place.',
     },
   ],
 };
@@ -88,7 +89,7 @@ export default function DoubleDinPodUpgradeKitManual() {
         {/* Header */}
         <div className="manual-header">
           <h1>Nav Pod Kit Installation Guide</h1>
-          <p className="manual-subtitle">For Subaru Forester SG (2003-2008), USDM Spec</p>
+          <p className="manual-subtitle">For the Subaru Forester SG (2003 to 2008), USDM Spec</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
               href="/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec"
@@ -136,9 +137,9 @@ export default function DoubleDinPodUpgradeKitManual() {
             </ul>
 
             <div className="manual-oem-callout">
-              <strong>💡 OEM Compatibility (Subaru Part # H0010SA950ML):</strong>
+              <strong>💡 Factory pod compatibility (Subaru part no. H0010SA950ML):</strong>
               <p>
-                All FozPrints parts are 1:1 backwards-compatible with factory Subaru USDM nav pods. If you are using this guide to replace a cracked shell, broken clips, or missing brackets on an original OEM housing, all mounting steps and hardware positions are identical.
+                Foz Prints parts are designed to fit the factory Subaru USDM nav pod. If you are using this guide to replace a cracked shell, broken clips or missing brackets on an original pod, the mounting steps and hardware positions are the same.
               </p>
             </div>
           </div>
@@ -170,6 +171,18 @@ export default function DoubleDinPodUpgradeKitManual() {
             <strong>Before you start:</strong> disconnect the negative (-) battery terminal before unplugging or
             connecting any wiring. Some head units lose their presets, or ask for a security code, after the battery
             has been disconnected.
+          </div>
+        </div>
+
+        <div className="info-box">
+          <AlertCircle size={20} />
+          <div>
+            <strong>Important safety information</strong>
+            <ul style={{ margin: '0.35rem 0 0', paddingLeft: '1.1rem', listStyle: 'disc' }}>
+              {NAV_POD_SAFETY.map((point) => (
+                <li key={point} style={{ marginBottom: '0.25rem' }}>{point}</li>
+              ))}
+            </ul>
           </div>
         </div>
 
@@ -321,7 +334,7 @@ export default function DoubleDinPodUpgradeKitManual() {
             <div className="step-content">
               <h3>Run Wiring</h3>
               <p>
-                Run all necessary wiring into the top dash cavity where the new pod kit will sit. This includes radio antenna, main harness, and optional reverse camera wires.
+                Run all necessary wiring into the top dash cavity where the Nav Pod will sit. This includes radio antenna, main harness, and optional reverse camera wires.
               </p>
             </div>
           </div>
@@ -450,7 +463,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                 <div className="step-image">
                   <Image
                     src="/images/step12-image1.jpg"
-                    alt="Navpod loosely placed on top of head unit"
+                    alt="Nav Pod loosely placed on top of the head unit"
                     width={400}
                     height={300}
                     style={{ width: '100%', height: 'auto' }}
@@ -459,7 +472,7 @@ export default function DoubleDinPodUpgradeKitManual() {
                 <div className="step-image">
                   <Image
                     src="/images/step12-image2.jpg"
-                    alt="Navpod fully installed on top of head unit"
+                    alt="Nav Pod fully installed on top of the head unit"
                     width={400}
                     height={300}
                     style={{ width: '100%', height: 'auto' }}
@@ -484,7 +497,7 @@ export default function DoubleDinPodUpgradeKitManual() {
           </p>
           <div style={{ marginTop: '1rem' }}>
             <Link
-              href="/products/subaru-forester-sg-2003-2008-double-din-pod-upgrade-kit-usdm-spec"
+              href="/products/subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec"
               className="download-pdf-button"
               style={{
                 textDecoration: 'none',

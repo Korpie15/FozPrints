@@ -7,13 +7,15 @@ import { Minus, Plus, Trash2, ShoppingCart, Loader2, Truck, Globe, Sparkles, Tag
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
 import { ShippingQuote, hasFullKit } from '@/lib/shipping';
-import { LAUNCH_OFFER } from '@/lib/promo';
+import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
+import { useLaunchOfferAvailable } from '@/lib/use-launch-offer';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import { PayPalCheckoutButton } from '@/components/PayPalCheckoutButton';
 import { GST_NOTE } from '@/lib/site';
 import '@/styles/cart.css';
 
-const isValidPostcode = (value: string) => /^\d{4}$/.test(value.trim());
+/** Four digits, 0200 or above (no Australian postcode is lower) */
+const isValidPostcode = (value: string) => /^\d{4}$/.test(value.trim()) && Number(value) >= 200;
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
@@ -36,19 +38,21 @@ export default function CartPage() {
   const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
 
   const isFullKitPresent = hasFullKit(items);
+  const launchOfferAvailable = useLaunchOfferAvailable();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Auto-apply LAUNCH50 if the full kit is in cart and user hasn't explicitly cleared it
+  // Auto-apply LAUNCH50 if the full kit is in cart, the offer is still running,
+  // and the user hasn't explicitly cleared it
   useEffect(() => {
-    if (isFullKitPresent && !appliedPromo && !isPromoTouched) {
+    if (isFullKitPresent && launchOfferAvailable === true && !appliedPromo && !isPromoTouched) {
       setAppliedPromo('LAUNCH50');
-    } else if (!isFullKitPresent && appliedPromo === 'LAUNCH50') {
+    } else if ((!isFullKitPresent || launchOfferAvailable === false) && appliedPromo === 'LAUNCH50') {
       setAppliedPromo(null);
     }
-  }, [isFullKitPresent, appliedPromo, isPromoTouched]);
+  }, [isFullKitPresent, launchOfferAvailable, appliedPromo, isPromoTouched]);
 
   // Recalculate shipping whenever cart items change if postcode is entered
   useEffect(() => {
@@ -105,6 +109,10 @@ export default function CartPage() {
     if (!code) return;
 
     if (code === 'LAUNCH50') {
+      if (launchOfferAvailable === false) {
+        setPromoError(`The ${LAUNCH_OFFER.code} offer has ended.`);
+        return;
+      }
       if (!isFullKitPresent) {
         setPromoError(`${LAUNCH_OFFER.code} is only valid for the ${LAUNCH_OFFER.productName}.`);
         return;
@@ -174,7 +182,7 @@ export default function CartPage() {
           <ShoppingCart size={64} style={{ margin: '0 auto 1rem', color: '#9ca3af' }} />
           <h1 className="cart-empty-title">Your cart is empty</h1>
           <p>
-            Start adding some FozPrints products to your cart!
+            Start adding some Foz Prints products to your cart!
           </p>
           <Link href="/products" className="btn btn-primary">
             Browse Products
@@ -190,8 +198,11 @@ export default function CartPage() {
   const activeQuote = shippingQuotes?.find((q) => q.serviceCode === selectedQuoteCode) || shippingQuotes?.[0];
   const shippingCost = activeQuote ? activeQuote.price : 0;
 
-  // Calculate discount amount
-  const discountAmount = appliedPromo === 'LAUNCH50' && isFullKitPresent ? 50.00 : 0;
+  // $50 off the kit, once per order, as the Stripe coupon and PayPal apply it
+  const kitSubtotal = items
+    .filter((item) => isLaunchKit(item.productId))
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discountAmount = appliedPromo === 'LAUNCH50' && isFullKitPresent ? Math.min(LAUNCH_OFFER.discount, kitSubtotal) : 0;
   const grandTotal = Math.max(0.01, subtotal - discountAmount + shippingCost);
 
   return (
@@ -283,7 +294,7 @@ export default function CartPage() {
           <h2>Order Summary</h2>
 
           {/* Nudge towards LAUNCH50; once applied, the Discount row says it instead */}
-          {hasFullKit(items) && appliedPromo !== 'LAUNCH50' && (
+          {hasFullKit(items) && appliedPromo !== 'LAUNCH50' && launchOfferAvailable === true && (
             <div
               style={{
                 marginBottom: '1rem',
@@ -329,7 +340,7 @@ export default function CartPage() {
           )}
 
           {/* Promo / Discount Code Input */}
-          <div style={{ marginBottom: '0.85rem', padding: '0.75rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div style={{ marginBottom: '0.85rem', padding: '0.75rem 0', borderBottom: '1px solid var(--cart-hairline)' }}>
             {appliedPromo ? (
               <div
                 style={{
@@ -384,6 +395,9 @@ export default function CartPage() {
                 </button>
               </form>
             )}
+            {appliedPromo === 'LAUNCH50' && (
+              <p className="cart-promo-terms">{LAUNCH_OFFER.terms}</p>
+            )}
             {promoError && (
               <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.35rem' }}>
                 {promoError}
@@ -423,7 +437,7 @@ export default function CartPage() {
                 placeholder="Postcode (e.g. 3000)"
                 aria-label="Postcode"
                 value={postcode}
-                onChange={(e) => setPostcode(e.target.value)}
+                onChange={(e) => setPostcode(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 maxLength={4}
                 inputMode="numeric"
                 autoComplete="postal-code"
@@ -431,7 +445,7 @@ export default function CartPage() {
               />
               <button
                 type="submit"
-                disabled={isEstimatingShipping || !postcode}
+                disabled={isEstimatingShipping || postcode.length !== 4}
                 className="cart-shipping-calc-btn"
               >
                 {isEstimatingShipping ? 'Calculating...' : 'Calculate'}
@@ -455,7 +469,7 @@ export default function CartPage() {
                         padding: '0.5rem 0.75rem',
                         borderRadius: '0.375rem',
                         backgroundColor: isSelected ? '#0369a1' : 'rgba(255, 255, 255, 0.05)',
-                        border: isSelected ? '1px solid #0369a1' : '1px solid rgba(255, 255, 255, 0.1)',
+                        border: isSelected ? '1px solid #0369a1' : '1px solid var(--cart-hairline)',
                         color: isSelected ? '#ffffff' : 'inherit',
                         transition: 'all 0.2s ease',
                       }}
@@ -474,7 +488,7 @@ export default function CartPage() {
                         </span>
                       </div>
                       <strong style={{ color: isFree ? '#10b981' : isSelected ? '#ffffff' : 'inherit' }}>
-                        {isFree ? 'FREE' : `$${q.price.toFixed(2)} AUD`}
+                        {isFree ? 'FREE' : formatPrice(q.price.toString(), currencyCode)}
                       </strong>
                     </label>
                   );
@@ -483,7 +497,7 @@ export default function CartPage() {
             )}
 
             {shippingError && (
-              <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+              <p role="alert" style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>
                 {shippingError}
               </p>
             )}
@@ -525,10 +539,10 @@ export default function CartPage() {
 
           {/* PayPal Checkout */}
           <div style={{ marginTop: '0.75rem', width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.75rem 0', color: '#6b7280', fontSize: '0.75rem' }}>
-              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.75rem 0', color: 'var(--cart-muted)', fontSize: '0.75rem' }}>
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--cart-hairline)' }} />
               <span>OR PAY WITH</span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+              <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--cart-hairline)' }} />
             </div>
             <PayPalCheckoutButton
               items={items}
@@ -545,7 +559,7 @@ export default function CartPage() {
               padding: '0.85rem',
               borderRadius: '0.5rem',
               backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: '1px solid var(--cart-hairline)',
               textAlign: 'center',
             }}
           >

@@ -19,34 +19,34 @@ export function isNavPodProduct(product: { handle?: string; title?: string }): b
 
 export const NAV_POD_FAQS = [
   {
-    question: 'Will this SG Forester nav pod fit standard 7-inch double DIN head units?',
+    question: 'Will the Nav Pod Kit fit standard 7-inch double DIN head units?',
     answer:
       'Yes, the Foz Prints SG Forester Double DIN Nav Pod is engineered to standard Double DIN dimensions (180mm x 100mm face) and fits aftermarket shallow-depth head units with Apple CarPlay / Android Auto, digital media receivers, and gauge displays.',
   },
   {
-    question: 'What models and years of Subaru Forester does this nav pod fit?',
+    question: 'Which Subaru Forester models and years does the Nav Pod Kit fit?',
     answer:
       'It is designed for the second-generation Subaru Forester (SG chassis, model years 2003 to 2008) including XT, 2.5X, and 2.5XS with the USDM-spec dashboard pocket.',
   },
   {
     question: 'What material is used and will it warp in summer heat?',
     answer:
-      'Our nav pods are 3D printed using engineering-grade ASA (Acrylonitrile Styrene Acrylate). ASA offers superior UV resistance and heat tolerance up to 95°C (203°F), preventing dashboard warping and fading under hot Australian and American sun.',
+      'The Nav Pod Kit is 3D printed in ASA (Acrylonitrile Styrene Acrylate), a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data). It is chosen to hold its shape and colour on a sunny dashboard, but very high cabin temperatures can still affect any plastic, so we recommend a windscreen sunshade when parked in direct sun.',
   },
   {
-    question: 'How difficult is the nav pod installation?',
+    question: 'How difficult is the Nav Pod Kit installation?',
     answer:
       'Installation is a straightforward DIY process taking approximately 20-30 minutes using basic hand tools (Phillips screwdriver and trim tool). No cutting of your factory dashboard is required. Full step-by-step instructions are available in our online manual.',
   },
   {
-    question: 'Is this kit compatible with original factory OEM Subaru USDM pod parts (H0010SA950ML)?',
+    question: 'Is this kit compatible with the factory Subaru USDM pod (part no. H0010SA950ML)?',
     answer:
-      'Yes, 100%! Every FozPrints component is precision-modeled to be backwards-compatible with the factory Subaru USDM navigation housing (OEM part # H0010SA950ML). If you already own an original OEM pod and the front clips snapped, or you only need brackets or fascia trim, email us at info@fozprints.com.au. Individual replacement parts are not listed in the shop, but we can supply them, and they click directly into your factory components.',
+      'Yes. Each Foz Prints component is modelled on our measurements of the factory Subaru USDM navigation housing (part no. H0010SA950ML), so it can be mixed with original parts. If you already own a factory pod and the front clips have snapped, or you only need brackets or fascia trim, email us at info@fozprints.com.au. Individual replacement parts are not listed in the shop, but we can supply them. Our parts are aftermarket, not genuine Subaru parts.',
   },
   {
     question: 'What is the difference between the USDM spec and JDM spec nav pod?',
     answer:
-      'The USDM spec (OEM # H0010SA950ML) features a recessed, streamlined housing that sits further back into the dash cavity for a clean, factory-integrated look that preserves full windscreen visibility. The JDM spec (OEM # H0017SA908) sits further forward with a steeper hood. Because the centre SG Forester dash pocket footprint is identical, our USDM spec pod fits both RHD (Australia, UK, Japan) and LHD (USA, Canada, Europe) Foresters.',
+      'The USDM spec (factory part no. H0010SA950ML) has a recessed, streamlined housing that sits further back into the dash cavity for a clean, factory-style look. The JDM spec (factory part no. H0017SA908) sits further forward with a steeper hood. Because the centre SG Forester dash pocket footprint is identical, our USDM spec pod fits both RHD (Australia, UK, Japan) and LHD (USA, Canada, Europe) Foresters.',
   },
 ];
 
@@ -60,7 +60,7 @@ export function getProductSeoData(product: Product) {
   const description =
     product.metadata?.seo_description ||
     (isNavPod
-      ? 'Relocate your SG Forester head unit to eye level with our custom 3D printed double DIN navigation pod upgrade kit. OEM fitment in heat-resistant ASA.'
+      ? 'Relocate your SG Forester head unit to eye level with our custom 3D printed double DIN navigation pod upgrade kit. Designed to fit the factory dash, printed in UV-stable ASA.'
       : product.shortDescription ||
         product.description ||
         `Precision 3D printed ${product.title} designed for Subaru Forester models.`);

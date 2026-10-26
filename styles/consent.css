@@ -1,32 +1,30 @@
 .consent-banner {
   position: fixed;
-  left: 1rem;
-  right: 1rem;
-  bottom: 1rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1000;
-  max-width: 44rem;
-  margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem max(1rem, calc((100% - 72rem) / 2));
   background-color: #ffffff;
   color: #1f2937;
-  border: 1px solid #d1d5db;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  font-size: 0.875rem;
-  line-height: 1.5;
+  border-top: 1px solid #d1d5db;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+/* Room at the end of the page so the banner never covers content */
+body {
+  padding-bottom: var(--consent-banner-height, 0px);
 }
 
 .consent-text {
-  flex: 1 1 20rem;
-}
-
-.consent-title {
-  font-weight: 700;
-  margin-bottom: 0.25rem;
+  flex: 1 1 auto;
+  max-width: 48rem;
 }
 
 .consent-text a {
@@ -38,7 +36,7 @@
 .consent-actions {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 /* Both choices look the same so neither is nudged */
@@ -67,7 +65,7 @@
   .consent-banner {
     background-color: #1f2937;
     color: #e5e7eb;
-    border-color: #374151;
+    border-top-color: #374151;
   }
 
   .consent-text a {
@@ -77,9 +75,11 @@
 
 @media (max-width: 640px) {
   .consent-banner {
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom));
+    font-size: 0.75rem;
   }
 
   .consent-actions {

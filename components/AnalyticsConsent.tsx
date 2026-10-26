@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
 import '../styles/consent.css';
@@ -48,6 +48,23 @@ export function AnalyticsConsent() {
     return () => window.removeEventListener(OPEN_SETTINGS_EVENT, openSettings);
   }, []);
 
+  // While the banner is open, pad the bottom of the page by its height so it
+  // never sits on top of the footer, the cart total or the checkout buttons
+  const bannerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const banner = bannerRef.current;
+    if (!isBannerOpen || !banner) return;
+    const root = document.documentElement;
+    const update = () => root.style.setProperty('--consent-banner-height', `${banner.offsetHeight}px`);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(banner);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty('--consent-banner-height');
+    };
+  }, [isBannerOpen]);
+
   const choose = (choice: Consent) => {
     try {
       localStorage.setItem(STORAGE_KEY, choice);
@@ -84,13 +101,12 @@ export function AnalyticsConsent() {
       )}
 
       {isBannerOpen && (
-        <div className="consent-banner" role="region" aria-labelledby="consent-title">
+        <div className="consent-banner" role="region" aria-labelledby="consent-title" ref={bannerRef}>
           <div className="consent-text">
-            <p id="consent-title" className="consent-title">Help us improve the site?</p>
             <p>
-              With your OK, we use Microsoft Clarity to see how people use this site, such as clicks,
-              scrolling and the pages you visit. Microsoft processes this data, including outside
-              Australia. See our <Link href="/policies/privacy-policy">privacy policy</Link>.
+              <strong id="consent-title">Help us improve the site?</strong> With your OK, we use Microsoft
+              Clarity to see how people use it (clicks, scrolling and pages visited). Microsoft processes
+              this data, including outside Australia. <Link href="/policies/privacy-policy">Privacy policy</Link>
             </p>
           </div>
           <div className="consent-actions">

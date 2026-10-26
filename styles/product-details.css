@@ -217,6 +217,19 @@
   color: #0369a1;
 }
 
+.product-launch-pill > svg {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+}
+
+/* The offer's terms sit under the headline, smaller and quieter */
+.product-launch-terms {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
 @media (prefers-color-scheme: dark) {
   .product-launch-pill {
     color: #e0f2fe;
@@ -351,7 +364,8 @@
 }
 
 .product-description-content h2 {
-  font-size: 1.5rem;
+  /* Description section headings: sized as sub-headings under the product title */
+  font-size: 1.25rem;
 }
 
 .product-description-content h3 {
@@ -884,7 +898,7 @@
   position: fixed;
   inset: 0;
   z-index: 10001;
-  background-color: rgba(0, 0, 0, 0.92);
+  background-color: rgba(0, 0, 0, 0.97);
 }
 
 .lightbox-image {
@@ -940,4 +954,67 @@
   text-align: center;
   color: #e5e7eb;
   font-size: 0.875rem;
+}
+
+/* Order lead time under the price */
+.product-lead-time {
+  margin: -0.5rem 0 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+/* Safety notice for the Nav Pod Kit */
+.product-safety {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #78350f;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.product-safety strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.product-safety ul {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+
+.product-safety li + li {
+  margin-top: 0.3rem;
+}
+
+.product-safety p {
+  margin: 0;
+}
+
+/* Says what the Subaru name is used for */
+.product-non-affiliation {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .product-lead-time {
+    color: #9ca3af;
+  }
+
+  .product-safety {
+    background-color: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fde68a;
+  }
+
+  .product-non-affiliation {
+    color: #9ca3af;
+  }
 }

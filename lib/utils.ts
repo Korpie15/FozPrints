@@ -30,23 +30,30 @@ export function stripHtml(html: string): string {
     .trim();
 }
 
+/** Escapes text so it can only ever render as text inside HTML */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
- * Dynamically converts plain text or raw HTML product descriptions
- * into cleanly formatted semantic HTML with paragraphs, headings, and lists.
+ * Converts plain text or HTML product descriptions into clean paragraphs,
+ * headings and lists. Any markup in the source is stripped and the text is
+ * escaped, so a description can never inject HTML or scripts into the page.
  */
 export function formatDescriptionToHtml(description: string): string {
   if (!description) return '';
-
-  // If already rich HTML with explicit headings/lists and no messy span wrappers
-  if (/<(h[1-6]|ul|ol)[\s>]/i.test(description) && !description.includes('<span>')) {
-    return description;
-  }
 
   // Normalize HTML breaks and tags into plain text with newlines
   let text = description
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n\n')
     .replace(/<\/div>/gi, '\n')
+    .replace(/<\/(h[1-6]|li|ul|ol)>/gi, '\n')
     .replace(/<li[^>]*>/gi, '\n• ')
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
@@ -57,7 +64,7 @@ export function formatDescriptionToHtml(description: string): string {
     .replace(/&gt;/g, '>')
     .trim();
 
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const lines = text.split(/\r?\n/).map((l) => escapeHtml(l.trim())).filter(Boolean);
   const htmlParts: string[] = [];
   let inList = false;
 
@@ -88,7 +95,7 @@ export function formatDescriptionToHtml(description: string): string {
       i < lines.length - 1;
 
     if (isHeading) {
-      htmlParts.push(`<h3>${line}</h3>`);
+      htmlParts.push(`<h2>${line}</h2>`);
     } else {
       htmlParts.push(`<p>${line}</p>`);
     }

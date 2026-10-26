@@ -22,6 +22,20 @@ The list is split into:
 - [x] **Stripe products:** Nav Pod renamed; "2025 vehicle" and "Top Mount Pod" wording fixed. Every product now has a `handle` in its Stripe metadata, so renaming a product no longer changes its web address. (`shopify_handle` is left over from Shopify and isn't used.)
 - [x] **Phone carousel dropdown:** opening the finish dropdown on a card no longer scrolls the card up inside the row; the dropdown shows under the card.
 
+### Second audit (25 October 2026): fixed locally, not yet deployed
+
+- [x] LAUNCH50 limited to 10 uses across card and PayPal (PayPal uses now counted; `paypal_orders.discount_cents` column added in Neon); banners and the cart stop advertising it once used up; offer terms shown.
+- [x] Product claims reworded (no "OEM replacement", "100%", "safer", absolute heat claims); "not affiliated with Subaru" line in footer, product pages and Terms; Stripe Nav Pod text updated to match.
+- [x] Safety information on the Nav Pod page and in the manual; lead time and fitment note on product pages.
+- [x] Refund, Privacy and Terms policies rewritten (Terms marked for lawyer review, step 2E).
+- [x] Waitlist: consent wording, same reply whether or not already registered, no overwriting, over-long input rejected; contact form privacy note; email shown on About page and footer.
+- [x] Cookie banner is a slim bottom bar that never covers content; 404 page readable in dark mode; cart divider lines visible in light mode; toast no longer shows over the photo viewer.
+- [x] Card price shows the price you can buy; sold-out finishes labelled; postcode box digits-only with feedback.
+- [x] Security: Stripe return URL fixed to the site; product descriptions escaped; webhook error responses tidied; CSP adds upgrade-insecure-requests and drops placehold.co.
+- [x] Accessibility: finish dropdown labels/Esc/focus, reduced motion, tap targets, heading order, contrast, carousel labels.
+- [x] SEO: 1200×630 sharing image on every page (temporary, until 2I), policy descriptions, JSON-LD return policy and categories, old product links, favicon.ico and apple-icon.
+- [x] Housekeeping: Node 22, `npm audit` clean, previews marked noindex.
+
 ### Still to do
 
 - [x] **#6 Enforce the content security policy:** console check came back clean (site pages, Clarity after Allow analytics, PayPal button), so the header is now enforced. Not yet deployed.

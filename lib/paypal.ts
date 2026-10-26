@@ -2,6 +2,9 @@ import { CartItem } from '@/types/product';
 import { getInventoryMap, decrementInventoryOnce, getPayPalOrder, savePayPalOrder } from '@/lib/db';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { CheckoutError, shippingShortfall } from '@/lib/cart';
+import { isLaunchOfferAvailable } from '@/lib/promo-server';
+import { isLaunchKit } from '@/lib/promo';
+import { buildPayPalOrderSummary, sendOrderEmailsOnce } from '@/lib/order-email';
 
 function getPayPalBaseUrl() {
   const env = process.env.PAYPAL_ENVIRONMENT || 'live';
@@ -89,10 +92,17 @@ export async function createPayPalOrderService(params: {
   const itemTotalCents = items.reduce((sum, item) => sum + item.priceCents * item.quantity, 0);
   const shippingCents = quote.priceCents;
 
-  // Check if LAUNCH50 applies
+  // LAUNCH50 matches the Stripe coupon: $50 off the kit, once per order, while
+  // redemptions remain (PayPal uses count toward the same cap of 10)
   let discountCents = 0;
   if (promoCode && promoCode.trim().toUpperCase() === 'LAUNCH50' && hasFullKit(items)) {
-    discountCents = Math.min(5000, itemTotalCents);
+    if (!(await isLaunchOfferAvailable())) {
+      throw new CheckoutError('The LAUNCH50 offer has ended. Please remove the code and try again.');
+    }
+    const kitCents = items
+      .filter((item) => isLaunchKit(item.productId))
+      .reduce((sum, item) => sum + item.priceCents * item.quantity, 0);
+    discountCents = Math.min(5000, kitCents);
   }
 
   const totalCents = itemTotalCents + shippingCents - discountCents;
@@ -120,7 +130,7 @@ export async function createPayPalOrderService(params: {
     intent: 'CAPTURE',
     purchase_units: [
       {
-        description: 'FozPrints Subaru 3D Printed Parts Order',
+        description: 'Foz Prints 3D printed parts order',
         items: paypalItems,
         amount: {
           currency_code: 'AUD',
@@ -147,7 +157,7 @@ export async function createPayPalOrderService(params: {
       },
     ],
     application_context: {
-      brand_name: 'FozPrints',
+      brand_name: 'Foz Prints',
       shipping_preference: 'GET_FROM_FILE',
       user_action: 'PAY_NOW',
     },
@@ -177,6 +187,7 @@ export async function createPayPalOrderService(params: {
     postcode: toPostcode,
     serviceCode: quote.serviceCode,
     shippingCents,
+    discountCents,
   });
 
   return { id: order.id };
@@ -246,12 +257,13 @@ export async function capturePayPalOrderService(orderId: string) {
     throw new CheckoutError('PayPal payment could not be captured. Please try again.');
   }
 
+  const warnings: string[] = [];
   const captured = captureData.purchase_units?.[0]?.payments?.captures?.[0]?.amount;
   if (captured?.currency_code !== 'AUD' || captured?.value !== recorded.amount) {
     // Money has already moved, so flag it for a manual check rather than failing the buyer
-    console.error(
-      `PayPal order ${orderId}: captured ${captured?.value} ${captured?.currency_code}, expected ${recorded.amount} AUD`
-    );
+    const note = `PayPal captured ${captured?.value} ${captured?.currency_code}, but the order was for ${recorded.amount} AUD`;
+    console.error(`PayPal order ${orderId}: ${note}`);
+    warnings.push(note);
   }
 
   // Deduct inventory from Neon exactly once using the PayPal Order ID as idempotency key.
@@ -262,7 +274,30 @@ export async function capturePayPalOrderService(orderId: string) {
     console.error(`PayPal order ${orderId}: failed to decrement Neon inventory:`, dbErr);
   }
 
+  // Order emails. Never fail the buyer's payment over these: if they fail here,
+  // the PAYMENT.CAPTURE.COMPLETED webhook sends whichever didn't go out
+  try {
+    await sendOrderEmailsOnce(`paypal_${orderId}`, () =>
+      buildPayPalOrderSummary(orderId, recorded, captureData, warnings)
+    );
+  } catch (emailErr) {
+    console.error(`PayPal order ${orderId}: failed to send order emails:`, emailErr);
+  }
+
   return { id: orderId };
+}
+
+/** PayPal's copy of an order: who paid, the delivery address and the capture */
+export async function getPayPalOrderDetails(orderId: string): Promise<any> {
+  const accessToken = await getPayPalAccessToken();
+  const response = await fetch(`${getPayPalBaseUrl()}/v2/checkout/orders/${orderId}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(`PayPal order lookup failed: ${response.status}`);
+  }
+  return response.json();
 }
 
 /**

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ShoppingBag, BookOpen } from 'lucide-react';
+import '../styles/not-found.css';
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
@@ -11,57 +12,15 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div
-      style={{
-        minHeight: '60vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '4rem 1.5rem',
-      }}
-    >
-      <div style={{ maxWidth: '500px' }}>
-        <h1
-          style={{
-            fontSize: '4rem',
-            fontWeight: 800,
-            color: '#0369a1',
-            marginBottom: '0.5rem',
-            lineHeight: 1,
-          }}
-        >
-          404
-        </h1>
-        <h2
-          style={{
-            fontSize: '1.75rem',
-            fontWeight: 700,
-            color: '#0f172a',
-            marginBottom: '1rem',
-          }}
-        >
-          Page Not Found
-        </h2>
-        <p
-          style={{
-            color: '#475569',
-            fontSize: '1.125rem',
-            marginBottom: '2rem',
-            lineHeight: 1.6,
-          }}
-        >
-          Sorry, we couldn't find the page or print you were looking for. It might have been moved or deleted.
+    <div className="not-found">
+      <div className="not-found-inner">
+        <p className="not-found-code" aria-hidden="true">404</p>
+        <h1 className="not-found-title">Page Not Found</h1>
+        <p className="not-found-text">
+          Sorry, we couldn&apos;t find the page or print you were looking for. It might have been moved or deleted.
         </p>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-          }}
-        >
+        <div className="not-found-actions">
           <Link href="/products" className="btn btn-primary btn-lg">
             <ShoppingBag size={18} />
             Shop All Parts

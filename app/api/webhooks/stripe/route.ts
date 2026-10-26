@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
 import { decrementInventoryOnce } from '@/lib/db';
 import { shippingShortfall } from '@/lib/cart';
+import { buildStripeOrderSummary, sendOrderEmailsOnce } from '@/lib/order-email';
 
 /**
  * Stripe Checkout can't re-price shipping once the buyer types their address,
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Stripe webhook signature error:', err.message);
     return NextResponse.json(
-      { error: `Webhook signature verification failed: ${err.message}` },
+      { error: 'Invalid signature' },
       { status: 400 }
     );
   }
@@ -115,6 +116,25 @@ export async function POST(req: Request) {
       // Non-2xx makes Stripe retry; decrementInventoryOnce is safe to retry
       console.error(`Order #${orderId}: failed to update inventory:`, err);
       return NextResponse.json({ error: 'Failed to update inventory' }, { status: 500 });
+    }
+
+    // Order emails: to the shop and to the buyer, each sent once per order
+    if (session.payment_status !== 'unpaid') {
+      try {
+        await sendOrderEmailsOnce(`stripe_${session.id}`, async () => {
+          // A shipping shortfall found above is saved on the payment; surface it in the email
+          const warnings: string[] = [];
+          if (typeof session.payment_intent === 'string') {
+            const intent = await stripe.paymentIntents.retrieve(session.payment_intent);
+            if (intent.metadata?.shipping_review) warnings.push(intent.metadata.shipping_review);
+          }
+          return buildStripeOrderSummary(stripe, session.id, warnings);
+        });
+      } catch (err) {
+        // Stock is already updated (and won't be again); the retry only resends unsent emails
+        console.error(`Order #${orderId}: failed to send order emails:`, err);
+        return NextResponse.json({ error: 'Failed to send order emails' }, { status: 500 });
+      }
     }
   }
 

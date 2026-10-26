@@ -52,6 +52,7 @@
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 600;
+  min-height: 1.75rem;
   padding: 0.2rem 0.65rem;
   border-radius: 9999px;
   cursor: pointer;
@@ -86,6 +87,13 @@
   transition: all 0.2s ease;
   line-height: 1;
   z-index: 2;
+}
+
+/* Invisible padding around the small circle gives a larger click and tap target */
+.header-announcement-close::after {
+  content: '';
+  position: absolute;
+  inset: -0.7rem;
 }
 
 .header-announcement-close:hover {
@@ -229,6 +237,9 @@
 }
 
 .nav-link {
+  display: inline-block;
+  /* Taller click area than the text alone */
+  padding: 0.6rem 0;
   font-size: 0.875rem;
   font-weight: 500;
   color: #ffffff;

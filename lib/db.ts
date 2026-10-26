@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { NAV_POD_NAME } from '@/lib/product-seo';
 
 export function getDb() {
   const url = process.env.DATABASE_URL;
@@ -88,12 +89,44 @@ export async function decrementInventoryOnce(
   return Number(rows[0]?.claimed) > 0;
 }
 
+/**
+ * Claims a one-off task (such as sending an order email) so it runs once even
+ * when Stripe or PayPal deliver the same notification more than once.
+ * Returns false if it was already claimed.
+ */
+export async function claimOnce(key: string): Promise<boolean> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  const rows = await withRetry(() => sql`
+    INSERT INTO processed_stripe_events (event_id)
+    VALUES (${key})
+    ON CONFLICT DO NOTHING
+    RETURNING event_id
+  `);
+  return rows.length > 0;
+}
+
+/** Undoes claimOnce after the task failed, so the next retry runs it again. */
+export async function releaseClaim(key: string): Promise<void> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  await withRetry(() => sql`DELETE FROM processed_stripe_events WHERE event_id = ${key}`);
+}
+
 export interface PayPalOrderRecord {
   lines: Array<{ priceId: string; quantity: number }>;
   amount: string;
   postcode: string;
   serviceCode: string;
   shippingCents: number;
+  /** LAUNCH50 discount given on this order, if any */
+  discountCents: number;
 }
 
 /** Records a PayPal order our server created, so capture only accepts our own orders. */
@@ -104,12 +137,31 @@ export async function savePayPalOrder(orderId: string, record: PayPalOrderRecord
   }
 
   await withRetry(() => sql`
-    INSERT INTO paypal_orders (order_id, lines, amount, postcode, service_code, shipping_cents)
+    INSERT INTO paypal_orders (order_id, lines, amount, postcode, service_code, shipping_cents, discount_cents)
     VALUES (
       ${orderId}, ${JSON.stringify(record.lines)}::jsonb, ${record.amount},
-      ${record.postcode}, ${record.serviceCode}, ${record.shippingCents}
+      ${record.postcode}, ${record.serviceCode}, ${record.shippingCents}, ${record.discountCents}
     )
   `);
+}
+
+/**
+ * PayPal orders that were paid with the LAUNCH50 discount. Stripe counts its own
+ * redemptions of the coupon; these are the ones Stripe never sees.
+ */
+export async function countPaidPayPalLaunchDiscounts(): Promise<number> {
+  const sql = getDb();
+  if (!sql) {
+    throw new Error('DATABASE_URL is not configured.');
+  }
+
+  const rows = await withRetry(() => sql`
+    SELECT count(*) AS used
+    FROM paypal_orders p
+    JOIN processed_stripe_events e ON e.event_id = 'paypal_' || p.order_id
+    WHERE p.discount_cents > 0
+  `);
+  return Number(rows[0]?.used ?? 0);
 }
 
 /** The order as our server created it, or null if we never created it. */
@@ -120,7 +172,7 @@ export async function getPayPalOrder(orderId: string): Promise<PayPalOrderRecord
   }
 
   const rows = await withRetry(() => sql`
-    SELECT lines, amount, postcode, service_code, shipping_cents
+    SELECT lines, amount, postcode, service_code, shipping_cents, discount_cents
     FROM paypal_orders WHERE order_id = ${orderId}
   `);
   if (rows.length === 0) {
@@ -133,6 +185,7 @@ export async function getPayPalOrder(orderId: string): Promise<PayPalOrderRecord
     postcode: row.postcode,
     serviceCode: row.service_code,
     shippingCents: Number(row.shipping_cents),
+    discountCents: Number(row.discount_cents ?? 0),
   };
 }
 
@@ -145,43 +198,24 @@ export interface InternationalInterestEntry {
 }
 
 /**
- * Saves international shipping waitlist interest in Neon DB.
- * If the email already exists, updates their details and country.
+ * Adds someone to the international shipping waitlist. An email that is
+ * already on the list is left unchanged, so nobody can overwrite another
+ * person's details by submitting their address.
  */
-export async function recordInternationalInterest(entry: InternationalInterestEntry): Promise<{ id: number; alreadyRegistered: boolean }> {
+export async function recordInternationalInterest(entry: InternationalInterestEntry): Promise<void> {
   const sql = getDb();
   if (!sql) {
     throw new Error('DATABASE_URL is not configured.');
   }
 
-  const { name, email, country, productInterest = 'Subaru Forester SG Double DIN Pod Kit', notes = '' } = entry;
+  const { name, email, country, productInterest = NAV_POD_NAME, notes = '' } = entry;
   const cleanEmail = email.trim().toLowerCase();
-  const cleanName = name.trim();
-  const cleanCountry = country.trim();
-  const cleanNotes = notes.trim();
 
-  // Check for existing registration
-  const existing = await withRetry(() => sql`
-    SELECT id FROM international_interest WHERE LOWER(email) = ${cleanEmail} LIMIT 1
-  `);
-
-  if (existing.length > 0) {
-    await withRetry(() => sql`
-      UPDATE international_interest
-      SET name = ${cleanName},
-          country = ${cleanCountry},
-          product_interest = ${productInterest},
-          notes = ${cleanNotes}
-      WHERE id = ${existing[0].id}
-    `);
-    return { id: Number(existing[0].id), alreadyRegistered: true };
-  }
-
-  const inserted = await withRetry(() => sql`
+  await withRetry(() => sql`
     INSERT INTO international_interest (name, email, country, product_interest, notes)
-    VALUES (${cleanName}, ${cleanEmail}, ${cleanCountry}, ${productInterest}, ${cleanNotes})
-    RETURNING id
+    SELECT ${name.trim()}, ${cleanEmail}, ${country.trim()}, ${productInterest}, ${notes.trim()}
+    WHERE NOT EXISTS (
+      SELECT 1 FROM international_interest WHERE LOWER(email) = ${cleanEmail}
+    )
   `);
-
-  return { id: Number(inserted[0].id), alreadyRegistered: false };
 }

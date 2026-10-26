@@ -1,0 +1,55 @@
+.not-found {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.not-found-inner {
+  max-width: 500px;
+}
+
+.not-found-code {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  color: #0369a1;
+}
+
+.not-found-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.not-found-text {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #475569;
+}
+
+.not-found-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .not-found-code {
+    color: #38bdf8;
+  }
+
+  .not-found-title {
+    color: #f9fafb;
+  }
+
+  .not-found-text {
+    color: #cbd5e1;
+  }
+}

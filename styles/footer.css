@@ -35,7 +35,7 @@
   }
 }
 
-.footer-section h3 {
+.footer-section h2 {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -66,4 +66,11 @@
 .footer-bottom p {
   font-size: 0.875rem;
   color: #9ca3af;
+}
+
+.footer-bottom .footer-disclaimer {
+  max-width: 48rem;
+  margin: 0.75rem auto 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }

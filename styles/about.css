@@ -139,7 +139,7 @@
 .faq-intro {
   text-align: center;
   font-size: 1.125rem;
-  color: #6b7280;
+  color: #4b5563;
   margin-bottom: 3rem;
   transition: color 0.3s;
 }
@@ -535,5 +535,28 @@
 
   .contact-form .btn {
     width: 100%;
+  }
+}
+
+.contact-privacy-note {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.contact-privacy-note a,
+.contact-intro a {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contact-privacy-note {
+    color: #9ca3af;
+  }
+
+  .contact-privacy-note a,
+  .contact-intro a {
+    color: #7dd3fc;
   }
 }

@@ -4,14 +4,28 @@ import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { getInventoryMap } from '@/lib/db';
 import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
-import { GST_NOTE } from '@/lib/site';
+import { GST_NOTE, SITE_URL } from '@/lib/site';
+import { isLaunchOfferAvailable } from '@/lib/promo-server';
+
+/** Where Stripe sends the buyer back to: this site, or one of its Netlify previews */
+function returnOrigin(req: Request): string {
+  const origin = req.headers.get('origin');
+  if (origin && (origin === SITE_URL || /^https:\/\/[a-z0-9-]+--fozprints\.netlify\.app$/.test(origin))) {
+    return origin;
+  }
+  if (origin && process.env.NODE_ENV === 'development' && /^http:\/\/localhost:\d+$/.test(origin)) {
+    return origin;
+  }
+  return SITE_URL;
+}
 
 export async function POST(req: Request) {
   try {
     const stripe = getStripeServer();
     if (!stripe) {
+      console.error('STRIPE_SECRET_KEY is not configured.');
       return NextResponse.json(
-        { error: 'STRIPE_SECRET_KEY is not configured on the server.' },
+        { error: 'Checkout is unavailable right now. Please try again later.' },
         { status: 500 }
       );
     }
@@ -50,7 +64,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const origin = returnOrigin(req);
 
     // Prices always come from Stripe via the Price ID, never from the client
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => ({
@@ -78,6 +92,13 @@ export async function POST(req: Request) {
     }));
 
     const isLaunchPromo = promoCode === 'LAUNCH50' && hasFullKit(items);
+    // Stripe caps its own uses of the coupon, but PayPal uses count toward the same 10
+    if (isLaunchPromo && !(await isLaunchOfferAvailable())) {
+      return NextResponse.json(
+        { error: 'The LAUNCH50 offer has ended. Please remove the code and try again.' },
+        { status: 400 }
+      );
+    }
 
     // Create Stripe Checkout Session
     const sessionParams: Stripe.Checkout.SessionCreateParams = {

@@ -6,6 +6,8 @@ import { Menu, X, Globe, Sparkles } from 'lucide-react';
 import { CartButton } from '@/components/CartButton';
 import { useFocusTrap } from '@/lib/use-focus-trap';
 import { LAUNCH_OFFER } from '@/lib/promo';
+import { useLaunchOfferAvailable } from '@/lib/use-launch-offer';
+import { NAV_POD_NAME } from '@/lib/product-seo';
 import { openInternationalWaitlist } from '@/components/InternationalInterestModal';
 import '../styles/header.css';
 
@@ -14,6 +16,8 @@ export function Header() {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
+  // Shown unless the offer is known to be used up
+  const offerLive = useLaunchOfferAvailable() !== false;
 
   // While the mobile menu is open: keep keyboard focus in the header, close on
   // Escape, and stop the page behind it from scrolling
@@ -74,26 +78,32 @@ export function Header() {
       {isAnnouncementVisible && (
         <div className="header-announcement">
           <div className="header-announcement-content">
-            <div className="header-announcement-desktop-only">
-              <span>
-                Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> the {LAUNCH_OFFER.productName} ({LAUNCH_OFFER.limit}) with code
-              </span>
-              <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
-              <span>{LAUNCH_OFFER.freeShipping} on the kit.</span>
-            </div>
-            <div className="header-announcement-mobile-only">
-              <div className="header-announcement-line1">
-                <strong>${LAUNCH_OFFER.discount} off</strong> with code <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
-              </div>
-              <div className="header-announcement-line2">
-                {LAUNCH_OFFER.productName}, {LAUNCH_OFFER.limit}. Free standard shipping on the kit.
-              </div>
-            </div>
+            {offerLive ? (
+              <>
+                <div className="header-announcement-desktop-only">
+                  <span>
+                    Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> the {LAUNCH_OFFER.productName} ({LAUNCH_OFFER.limit}) with code
+                  </span>
+                  <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
+                  <span>{LAUNCH_OFFER.freeShipping} on the kit.</span>
+                </div>
+                <div className="header-announcement-mobile-only">
+                  <div className="header-announcement-line1">
+                    <strong>${LAUNCH_OFFER.discount} off</strong> with code <code className="header-promo-code">{LAUNCH_OFFER.code}</code>
+                  </div>
+                  <div className="header-announcement-line2">
+                    {LAUNCH_OFFER.productName}, {LAUNCH_OFFER.limit}. Free standard shipping on the kit.
+                  </div>
+                </div>
+              </>
+            ) : (
+              <span>{LAUNCH_OFFER.freeShipping} on the {LAUNCH_OFFER.productName}.</span>
+            )}
           </div>
 
           <button
             type="button"
-            onClick={() => openInternationalWaitlist('Subaru Forester SG Double DIN Pod Kit')}
+            onClick={() => openInternationalWaitlist(NAV_POD_NAME)}
             className="header-intl-btn header-announcement-desktop-only"
             aria-label="Register international shipping interest"
           >
@@ -177,7 +187,7 @@ export function Header() {
             style={{ textAlign: 'left', background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8', cursor: 'pointer' }}
             onClick={() => {
               setIsMobileMenuOpen(false);
-              openInternationalWaitlist('Subaru Forester SG Double DIN Pod Kit');
+              openInternationalWaitlist(NAV_POD_NAME);
             }}
           >
             <Globe size={18} />

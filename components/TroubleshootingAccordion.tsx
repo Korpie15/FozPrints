@@ -20,7 +20,7 @@ const items: TroubleshootingItem[] = [
     id: 2,
     question: "Brackets don't align with car mounting points",
     answer:
-      "Double-check you have the correct model kit for your Forester year (SG 2003-2008 USDM). Ensure the brackets are attached to the correct sides of the head unit. Try loosening the bracket screws slightly to allow for minor adjustments.",
+      "Double-check you have the correct model kit for your Forester year (SG, 2003 to 2008, USDM spec). Ensure the brackets are attached to the correct sides of the head unit. Try loosening the bracket screws slightly to allow for minor adjustments.",
   },
   {
     id: 3,

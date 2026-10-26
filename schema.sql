@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS paypal_orders (
   postcode       text NOT NULL,          -- postcode the shipping was quoted for
   service_code   text NOT NULL,          -- AUS_PARCEL_REGULAR or AUS_PARCEL_EXPRESS
   shipping_cents integer NOT NULL,       -- shipping charged
+  discount_cents integer NOT NULL DEFAULT 0, -- LAUNCH50 discount given (counts toward the 10-use cap)
   created_at timestamptz NOT NULL DEFAULT now()
 );

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Globe, CheckCircle2, Loader2 } from 'lucide-react';
 import { useFocusTrap } from '@/lib/use-focus-trap';
+import { NAV_POD_NAME } from '@/lib/product-seo';
 
 interface InternationalInterestModalProps {
   isOpen?: boolean;
@@ -37,7 +38,7 @@ const COMMON_COUNTRIES = [
 export function InternationalInterestModal({
   isOpen: controlledIsOpen,
   onClose: controlledOnClose,
-  productInterest: defaultProductInterest = 'Subaru Forester SG Double DIN Pod Kit',
+  productInterest: defaultProductInterest = NAV_POD_NAME,
 }: InternationalInterestModalProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
@@ -274,10 +275,11 @@ export function InternationalInterestModal({
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
+                <label htmlFor="intl-name" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
                   Full Name <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
+                  id="intl-name"
                   type="text"
                   required
                   value={name}
@@ -297,10 +299,11 @@ export function InternationalInterestModal({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
+                <label htmlFor="intl-email" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
                   Email Address <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
+                  id="intl-email"
                   type="email"
                   required
                   value={email}
@@ -320,10 +323,11 @@ export function InternationalInterestModal({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
+                <label htmlFor="intl-country" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
                   Country / Region <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
+                  id="intl-country"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   style={{
@@ -350,6 +354,7 @@ export function InternationalInterestModal({
                     required
                     value={otherCountry}
                     onChange={(e) => setOtherCountry(e.target.value)}
+                    aria-label="Your country"
                     placeholder="Enter your country name"
                     style={{
                       width: '100%',
@@ -367,10 +372,11 @@ export function InternationalInterestModal({
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
+                <label htmlFor="intl-notes" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.35rem', color: '#e5e7eb' }}>
                   Your Vehicle / Model (Optional)
                 </label>
                 <input
+                  id="intl-notes"
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -393,6 +399,15 @@ export function InternationalInterestModal({
                   {errorMessage}
                 </div>
               )}
+
+              <p style={{ fontSize: '0.75rem', lineHeight: 1.5, color: '#9ca3af', margin: 0 }}>
+                By registering, you agree that Foz Prints may email you about international shipping and a
+                related launch offer. We won&apos;t send anything else, and you can unsubscribe at any time. See our{' '}
+                <a href="/policies/privacy-policy" style={{ color: '#7dd3fc', textDecoration: 'underline' }}>
+                  Privacy Policy
+                </a>
+                .
+              </p>
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
                 <button

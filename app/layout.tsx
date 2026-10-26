@@ -4,7 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { InternationalInterestModal } from '@/components/InternationalInterestModal';
 import { AnalyticsConsent } from '@/components/AnalyticsConsent';
-import { SITE_URL } from '@/lib/site';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 const siteUrl = SITE_URL;
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: '%s | Foz Prints',
   },
   description:
-    'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003-2008). Heat and UV-resistant engineering materials.',
+    'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003 to 2008). Heat and UV-resistant engineering materials.',
   keywords: [
     'Subaru Forester',
     'SG Forester',
@@ -54,26 +54,15 @@ export const metadata: Metadata = {
     siteName: 'Foz Prints',
     title: 'Foz Prints - Precision 3D Printed Subaru Forester Parts',
     description:
-      'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003-2008).',
-    images: [
-      {
-        url: '/images/hero-bg-installed.png',
-        width: 1200,
-        height: 630,
-        alt: 'Nav Pod Kit installed in a Subaru Forester SG dash',
-      },
-    ],
+      'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003 to 2008).',
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Foz Prints - Precision 3D Printed Subaru Forester Parts',
     description:
-      'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003-2008).',
-    images: ['/images/hero-bg-installed.png'],
-  },
-  icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+      'Premium 3D printed automotive parts and accessories designed and manufactured in Australia for the SG Subaru Forester (2003 to 2008).',
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 

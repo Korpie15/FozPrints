@@ -2,6 +2,7 @@
 
 import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { Toast } from './Toast';
 import '../styles/about.css';
@@ -70,8 +71,8 @@ export function AboutContent() {
             <div className="about-content-grid">
               <div className="about-text">
                 <p>
-                  Finding decent interior parts for an SG Forester shouldn't mean paying $400 for a 20-year-old 
-                  cracked OEM bezel or buying flimsy generic plastics that droop after two weeks in the sun.
+                  Finding decent interior parts for an SG Forester shouldn't mean paying hundreds of dollars for a
+                  20-year-old cracked factory bezel, or settling for generic plastic that sags in the sun.
                 </p>
                 <p>
                   I started Foz Prints to fix that problem for my own car. That pile in the photo is what it actually 
@@ -79,8 +80,8 @@ export function AboutContent() {
                   dialling in clip tolerances and shrinkage so everything snaps into place like factory trim.
                 </p>
                 <p>
-                  Every part is printed locally in ASA, a UV and high-heat resistant polymer built to survive 
-                  Australian summers on a black dashboard without warping.
+                  Every part is printed locally in ASA, a UV-stable, heat-resistant engineering plastic chosen
+                  for life on a black dashboard through an Australian summer.
                 </p>
               </div>
               <div className="about-image">
@@ -121,7 +122,7 @@ export function AboutContent() {
                 {openFaq === 1 && (
                   <div className="faq-answer" id="faq-answer-1">
                     <p>
-                      No. The parts are printed in <strong>ASA (Acrylonitrile Styrene Acrylate)</strong>, an automotive-grade thermoplastic with heat resistance up to ~95°C and full UV stability. It won't soften or sag sitting on an Australian dashboard in mid-summer.
+                      They&apos;re designed not to. The parts are printed in <strong>ASA (Acrylonitrile Styrene Acrylate)</strong>, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), well above PLA&apos;s roughly 55°C. Very high cabin temperatures can still affect any plastic, so we recommend a windscreen sunshade when you park in direct sun.
                     </p>
                   </div>
                 )}
@@ -197,7 +198,8 @@ export function AboutContent() {
           <div className="container">
             <h2>Contact Us</h2>
             <p className="contact-intro">
-              Got a question about fitment, lead times, or custom prints? Drop a message below.
+              Got a question about fitment, lead times, or custom prints? Drop a message below, or email{' '}
+              <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.
             </p>
 
             <div className="contact-form-section">
@@ -232,6 +234,10 @@ export function AboutContent() {
                 <button type="submit" className="btn btn-primary" disabled={isSending}>
                   {isSending ? 'Sending...' : 'Send Message'}
                 </button>
+                <p className="contact-privacy-note">
+                  We only use your details to reply to your message. See our{' '}
+                  <Link href="/policies/privacy-policy">Privacy Policy</Link>.
+                </p>
               </form>
             </div>
           </div>

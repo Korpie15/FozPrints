@@ -1,43 +1,58 @@
 import { NextResponse } from 'next/server';
 import { recordInternationalInterest } from '@/lib/db';
 
+const MAX = { name: 100, email: 254, country: 100, productInterest: 150, notes: 500 };
+
+/** A trimmed string within the limit, '' when missing, or null when too long or not a string */
+function field(value: unknown, max: number): string | null {
+  if (value === undefined || value === null) return '';
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > max ? null : trimmed;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null);
-    if (!body) {
+    if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
     }
 
-    const { name, email, country, productInterest, notes } = body;
+    const name = field(body.name, MAX.name);
+    const email = field(body.email, MAX.email);
+    const country = field(body.country, MAX.country);
+    const productInterest = field(body.productInterest, MAX.productInterest);
+    const notes = field(body.notes, MAX.notes);
 
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return NextResponse.json({ error: 'Please provide your name.' }, { status: 400 });
+    if (!name) {
+      return NextResponse.json({ error: `Please provide your name (up to ${MAX.name} characters).` }, { status: 400 });
     }
-
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
-
-    if (!country || typeof country !== 'string' || country.trim().length === 0) {
-      return NextResponse.json({ error: 'Please provide your country.' }, { status: 400 });
+    if (!country) {
+      return NextResponse.json({ error: `Please provide your country (up to ${MAX.country} characters).` }, { status: 400 });
+    }
+    if (productInterest === null || notes === null) {
+      return NextResponse.json({ error: `Please keep your notes under ${MAX.notes} characters.` }, { status: 400 });
     }
 
-    const result = await recordInternationalInterest({
-      name: name.slice(0, 100),
-      email: email.slice(0, 150),
-      country: country.slice(0, 100),
-      productInterest: typeof productInterest === 'string' ? productInterest.slice(0, 150) : undefined,
-      notes: typeof notes === 'string' ? notes.slice(0, 500) : undefined,
+    await recordInternationalInterest({
+      name,
+      email,
+      country,
+      productInterest: productInterest || undefined,
+      notes,
     });
 
+    // The same reply whether or not the email was already on the list, so the
+    // form can't be used to find out who has signed up
     return NextResponse.json({
       success: true,
-      alreadyRegistered: result.alreadyRegistered,
-      message: result.alreadyRegistered
-        ? "We've updated your preferences! We'll notify you the moment shipping opens to your country."
-        : "Thank you! You're on the list. We'll email you the moment shipping opens to your country with an exclusive early-bird offer.",
+      message:
+        "Thank you! You're on the list. We'll email you when shipping opens to your country, along with an early-bird offer. You can unsubscribe at any time.",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error saving international interest:', error);
     return NextResponse.json(
       { error: 'Failed to record your interest. Please try again later.' },

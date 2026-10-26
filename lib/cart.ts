@@ -91,7 +91,8 @@ export function parsePostcode(raw: unknown): string {
   if (postcode === '') {
     return '2000';
   }
-  if (!/^\d{4}$/.test(postcode)) {
+  // No Australian postcode is below 0200
+  if (!/^\d{4}$/.test(postcode) || Number(postcode) < 200) {
     throw new CheckoutError('Please enter a valid Australian postcode.');
   }
   return postcode;

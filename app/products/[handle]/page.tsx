@@ -112,7 +112,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ]
         : undefined,
       description: seoDescription,
-      category: 'Automotive Interior Accessories',
+      category: /rooftop|tent/i.test(product.title)
+        ? 'Camping & Overlanding Accessories'
+        : 'Automotive Interior Accessories',
       image: product.images.map((img) => (img.url.startsWith('/') ? `${siteUrl}${img.url}` : img.url)),
       url: productUrl,
       brand: {
@@ -137,7 +139,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         hasMerchantReturnPolicy: {
           '@type': 'MerchantReturnPolicy',
           applicableCountry: 'AU',
-          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+          // Change-of-mind returns aren't offered on made-to-order parts, but faulty
+          // items always can be, so don't tell search engines returns are not permitted
+          returnPolicyCategory: 'https://schema.org/MerchantReturnUnspecified',
           merchantReturnLink: `${siteUrl}/policies/refund-policy`,
           itemDefectReturnFees: 'https://schema.org/FreeReturn',
           itemDefectReturnShippingFeesAmount: {

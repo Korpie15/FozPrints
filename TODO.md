@@ -4,7 +4,7 @@ Outstanding steps from the security and QA work (October 2026). Code changes are
 
 ## Analytics (Microsoft Clarity)
 
-- [ ] Set masking to **Strict**: sign in at https://clarity.microsoft.com, open project `z0ivapi5ky`, Settings → Masking → Strict → Save.
+- [x] Set masking to **Strict**: sign in at https://clarity.microsoft.com, open project `z0ivapi5ky`, Settings → Masking → Strict → Save.
 - [ ] After deploying, click "Allow analytics" and check only one Clarity script loads. If two versions still load, check Cloudflare Zaraz and Netlify Snippet injection for a second copy.
 
 ## Email spoofing (Cloudflare → DNS)
@@ -16,12 +16,12 @@ Outstanding steps from the security and QA work (October 2026). Code changes are
 
 ## Security headers
 
-- [ ] After deploying, browse the site, cart, Stripe checkout and PayPal checkout with the browser console open. If there are no `Content-Security-Policy-Report-Only` warnings, switch the policy to enforced (rename the header in `next.config.js`).
+- [x] Content security policy checked and enforced (25 October 2026); Cloudflare Web Analytics added to it.
 - [ ] Optional: Cloudflare → SSL/TLS → Edge Certificates → HSTS → tick Include subdomains, only if every subdomain works over HTTPS.
 
 ## Framework
 
-- [ ] Upgrade Next.js from 16.0.8 to the latest 16.x (16.4.2 or later). Fixes critical advisories, including remote code execution in image optimisation when AVIF is enabled (it is).
+- [x] Upgrade Next.js from 16.0.8 to the latest 16.x (16.4.2 or later). Fixes critical advisories, including remote code execution in image optimisation when AVIF is enabled (it is).
 
 ## Stock and test data
 
@@ -49,5 +49,14 @@ Outstanding steps from the security and QA work (October 2026). Code changes are
 
 ## Still open from the audits
 
-- [ ] Site audit (`FOZPRINTS_HITLIST.md`): items not yet done include #2 (Nav Pod defaulting to an out-of-stock variant), #5 (policy wording vs Australian Consumer Law), #10 (small-phone overflow) and #12 to #24.
+- [x] Site audit (`FOZPRINTS_HITLIST.md`): code items done; what's left is tracked in `AUDIT_REMAINING.md`.
 - [ ] Anti-slop audit (`anti-slop/audit-001-2026-10-21.md`): choose which numbered items to fix.
+
+## Order automation
+
+- [x] Order email to info@fozprints.com.au via Resend on every paid order (Stripe and PayPal), sent once per order (built, not yet deployed).
+- [x] Customer confirmation email (made-to-order lead time, delivery address, install guide link and safety reminder for the Nav Pod Kit, refund policy link), sent once per order (built, not yet deployed).
+- [ ] After deploying: place one real low-value order (or a PayPal sandbox order on the test site) and check both emails arrive and look right.
+- [ ] Leave Stripe's own "Successful payments" receipts OFF (Settings → Business → Customer emails): our confirmation email is the receipt, so turning it on would send card buyers two emails. PayPal always sends its own payment receipt, which is fine.
+- [x] Australia Post labels: decided to stay manual for now. Create labels in MyPost Business by hand from the order email.
+- [ ] Later, if volume grows: Starshipit (about A$35-45/month, linked to MyPost Business, paid orders sent in as drafts) or a "Download orders CSV" export for MyPost Business bulk import (free). Shippit's paid plans (about A$499/month) are too expensive at this volume.

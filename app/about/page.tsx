@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AboutContent } from '@/components/AboutContent';
-import { SITE_URL } from '@/lib/site';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'About Foz Prints & FAQ',
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     canonical: '/about',
   },
   openGraph: {
-    title: 'About Foz Prints & FAQ | Custom Subaru Forester Parts',
+    images: [DEFAULT_OG_IMAGE],
+    title: 'About Foz Prints & FAQ',
     description:
       'Custom 3D printed parts for the SG Subaru Forester, made in Australia from heat-resistant ASA. Read about the design process, FAQs, and get in touch.',
     url: `${SITE_URL}/about`,
@@ -26,7 +27,7 @@ const faqSchema = {
       name: 'Will these parts melt in the Australian sun?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No. The parts are printed in ASA (Acrylonitrile Styrene Acrylate), an automotive-grade thermoplastic with heat resistance up to ~95°C and full UV stability. It won’t soften or sag sitting on an Australian dashboard in mid-summer.',
+        text: 'They’re designed not to. The parts are printed in ASA (Acrylonitrile Styrene Acrylate), a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), well above PLA’s roughly 55°C. Very high cabin temperatures can still affect any plastic, so we recommend a windscreen sunshade when you park in direct sun.',
       },
     },
     {

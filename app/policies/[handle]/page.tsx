@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getAllPolicies, getPolicy } from '@/lib/policies';
 import '@/styles/policy.css';
-import { SITE_URL } from '@/lib/site';
+import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 // The policies are a fixed set, so build them all ahead and 404 anything else
 export const dynamicParams = false;
@@ -32,13 +32,14 @@ export async function generateMetadata({
 
   return {
     title: policy.title,
-    description: `Read the ${policy.title} for Foz Prints online store.`,
+    description: policy.description,
     alternates: {
       canonical: `${siteUrl}/policies/${handle}`,
     },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title: `${policy.title} | Foz Prints`,
-      description: `Read the ${policy.title} for Foz Prints online store.`,
+      description: policy.description,
       url: `${siteUrl}/policies/${handle}`,
     },
   };

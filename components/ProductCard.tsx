@@ -25,20 +25,50 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
   const hasMultipleVariants = variants.length > 1;
   const firstVariant = variants[0];
 
-  // Close dropdown on outside click
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuId = `finish-options-${product.id}`;
+
+  // Close the dropdown on an outside click, on Escape (returning focus to the
+  // toggle), or when focus moves out of the card; move focus into it on open
   useEffect(() => {
+    if (!isDropdownOpen) return;
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     }
-    if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+        toggleRef.current?.focus();
+      }
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    function handleFocusOut(event: FocusEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.relatedTarget as Node | null)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    const wrapper = dropdownRef.current;
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    wrapper?.addEventListener('focusout', handleFocusOut);
+    wrapper?.querySelector<HTMLButtonElement>('.product-card-dropdown button:not(:disabled)')?.focus({ preventScroll: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+      wrapper?.removeEventListener('focusout', handleFocusOut);
+    };
   }, [isDropdownOpen]);
 
   const isAvailable = Boolean(firstVariant?.availableForSale);
+
+  // Price from the finishes that can be bought now, so a sold-out cheaper
+  // finish doesn't advertise a price nobody can pay
+  const purchasable = variants.filter((v) => v.availableForSale);
+  const pricedVariants = purchasable.length > 0 ? purchasable : variants;
+  const variantPrices = pricedVariants.map((v) => parseFloat(v.price.amount)).filter((n) => !Number.isNaN(n));
+  const cardPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : product.price;
+  const hasPriceRange = new Set(variantPrices).size > 1;
   const hasAnyAvailableVariant = variants.some((v) => v.availableForSale);
 
   const handleAddToCart = (e: React.MouseEvent, variant: ProductVariant) => {
@@ -92,12 +122,18 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
 
           <div className="product-card-footer">
             <span className="product-card-price">
-              {formatPrice(product.price.toString(), product.currencyCode)}
+              {hasPriceRange && 'From '}
+              {formatPrice(cardPrice.toString(), product.currencyCode)}
             </span>
             <div className="product-card-actions">
               {hasMultipleVariants ? (
                 <div className="product-card-dropdown-wrapper">
                   <button
+                    ref={toggleRef}
+                    type="button"
+                    aria-label={`Choose a finish for ${product.title}`}
+                    aria-expanded={isDropdownOpen}
+                    aria-controls={menuId}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -133,6 +169,7 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
       {/* Dropdown rendered outside card */}
       {hasMultipleVariants && isDropdownOpen && hasAnyAvailableVariant && (
         <div
+          id={menuId}
           className="product-card-dropdown"
           onClick={(e) => {
             e.stopPropagation();
@@ -149,6 +186,7 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
                 className={`product-card-button product-card-button-cart ${!variant.availableForSale ? 'product-card-button-unavailable' : ''}`}
                 style={{ padding: '0.25rem 0.5rem' }}
                 title={!variant.availableForSale ? 'Out of stock' : 'Quick add to cart'}
+                aria-label={variant.availableForSale ? `Add ${variant.title} to cart` : `${variant.title} is out of stock`}
               >
                 <ShoppingCart size={14} />
               </button>

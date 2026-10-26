@@ -1,13 +1,38 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { verifyPayPalWebhook } from '@/lib/paypal';
+import { getPayPalOrderDetails, verifyPayPalWebhook } from '@/lib/paypal';
+import { buildPayPalOrderSummary, sendOrderEmailsOnce } from '@/lib/order-email';
 import { decrementInventoryOnce, getPayPalOrder } from '@/lib/db';
 
 /**
  * Backup for the capture route's stock update: PayPal retries this webhook
  * until it succeeds, so a failed inventory write is never lost.
  */
+const SIGNATURE_HEADERS = [
+  'paypal-auth-algo',
+  'paypal-cert-url',
+  'paypal-transmission-id',
+  'paypal-transmission-sig',
+  'paypal-transmission-time',
+];
+
 export async function POST(req: Request) {
+  // Anything without PayPal's signature headers can't be genuine: reject it
+  // before spending calls to PayPal's verification API
+  const certUrl = req.headers.get('paypal-cert-url') ?? '';
+  let certHost = '';
+  try {
+    certHost = new URL(certUrl).hostname;
+  } catch {
+    // Missing or malformed cert URL: rejected below
+  }
+  if (
+    SIGNATURE_HEADERS.some((name) => !req.headers.get(name)) ||
+    !(certHost === 'paypal.com' || certHost.endsWith('.paypal.com'))
+  ) {
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+
   const event = await req.json().catch(() => null);
   if (!event) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
@@ -21,7 +46,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Webhook verification unavailable' }, { status: 500 });
   }
   if (!verified) {
-    return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
   if (event.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
@@ -55,6 +80,18 @@ export async function POST(req: Request) {
       // Non-2xx makes PayPal retry; decrementInventoryOnce is safe to retry
       console.error(`PayPal order ${orderId}: failed to update inventory:`, err);
       return NextResponse.json({ error: 'Failed to update inventory' }, { status: 500 });
+    }
+
+    // Backup for the order emails: sends any the capture route couldn't, never twice
+    try {
+      await sendOrderEmailsOnce(`paypal_${orderId}`, async () => {
+        const recorded = await getPayPalOrder(orderId);
+        if (!recorded) throw new Error('order record disappeared');
+        return buildPayPalOrderSummary(orderId, recorded, await getPayPalOrderDetails(orderId), []);
+      });
+    } catch (err) {
+      console.error(`PayPal order ${orderId}: failed to send order emails:`, err);
+      return NextResponse.json({ error: 'Failed to send order emails' }, { status: 500 });
     }
   }
 

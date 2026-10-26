@@ -9,6 +9,8 @@ import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { isNavPodProduct, NAV_POD_FAQS, NAV_POD_NAME, NAV_POD_SHORT_NAME } from '@/lib/product-seo';
 import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
+import { useLaunchOfferAvailable } from '@/lib/use-launch-offer';
+import { LEAD_TIME, NAV_POD_SAFETY, NON_AFFILIATION } from '@/lib/site';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
 import { ImageLightbox } from './ImageLightbox';
@@ -75,6 +77,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const isNavPod = isNavPodProduct(product);
   const isFullKit = isLaunchKit(product.id);
   const isModularComponent = !isFullKit && isNavPod;
+  // Shown unless the offer is known to be used up
+  const launchOfferLive = useLaunchOfferAvailable() !== false;
 
   // Warm the browser and image caches so switching variants/photos is instant.
   // Variant photos go first; the rest of the gallery follows once the page is idle.
@@ -303,11 +307,14 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             )}
           </div>
 
-          {isFullKit && (
+          <p className="product-lead-time">{LEAD_TIME}</p>
+
+          {isFullKit && launchOfferLive && (
             <div className="product-launch-pill">
               <Sparkles size={14} style={{ flexShrink: 0 }} />
               <span>
                 Launch offer: <strong>${LAUNCH_OFFER.discount} off</strong> with code <code>{LAUNCH_OFFER.code}</code> ({LAUNCH_OFFER.limit})
+                <span className="product-launch-terms">{LAUNCH_OFFER.terms}</span>
               </span>
             </div>
           )}
@@ -318,6 +325,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <span>
                 Subaru Forester SG, 2003 to 2008 (all trims), in both right-hand drive (Australia, UK, Japan) and
                 left-hand drive (USA, Canada, Europe) cars. &quot;USDM Spec&quot; describes the pod&apos;s shape, not where your car is from.
+                Please check your dash matches the photos before ordering. The pod suits standard double DIN head units;
+                deeper units may need minor trimming of the ducting behind the dash.
               </span>
             </div>
           )}
@@ -325,10 +334,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           {isModularComponent && (
             <div className="product-oem-callout">
               <strong>
-                🔄 Direct OEM Replacement (Subaru Part # H0010SA950ML)
+                🔄 Replacement part for the factory pod (Subaru part no. H0010SA950ML)
               </strong>
               <span>
-                100% backwards-compatible with the factory original Subaru USDM navigation housing. If your OEM pod clips snapped or you only need this specific component, it clips directly into your existing factory dash hardware, so there&apos;s no need to buy the full kit.
+                Designed to fit the factory Subaru USDM navigation housing. If your original pod&apos;s clips have snapped or you only need this one component, it fits your existing factory dash hardware, so there&apos;s no need to buy the full kit. This is an aftermarket part, not a genuine Subaru part.
               </span>
             </div>
           )}
@@ -344,7 +353,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               >
                 {product.variants.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.title}
+                    {v.availableForSale ? v.title : `${v.title} (out of stock)`}
                   </option>
                 ))}
               </select>
@@ -422,14 +431,30 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           )}
 
+          {isNavPod && (
+            <div className="product-safety">
+              <strong>Important safety information</strong>
+              <ul>
+                {NAV_POD_SAFETY.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+              <p>This doesn&apos;t limit your rights under the Australian Consumer Law.</p>
+            </div>
+          )}
+
           <div className="product-description">
             <div
               className="product-description-content"
               dangerouslySetInnerHTML={{
-                __html: formatDescriptionToHtml(product.descriptionHtml || product.description),
+                __html: formatDescriptionToHtml(product.description),
               }}
             />
           </div>
+
+          {/subaru|forester/i.test(product.title) && (
+            <p className="product-non-affiliation">{NON_AFFILIATION}</p>
+          )}
         </div>
       </div>
 
@@ -450,9 +475,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
                 <div>
-                  <h3>OEM Fit & Dashboard Texture Match</h3>
+                  <h3>Designed for the SG Dash, with a Matching Texture</h3>
                   <p>
-                    Custom engineered specifically for the 2003–2008 Subaru Forester (SG chassis). Available in both smooth satin and textured OEM-matched finish to blend seamlessly with factory dashboard trim.
+                    Designed for the 2003 to 2008 Subaru Forester (SG chassis). Available in a smooth satin finish, or a textured finish made to closely match the grain of the factory dashboard.
                   </p>
                 </div>
               </div>
@@ -461,7 +486,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>High-Heat Automotive ASA Material</h3>
                   <p>
-                    Precision 3D printed in engineering-grade ASA polymer. Rated to withstand interior dashboard temperatures up to 95°C (203°F) and harsh UV exposure without softening, warping, or discoloring.
+                    3D printed in ASA, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), chosen for life on a sunny dashboard. Very high cabin temperatures can still affect any plastic, so use a windscreen sunshade when parked in direct sun.
                   </p>
                 </div>
               </div>
@@ -477,9 +502,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
                 <div>
-                  <h3>100% OEM Modular Compatibility (Subaru Part # H0010SA950ML)</h3>
+                  <h3>Compatible with the Factory Pod (Subaru part no. H0010SA950ML)</h3>
                   <p>
-                    Every component is dimensionally matched to the factory Subaru USDM Navigation Pod (H0010SA950ML). If you already own an OEM pod and only need a pod shell, front fascia or bracket, email us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. Individual parts aren&apos;t listed in the shop, but we can supply them, and they fit your existing factory hardware.
+                    Each component is modelled on our measurements of the factory Subaru USDM navigation pod (H0010SA950ML), so parts can be mixed with an original pod. If you already own a factory pod and only need a pod shell, front fascia or bracket, email us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. Individual parts aren&apos;t listed in the shop, but we can supply them, and they fit your existing factory hardware.
                   </p>
                 </div>
               </div>

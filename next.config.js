@@ -6,7 +6,7 @@ const contentSecurityPolicy = [
   // Cloudflare adds its Web Analytics beacon to the live domain (not Netlify previews)
   "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://www.paypal.com https://*.paypal.com https://*.paypalobjects.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://files.stripe.com https://placehold.co https://*.paypal.com https://*.paypalobjects.com https://*.clarity.ms https://c.bing.com",
+  "img-src 'self' data: blob: https://files.stripe.com https://*.paypal.com https://*.paypalobjects.com https://*.clarity.ms https://c.bing.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.paypal.com https://*.paypalobjects.com https://cloudflareinsights.com",
   "frame-src https://*.paypal.com",
@@ -14,6 +14,7 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
+  'upgrade-insecure-requests',
 ].join('; ');
 
 const securityHeaders = [
@@ -23,6 +24,10 @@ const securityHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), usb=(), interest-cohort=()' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
+  // Netlify sets CONTEXT during the build: keep previews and branch deploys out of search results
+  ...(process.env.CONTEXT && process.env.CONTEXT !== 'production'
+    ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
+    : []),
 ];
 
 /** @type {import('next').NextConfig} */
@@ -41,10 +46,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'files.stripe.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
       },
     ],
   },

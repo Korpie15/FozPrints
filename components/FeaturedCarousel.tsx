@@ -34,7 +34,8 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
     if (!track || items.length === 0) return;
 
     const target = (index + items.length) % items.length;
-    track.scrollTo({ left: items[target].offsetLeft - items[0].offsetLeft, behavior: 'smooth' });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    track.scrollTo({ left: items[target].offsetLeft - items[0].offsetLeft, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
   const handleScroll = () => {
@@ -47,7 +48,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
   };
 
   return (
-    <div className="featured-carousel">
+    <div className="featured-carousel" role="region" aria-roledescription="carousel" aria-label="Featured products">
       <button
         onClick={() => scrollToIndex(currentIndex - 1)}
         className="carousel-button carousel-button-prev"
@@ -57,8 +58,14 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
       </button>
 
       <div className="featured-grid" ref={trackRef} onScroll={handleScroll}>
-        {displayProducts.map((product) => (
-          <div key={product.id} className="featured-grid-item">
+        {displayProducts.map((product, index) => (
+          <div
+            key={product.id}
+            className="featured-grid-item"
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} of ${displayProducts.length}`}
+          >
             <ProductCard product={product} />
           </div>
         ))}

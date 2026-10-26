@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getShopPolicies } from '@/lib/policies';
 import { AnalyticsSettingsButton } from '@/components/AnalyticsConsent';
-import { BUSINESS_ABN, GST_NOTE } from '@/lib/site';
+import { BUSINESS_ABN, GST_NOTE, NON_AFFILIATION } from '@/lib/site';
 import '../styles/footer.css';
 
 export async function Footer() {
@@ -23,19 +23,20 @@ export async function Footer() {
               <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#e0f2fe' }}>Prints</span>
             </Link>
             <p>
-              Heat-resistant 3D printed parts for the SG Subaru Forester. Designed, tested, and made in Australia.
+              Heat-resistant 3D printed parts for the SG Subaru Forester. Designed and 3D printed in Australia.
             </p>
           </div>
 
           <div className="footer-section">
-            <h3>Shop</h3>
+            <h2>Shop</h2>
             <Link href="/products">All Products</Link>
             <Link href="/manuals">Install Manuals</Link>
           </div>
 
           <div className="footer-section">
-            <h3>Support</h3>
+            <h2>Support</h2>
             <Link href="/about#contact">Contact Us</Link>
+            <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>
             {policies?.shippingPolicy && (
               <Link href="/policies/shipping-policy">
                 {policies.shippingPolicy.title}
@@ -50,7 +51,7 @@ export async function Footer() {
           </div>
 
           <div className="footer-section">
-            <h3>Company</h3>
+            <h2>Company</h2>
             <Link href="/about">About Us</Link>
             {policies?.privacyPolicy && (
               <Link href="/policies/privacy-policy">
@@ -71,6 +72,7 @@ export async function Footer() {
             © {new Date().getFullYear()} Foz Prints, ABN {BUSINESS_ABN}. All rights reserved.
           </p>
           <p>{GST_NOTE}</p>
+          <p className="footer-disclaimer">{NON_AFFILIATION}</p>
         </div>
       </div>
     </footer>

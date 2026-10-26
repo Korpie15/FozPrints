@@ -3,7 +3,7 @@
   top: calc(var(--header-offset, 6.25rem) + 0.6rem);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 99999;
+  z-index: 10000; /* above the header and consent banner, below the photo viewer */
   width: 100%;
   max-width: 34rem;
   padding: 0 1rem;

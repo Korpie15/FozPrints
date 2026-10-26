@@ -1,4 +1,17 @@
 .cart-page {
+  /* Thin divider lines and quiet text, visible in both colour schemes */
+  --cart-hairline: #e5e7eb;
+  --cart-muted: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-page {
+    --cart-hairline: rgba(255, 255, 255, 0.12);
+    --cart-muted: #9ca3af;
+  }
+}
+
+.cart-page {
   padding: 3rem 1rem;
   max-width: 1280px;
   margin: 0 auto;
@@ -262,6 +275,19 @@
   padding-top: 1rem;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.cart-promo-terms {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cart-promo-terms {
+    color: #9ca3af;
+  }
 }
 
 .cart-gst-note {
