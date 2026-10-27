@@ -3,7 +3,7 @@ import { getProducts } from '@/lib/stripe';
 import { ProductCard } from '@/components/ProductCard';
 import { Product } from '@/types/product';
 import '@/styles/products.css';
-import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
+import { DEFAULT_OG_IMAGE, PRODUCT_DISPLAY_ORDER, SITE_URL } from '@/lib/site';
 
 export const revalidate = 300;
 
@@ -24,7 +24,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const position = (handle: string) => {
+    const index = PRODUCT_DISPLAY_ORDER.indexOf(handle.toLowerCase());
+    return index === -1 ? PRODUCT_DISPLAY_ORDER.length : index;
+  };
+  const products = [...(await getProducts())].sort((a, b) => position(a.handle) - position(b.handle));
 
   return (
     <div className="products-page">

@@ -335,8 +335,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <span>
                 Subaru Forester SG, 2003 to 2008 (all trims), in both right-hand drive (Australia, UK, Japan) and
                 left-hand drive (USA, Canada, Europe) cars. &quot;USDM Spec&quot; describes the pod&apos;s shape, not where your car is from.
-                Please check your dash matches the photos before ordering. The pod suits standard double DIN head units;
-                deeper units may need minor trimming of the ducting behind the dash.
+                Please check your dash matches the photos before ordering. The pod suits standard double DIN head units.
               </span>
             </div>
           )}

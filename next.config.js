@@ -4,12 +4,12 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   // Next.js inlines its bootstrap scripts and styles, so 'unsafe-inline' is needed without nonces
   // Cloudflare adds its Web Analytics beacon to the live domain (not Netlify previews)
-  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://www.paypal.com https://*.paypal.com https://*.paypalobjects.com https://static.cloudflareinsights.com https://apis.google.com https://www.gstatic.com",
+  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://www.paypal.com https://*.paypal.com https://*.paypalobjects.com https://static.cloudflareinsights.com https://apis.google.com https://www.gstatic.com https://www.googletagmanager.com https://googleads.g.doubleclick.net",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://files.stripe.com https://*.paypal.com https://*.paypalobjects.com https://*.clarity.ms https://c.bing.com",
+  "img-src 'self' data: blob: https://files.stripe.com https://*.paypal.com https://*.paypalobjects.com https://*.clarity.ms https://c.bing.com https://*.google-analytics.com https://*.googletagmanager.com https://www.google.com https://www.google.com.au https://googleads.g.doubleclick.net",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.paypal.com https://*.paypalobjects.com https://cloudflareinsights.com",
-  "frame-src https://*.paypal.com https://www.google.com",
+  "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.paypal.com https://*.paypalobjects.com https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.google.com https://googleads.g.doubleclick.net https://*.doubleclick.net",
+  "frame-src https://*.paypal.com https://www.google.com https://www.googletagmanager.com https://td.doubleclick.net",
   "form-action 'self' https://checkout.stripe.com https://*.paypal.com",
   "base-uri 'self'",
   "object-src 'none'",

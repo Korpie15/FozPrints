@@ -5,7 +5,7 @@ import { getProducts } from '@/lib/stripe';
 import { Product } from '@/types/product';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import '../styles/home.css';
-import { SITE_URL } from '@/lib/site';
+import { PRODUCT_DISPLAY_ORDER, SITE_URL } from '@/lib/site';
 
 export const revalidate = 300;
 
@@ -33,13 +33,7 @@ const websiteSchema = {
 };
 
 export default async function HomePage() {
-  const featuredHandles = [
-    'subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
-    'sg-forester-pod-kit',
-    'subaru-forester-sg-2003-2008-double-din-lower-storage-cubby',
-    'rooftop-tent-anderson-plug-holder-t-slot-power-mount',
-    'rooftop-tent-cable-organiser-t-slot-wire-router',
-  ];
+  const featuredHandles = PRODUCT_DISPLAY_ORDER;
 
   const allProducts = await getProducts();
 

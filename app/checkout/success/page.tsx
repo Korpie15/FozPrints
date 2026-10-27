@@ -5,6 +5,7 @@ import { getPayPalOrderDetails, isPayPalOrderPaid } from '@/lib/paypal';
 import { GOOGLE_MERCHANT_ID } from '@/lib/site';
 import { ClearCart } from '@/components/ClearCart';
 import { GoogleReviewsOptIn } from '@/components/GoogleReviewsOptIn';
+import { PurchaseTracking } from '@/components/AnalyticsConsent';
 import '@/styles/cart.css';
 
 // Every visit checks the payment live, so this page must never be cached
@@ -31,21 +32,26 @@ async function isOrderPaid(sessionId: string | undefined): Promise<boolean> {
 /** Days from payment to delivery: up to 2 to print and dispatch, then up to 7 business days in the post */
 const DELIVERY_ALLOWANCE_DAYS = 12;
 
-/** Buyer's email and delivery country for the Google Customer Reviews opt-in, or null if unavailable */
-async function getReviewOptInDetails(sessionId: string) {
+/** Buyer's email, delivery country and amount paid, for the Google review opt-in and purchase tracking */
+async function getOrderDetails(sessionId: string) {
   try {
     if (sessionId.startsWith('paypal_')) {
       const order = await getPayPalOrderDetails(sessionId.slice('paypal_'.length));
-      const email: string | undefined = order?.payer?.email_address;
-      const country: string | undefined = order?.purchase_units?.[0]?.shipping?.address?.country_code;
-      return email ? { email, country: country ?? 'AU' } : null;
+      const unit = order?.purchase_units?.[0];
+      return {
+        email: order?.payer?.email_address as string | undefined,
+        country: (unit?.shipping?.address?.country_code as string | undefined) ?? 'AU',
+        total: Number(unit?.amount?.value ?? 0),
+      };
     }
     const session = await getStripeServer()?.checkout.sessions.retrieve(sessionId);
-    const email = session?.customer_details?.email;
-    const country = session?.collected_information?.shipping_details?.address?.country;
-    return email ? { email, country: country ?? 'AU' } : null;
+    return {
+      email: session?.customer_details?.email ?? undefined,
+      country: session?.collected_information?.shipping_details?.address?.country ?? 'AU',
+      total: (session?.amount_total ?? 0) / 100,
+    };
   } catch (error) {
-    console.error('Could not load details for the Google Customer Reviews opt-in:', error);
+    console.error('Could not load order details for the confirmation page:', error);
     return null;
   }
 }
@@ -58,7 +64,7 @@ export default async function CheckoutSuccessPage({
   const { session_id } = await searchParams;
   const paid = await isOrderPaid(session_id);
 
-  const optIn = paid && session_id && GOOGLE_MERCHANT_ID ? await getReviewOptInDetails(session_id) : null;
+  const order = paid && session_id ? await getOrderDetails(session_id) : null;
 
   if (!paid) {
     return (
@@ -84,12 +90,13 @@ export default async function CheckoutSuccessPage({
   return (
     <div className="cart-page">
       <ClearCart />
-      {optIn && session_id && (
+      {order && session_id && <PurchaseTracking orderId={session_id} value={order.total} />}
+      {order?.email && session_id && GOOGLE_MERCHANT_ID > 0 && (
         <GoogleReviewsOptIn
           merchantId={GOOGLE_MERCHANT_ID}
           orderId={session_id}
-          email={optIn.email}
-          deliveryCountry={optIn.country}
+          email={order.email}
+          deliveryCountry={order.country}
           estimatedDeliveryDate={new Date(Date.now() + DELIVERY_ALLOWANCE_DAYS * 86_400_000).toISOString().slice(0, 10)}
         />
       )}

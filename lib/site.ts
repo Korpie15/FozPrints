@@ -31,3 +31,11 @@ export const DEFAULT_OG_IMAGE = {
 
 /** Google Merchant Center ID, for the Google Customer Reviews opt-in on the order confirmation page. 0 turns it off. */
 export const GOOGLE_MERCHANT_ID = 5888299609;
+
+/** Order products are shown in on the home and Products pages; anything not listed goes after these */
+export const PRODUCT_DISPLAY_ORDER = [
+  'subaru-forester-sg-double-din-nav-pod-kit-20032008-usdm-spec',
+  'subaru-forester-sg-2003-2008-double-din-lower-storage-cubby',
+  'rooftop-tent-anderson-plug-holder-t-slot-power-mount',
+  'rooftop-tent-cable-organiser-t-slot-wire-router',
+];
