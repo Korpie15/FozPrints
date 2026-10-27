@@ -4,12 +4,12 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   // Next.js inlines its bootstrap scripts and styles, so 'unsafe-inline' is needed without nonces
   // Cloudflare adds its Web Analytics beacon to the live domain (not Netlify previews)
-  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://www.paypal.com https://*.paypal.com https://*.paypalobjects.com https://static.cloudflareinsights.com",
+  "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://www.paypal.com https://*.paypal.com https://*.paypalobjects.com https://static.cloudflareinsights.com https://apis.google.com https://www.gstatic.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://files.stripe.com https://*.paypal.com https://*.paypalobjects.com https://*.clarity.ms https://c.bing.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.paypal.com https://*.paypalobjects.com https://cloudflareinsights.com",
-  "frame-src https://*.paypal.com",
+  "frame-src https://*.paypal.com https://www.google.com",
   "form-action 'self' https://checkout.stripe.com https://*.paypal.com",
   "base-uri 'self'",
   "object-src 'none'",

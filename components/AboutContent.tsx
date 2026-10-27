@@ -164,7 +164,7 @@ export function AboutContent() {
                 {openFaq === 3 && (
                   <div className="faq-answer" id="faq-answer-3">
                     <p>
-                      Step-by-step digital install guides with photos are available in the <a href="/manuals">Manuals section</a>.
+                      Step-by-step digital install guides with photos are available in the <a href="/manuals" className="faq-link">Manuals section</a>.
                     </p>
                   </div>
                 )}
@@ -199,7 +199,7 @@ export function AboutContent() {
             <h2>Contact Us</h2>
             <p className="contact-intro">
               Got a question about fitment, lead times, or custom prints? Drop a message below, or email{' '}
-              <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.
+              <a href="mailto:info@fozprints.com.au" className="faq-link">info@fozprints.com.au</a>.
             </p>
 
             <div className="contact-form-section">

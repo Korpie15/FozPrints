@@ -964,37 +964,6 @@
   color: #4b5563;
 }
 
-/* Safety notice for the Nav Pod Kit */
-.product-safety {
-  margin-top: 1.25rem;
-  padding: 0.85rem 1rem;
-  border-radius: 0.5rem;
-  background-color: #fffbeb;
-  border: 1px solid #fcd34d;
-  color: #78350f;
-  font-size: 0.85rem;
-  line-height: 1.55;
-}
-
-.product-safety strong {
-  display: block;
-  margin-bottom: 0.35rem;
-}
-
-.product-safety ul {
-  margin: 0 0 0.5rem;
-  padding-left: 1.1rem;
-  list-style: disc;
-}
-
-.product-safety li + li {
-  margin-top: 0.3rem;
-}
-
-.product-safety p {
-  margin: 0;
-}
-
 /* Says what the Subaru name is used for */
 .product-non-affiliation {
   margin-top: 1rem;
@@ -1006,12 +975,6 @@
 @media (prefers-color-scheme: dark) {
   .product-lead-time {
     color: #9ca3af;
-  }
-
-  .product-safety {
-    background-color: rgba(251, 191, 36, 0.1);
-    border-color: rgba(251, 191, 36, 0.35);
-    color: #fde68a;
   }
 
   .product-non-affiliation {

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getProduct, getProducts } from '@/lib/stripe';
 import { ProductDetails } from '@/components/ProductDetails';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { toJsonLd } from '@/lib/utils';
+import { toJsonLd, variantSlug } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { getProductSeoData, NAV_POD_FAQS, isNavPodProduct } from '@/lib/product-seo';
 import { getLiveShippingQuotes } from '@/lib/shipping';
@@ -125,7 +125,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       offers: product.variants.map((variant) => ({
         '@type': 'Offer',
         name: variant.title,
-        url: productUrl,
+        url: product.variants.length > 1 ? `${productUrl}?variant=${variantSlug(variant.title)}` : productUrl,
         priceCurrency: variant.price.currencyCode || 'AUD',
         price: variant.price.amount,
         itemCondition: 'https://schema.org/NewCondition',

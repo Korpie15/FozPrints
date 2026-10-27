@@ -13,7 +13,7 @@ export const NON_AFFILIATION =
 export const LEAD_TIME =
   'Made to order: allow 1–2 business days for us to print and dispatch, then Australia Post delivery (usually 3–7 business days standard, or 1–3 express).';
 
-/** Shown on the Nav Pod Kit page and in its installation manual */
+/** Shown in the Nav Pod Kit installation manual */
 export const NAV_POD_SAFETY = [
   'This is an aftermarket accessory, not a genuine Subaru part. Fit it only if you are confident working on your car’s interior, or have it fitted by a qualified installer.',
   'Do not fit or position any part in or near the path of an airbag, and do not touch or modify airbag (SRS) components or wiring. If you need to work near SRS wiring, follow your vehicle’s service manual, including disconnecting the battery and waiting the time it specifies.',
@@ -28,3 +28,6 @@ export const DEFAULT_OG_IMAGE = {
   height: 630,
   alt: 'Nav Pod Kit installed in a Subaru Forester SG dash',
 };
+
+/** Google Merchant Center ID, for the Google Customer Reviews opt-in on the order confirmation page. 0 turns it off. */
+export const GOOGLE_MERCHANT_ID = 5888299609;

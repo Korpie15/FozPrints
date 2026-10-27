@@ -115,3 +115,8 @@ export function formatDescriptionToHtml(description: string): string {
 export function toJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
+
+/** URL-friendly form of a variant title, e.g. "Heat Inserts" -> "heat-inserts", used in ?variant= links */
+export function variantSlug(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { CheckCircle, ArrowRight, Package, SearchX } from 'lucide-react';
-import { isCheckoutSessionPaid } from '@/lib/stripe';
-import { isPayPalOrderPaid } from '@/lib/paypal';
+import { getStripeServer, isCheckoutSessionPaid } from '@/lib/stripe';
+import { getPayPalOrderDetails, isPayPalOrderPaid } from '@/lib/paypal';
+import { GOOGLE_MERCHANT_ID } from '@/lib/site';
 import { ClearCart } from '@/components/ClearCart';
+import { GoogleReviewsOptIn } from '@/components/GoogleReviewsOptIn';
 import '@/styles/cart.css';
 
 // Every visit checks the payment live, so this page must never be cached
@@ -26,6 +28,28 @@ async function isOrderPaid(sessionId: string | undefined): Promise<boolean> {
   }
 }
 
+/** Days from payment to delivery: up to 2 to print and dispatch, then up to 7 business days in the post */
+const DELIVERY_ALLOWANCE_DAYS = 12;
+
+/** Buyer's email and delivery country for the Google Customer Reviews opt-in, or null if unavailable */
+async function getReviewOptInDetails(sessionId: string) {
+  try {
+    if (sessionId.startsWith('paypal_')) {
+      const order = await getPayPalOrderDetails(sessionId.slice('paypal_'.length));
+      const email: string | undefined = order?.payer?.email_address;
+      const country: string | undefined = order?.purchase_units?.[0]?.shipping?.address?.country_code;
+      return email ? { email, country: country ?? 'AU' } : null;
+    }
+    const session = await getStripeServer()?.checkout.sessions.retrieve(sessionId);
+    const email = session?.customer_details?.email;
+    const country = session?.collected_information?.shipping_details?.address?.country;
+    return email ? { email, country: country ?? 'AU' } : null;
+  } catch (error) {
+    console.error('Could not load details for the Google Customer Reviews opt-in:', error);
+    return null;
+  }
+}
+
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
@@ -33,6 +57,8 @@ export default async function CheckoutSuccessPage({
 }) {
   const { session_id } = await searchParams;
   const paid = await isOrderPaid(session_id);
+
+  const optIn = paid && session_id && GOOGLE_MERCHANT_ID ? await getReviewOptInDetails(session_id) : null;
 
   if (!paid) {
     return (
@@ -58,6 +84,15 @@ export default async function CheckoutSuccessPage({
   return (
     <div className="cart-page">
       <ClearCart />
+      {optIn && session_id && (
+        <GoogleReviewsOptIn
+          merchantId={GOOGLE_MERCHANT_ID}
+          orderId={session_id}
+          email={optIn.email}
+          deliveryCountry={optIn.country}
+          estimatedDeliveryDate={new Date(Date.now() + DELIVERY_ALLOWANCE_DAYS * 86_400_000).toISOString().slice(0, 10)}
+        />
+      )}
       <div className="cart-empty" style={{ maxWidth: '600px', margin: '3rem auto', textAlign: 'center' }}>
         <CheckCircle size={64} style={{ color: '#16a34a', margin: '0 auto 1.5rem' }} />
         <h1 className="cart-title" style={{ marginBottom: '0.75rem' }}>

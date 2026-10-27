@@ -114,11 +114,12 @@ export const POLICIES: Record<string, Policy> = {
         <li><strong>Resend</strong>: sending your order confirmation email, and delivering order notifications and contact form messages to our inbox.</li>
         <li><strong>Cloudflare</strong>: website security, delivery and visit statistics.</li>
         <li><strong>Microsoft</strong>: Clarity analytics, only if you allow it.</li>
+        <li><strong>Google</strong>: after you place an order, Google Customer Reviews may ask whether you'd like to rate your experience. To show that request, we pass your email address, order number, delivery country and expected delivery date to Google. Google only emails you a survey if you agree. See the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</li>
       </ul>
       <p>We may also disclose information if required by law, or to protect our rights or the safety of others. We don't sell your personal information.</p>
 
       <h2>Overseas Disclosure</h2>
-      <p>Some of these providers store or process information outside Australia, mainly in the United States and in other countries where they operate: Stripe, PayPal, Netlify, Resend, Cloudflare and Microsoft. We choose established providers and take reasonable steps to make sure they protect your information.</p>
+      <p>Some of these providers store or process information outside Australia, mainly in the United States and in other countries where they operate: Stripe, PayPal, Netlify, Resend, Cloudflare, Microsoft and Google. We choose established providers and take reasonable steps to make sure they protect your information.</p>
 
       <h2>Analytics and Cookies</h2>
       <h3>Cloudflare</h3>

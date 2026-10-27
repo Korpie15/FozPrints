@@ -5,12 +5,12 @@ import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2, Truck, Sparkles, Globe } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
-import { formatPrice, formatDescriptionToHtml } from '@/lib/utils';
+import { formatPrice, formatDescriptionToHtml, variantSlug } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import { isNavPodProduct, NAV_POD_FAQS, NAV_POD_NAME, NAV_POD_SHORT_NAME } from '@/lib/product-seo';
 import { LAUNCH_OFFER, isLaunchKit } from '@/lib/promo';
 import { useLaunchOfferAvailable } from '@/lib/use-launch-offer';
-import { LEAD_TIME, NAV_POD_SAFETY, NON_AFFILIATION } from '@/lib/site';
+import { LEAD_TIME, NON_AFFILIATION } from '@/lib/site';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
 import { ImageLightbox } from './ImageLightbox';
@@ -143,6 +143,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       setSelectedImageIndex(imageIndex);
     }
   };
+
+  // Open on the finish named in the link (?variant=textured), so shopping ads land on the price they show
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get('variant');
+    const variant = wanted && product.variants.find((v) => variantSlug(v.title) === wanted.toLowerCase());
+    if (variant) {
+      handleVariantSelect(variant.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
@@ -428,18 +438,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <Link href="/manuals/double-DIN-pod-upgrade-kit">
                 Installation Manual &rarr;
               </Link>
-            </div>
-          )}
-
-          {isNavPod && (
-            <div className="product-safety">
-              <strong>Important safety information</strong>
-              <ul>
-                {NAV_POD_SAFETY.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-              <p>This doesn&apos;t limit your rights under the Australian Consumer Law.</p>
             </div>
           )}
 
