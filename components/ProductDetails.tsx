@@ -14,6 +14,7 @@ import { LEAD_TIME, NON_AFFILIATION } from '@/lib/site';
 import { openInternationalWaitlist } from './InternationalInterestModal';
 import { Toast } from './Toast';
 import { ImageLightbox } from './ImageLightbox';
+import { CompareSlider } from './CompareSlider';
 import { useSwipe } from '@/lib/use-swipe';
 import '../styles/product-details.css';
 
@@ -501,7 +502,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>Compatible with the Factory Pod (Subaru part no. H0010SA950ML)</h3>
                   <p>
-                    Each component is modelled on our measurements of the factory Subaru USDM navigation pod (H0010SA950ML), so parts can be mixed with an original pod. If you already own a factory pod and only need a pod shell, front fascia or bracket, email us at <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. Individual parts aren&apos;t listed in the shop, but we can supply them, and they fit your existing factory hardware.
+                    Each component is modelled on our measurements of the factory Subaru USDM navigation pod (H0010SA950ML), so parts can be mixed with an original pod. If you already own a factory pod and only need a pod shell, front fascia or bracket, you can buy just that part from our <Link href="/products/dash-replacement-parts">Dash Replacement Parts</Link>, and it fits your existing factory hardware. Questions? Email <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.
                   </p>
                 </div>
               </div>
@@ -534,6 +535,50 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     {isOpen && (
                       <div className="product-faq-answer" id={`product-faq-answer-${idx}`}>
                         <p>{faq.answer}</p>
+                        {faq.media === 'oem-fitment' && (
+                          <div className="faq-media">
+                            <figure className="faq-media-figure">
+                              <CompareSlider
+                                beforeSrc="/images/photos/compare/original.webp"
+                                beforeAlt="Original Subaru USDM nav pod installed on an SG Forester dashboard"
+                                beforeLabel="Original (OEM)"
+                                afterSrc="/images/photos/compare/new.webp"
+                                afterAlt="Foz Prints nav pod installed in the same position on an SG Forester dashboard"
+                                afterLabel="Foz Prints"
+                                width={1600}
+                                height={1200}
+                              />
+                              <figcaption className="faq-media-caption">
+                                Drag the slider to compare the original pod with the Foz Prints pod, shot from the same spot.
+                              </figcaption>
+                            </figure>
+                            <div className="faq-media-pair">
+                              <figure className="faq-media-figure">
+                                <Image
+                                  src="/images/photos/oem-fitment/orig-facia-new-pod.webp"
+                                  alt="Original Subaru front fascia fitted into a Foz Prints nav pod"
+                                  width={1600}
+                                  height={1200}
+                                  sizes="(max-width: 640px) 100vw, 360px"
+                                />
+                                <figcaption className="faq-media-caption">Original fascia in a Foz Prints pod</figcaption>
+                              </figure>
+                              <figure className="faq-media-figure">
+                                <Image
+                                  src="/images/photos/oem-fitment/orig-nav-new-facia.webp"
+                                  alt="Foz Prints front fascia fitted into an original Subaru nav pod"
+                                  width={1600}
+                                  height={2133}
+                                  sizes="(max-width: 640px) 100vw, 360px"
+                                />
+                                <figcaption className="faq-media-caption">Foz Prints fascia in an original pod</figcaption>
+                              </figure>
+                            </div>
+                            <Link href="/products/dash-replacement-parts" className="faq-media-link">
+                              Shop Dash Replacement Parts
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

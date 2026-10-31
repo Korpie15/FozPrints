@@ -17,7 +17,14 @@ export function isNavPodProduct(product: { handle?: string; title?: string }): b
   );
 }
 
-export const NAV_POD_FAQS = [
+export interface NavPodFaq {
+  question: string;
+  answer: string;
+  /** Extra photos shown under the answer on the product page (not part of the Google FAQ text) */
+  media?: 'oem-fitment';
+}
+
+export const NAV_POD_FAQS: NavPodFaq[] = [
   {
     question: 'Will the Nav Pod Kit fit standard 7-inch double DIN head units?',
     answer:
@@ -39,9 +46,10 @@ export const NAV_POD_FAQS = [
       'Installation is a straightforward DIY process taking approximately 20-30 minutes using basic hand tools (Phillips screwdriver and trim tool). No cutting of your factory dashboard is required. Full step-by-step instructions are available in our online manual.',
   },
   {
-    question: 'Is this kit compatible with the factory Subaru USDM pod (part no. H0010SA950ML)?',
+    question: 'Will your parts fit with the original Subaru (OEM) nav pod parts?',
     answer:
-      'Yes. Each Foz Prints component is modelled on our measurements of the factory Subaru USDM navigation housing (part no. H0010SA950ML), so it can be mixed with original parts. If you already own a factory pod and the front clips have snapped, or you only need brackets or fascia trim, email us at info@fozprints.com.au. Individual replacement parts are not listed in the shop, but we can supply them. Our parts are aftermarket, not genuine Subaru parts.',
+      'Yes. If you have one or some of the parts from the factory USDM nav pod kit (Subaru part no. H0010SA950ML), any of our parts are made to fit. Our pod works with the original fascia, and our fascia works with the original pod, so you can mix and match. Slide the comparison below to see our pod next to the original, then see the original and Foz Prints parts fitted together. Need just one part? Replacement top covers, front fascias and radio mount brackets are in the shop as Dash Replacement Parts. Our parts are aftermarket, not genuine Subaru parts.',
+    media: 'oem-fitment',
   },
   {
     question: 'What is the difference between the USDM spec and JDM spec nav pod?',
