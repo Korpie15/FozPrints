@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AboutContent } from '@/components/AboutContent';
+import { ABOUT_PAGE_NAV_POD_FAQS } from '@/lib/product-seo';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -54,6 +55,11 @@ const faqSchema = {
         text: 'We currently ship within Australia only, via Australia Post. The Nav Pod Kit ships free with Australia Post standard shipping. For everything else, the shipping cost and delivery estimate are calculated at checkout from your postcode.',
       },
     },
+    ...ABOUT_PAGE_NAV_POD_FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
   ],
 };
 

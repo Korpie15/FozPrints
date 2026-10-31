@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { Toast } from './Toast';
+import { OemFitmentMedia } from './OemFitmentMedia';
+import { ABOUT_PAGE_NAV_POD_FAQS } from '@/lib/product-seo';
 import '../styles/about.css';
 
 export function AboutContent() {
@@ -189,6 +191,31 @@ export function AboutContent() {
                   </div>
                 )}
               </div>
+
+              {/* Nav Pod Kit questions, shared with the kit's product page (numbered after the four above) */}
+              {ABOUT_PAGE_NAV_POD_FAQS.map((faq, idx) => {
+                const id = idx + 5;
+                const isOpen = openFaq === id;
+                return (
+                  <div className="faq-item" key={faq.question}>
+                    <button
+                      className={`faq-question ${isOpen ? 'faq-question-active' : ''}`}
+                      onClick={() => setOpenFaq(isOpen ? null : id)}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${id}`}
+                    >
+                      <span>{faq.question}</span>
+                      <ChevronDown className={`faq-icon ${isOpen ? 'faq-icon-active' : ''}`} size={20} />
+                    </button>
+                    {isOpen && (
+                      <div className="faq-answer" id={`faq-answer-${id}`}>
+                        <p>{faq.answer}</p>
+                        {faq.media === 'oem-fitment' && <OemFitmentMedia />}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

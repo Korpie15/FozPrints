@@ -37,9 +37,10 @@ export function CompareSlider({
 
   return (
     <div className="compare-slider" style={{ aspectRatio: `${width} / ${height}` }}>
-      <Image src={afterSrc} alt={afterAlt} fill sizes={sizes} className="compare-slider-image" />
+      {/* Served as-is: these WebPs are already sized, and re-compressing them blurs fine texture */}
+      <Image src={afterSrc} alt={afterAlt} fill sizes={sizes} className="compare-slider-image" unoptimized />
       <div className="compare-slider-before" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
-        <Image src={beforeSrc} alt={beforeAlt} fill sizes={sizes} className="compare-slider-image" />
+        <Image src={beforeSrc} alt={beforeAlt} fill sizes={sizes} className="compare-slider-image" unoptimized />
       </div>
 
       <span className="compare-slider-label compare-slider-label-before">{beforeLabel}</span>

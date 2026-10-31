@@ -22,6 +22,8 @@ export interface NavPodFaq {
   answer: string;
   /** Extra photos shown under the answer on the product page (not part of the Google FAQ text) */
   media?: 'oem-fitment';
+  /** Leave out of the About page FAQ, which already answers the same question */
+  productPageOnly?: boolean;
 }
 
 export const NAV_POD_FAQS: NavPodFaq[] = [
@@ -33,12 +35,13 @@ export const NAV_POD_FAQS: NavPodFaq[] = [
   {
     question: 'Which Subaru Forester models and years does the Nav Pod Kit fit?',
     answer:
-      'It is designed for the second-generation Subaru Forester (SG chassis, model years 2003 to 2008) including XT, 2.5X, and 2.5XS with the USDM-spec dashboard pocket.',
+      'It is designed for the second-generation Subaru Forester (SG chassis, model years 2003 to 2008) including XT, 2.5X, and 2.5XS.',
   },
   {
     question: 'What material is used and will it warp in summer heat?',
     answer:
       'The Nav Pod Kit is 3D printed in ASA (Acrylonitrile Styrene Acrylate), a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data). It is chosen to hold its shape and colour on a sunny dashboard, but very high cabin temperatures can still affect any plastic, so we recommend a windscreen sunshade when parked in direct sun.',
+    productPageOnly: true,
   },
   {
     question: 'How difficult is the Nav Pod Kit installation?',
@@ -95,3 +98,6 @@ export function getProductSeoData(product: Product) {
     keywords,
   };
 }
+
+/** The Nav Pod Kit questions that also appear in the About page FAQ */
+export const ABOUT_PAGE_NAV_POD_FAQS = NAV_POD_FAQS.filter((faq) => !faq.productPageOnly);
