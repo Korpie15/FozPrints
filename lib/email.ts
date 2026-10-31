@@ -4,6 +4,12 @@ export const OWNER_EMAIL = process.env.CONTACT_TO_EMAIL || 'info@fozprints.com.a
 /** Must be an address on a domain verified in Resend */
 const FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || 'info@fozprints.com.au';
 
+/** Sender for order confirmations to customers */
+export const ORDERS_FROM_EMAIL = 'orders@fozprints.com.au';
+
+/** Sender for new-order notifications to the owner */
+export const ADMIN_FROM_EMAIL = 'admin@fozprints.com.au';
+
 export interface EmailMessage {
   to: string;
   subject: string;
@@ -12,6 +18,8 @@ export interface EmailMessage {
   replyTo?: string;
   /** Display name for the sender, e.g. "Foz Prints" */
   fromName?: string;
+  /** Sender address; defaults to CONTACT_FROM_EMAIL. Must be on a domain verified in Resend */
+  fromAddress?: string;
 }
 
 /**
@@ -31,7 +39,7 @@ export async function sendEmail(message: EmailMessage): Promise<void> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: `${message.fromName ?? 'Foz Prints'} <${FROM_EMAIL}>`,
+      from: `${message.fromName ?? 'Foz Prints'} <${message.fromAddress ?? FROM_EMAIL}>`,
       to: [message.to],
       ...(message.replyTo ? { reply_to: message.replyTo } : {}),
       subject: message.subject.replace(/[\r\n]+/g, ' '),

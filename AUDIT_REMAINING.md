@@ -1,6 +1,6 @@
 # Site audit: what's left
 
-Remaining items from the 24 October 2026 site audit (`FOZPRINTS_HITLIST.md`), updated 25 October 2026.
+Remaining items from the 24 October 2026 site audit (`FOZPRINTS_HITLIST.md`), updated 28 October 2026. Everything in section 1 is live (last deploy 27 October 2026). Deploys are paused until 9 November 2026.
 
 Numbered items done on the `security-fixes` branch: #1 to #3, #7 to #21, #23, #24. #4, #5, #6 and #22 are partly done and need steps from you (section 2).
 
@@ -22,23 +22,32 @@ The list is split into:
 - [x] **Stripe products:** Nav Pod renamed; "2025 vehicle" and "Top Mount Pod" wording fixed. Every product now has a `handle` in its Stripe metadata, so renaming a product no longer changes its web address. (`shopify_handle` is left over from Shopify and isn't used.)
 - [x] **Phone carousel dropdown:** opening the finish dropdown on a card no longer scrolls the card up inside the row; the dropdown shows under the card.
 
-### Second audit (25 October 2026): fixed locally, not yet deployed
+### Second audit (25 October 2026): live since 27 October 2026
 
 - [x] LAUNCH50 limited to 10 uses across card and PayPal (PayPal uses now counted; `paypal_orders.discount_cents` column added in Neon); banners and the cart stop advertising it once used up; offer terms shown.
 - [x] Product claims reworded (no "OEM replacement", "100%", "safer", absolute heat claims); "not affiliated with Subaru" line in footer, product pages and Terms; Stripe Nav Pod text updated to match.
-- [x] Safety information on the Nav Pod page and in the manual; lead time and fitment note on product pages.
+- [x] Safety information in the manual and the Nav Pod order email (taken off the product page on 27 October at your request); lead time and fitment note on product pages (the ducting-trimming sentence removed).
 - [x] Refund, Privacy and Terms policies rewritten (Terms marked for lawyer review, step 2E).
 - [x] Waitlist: consent wording, same reply whether or not already registered, no overwriting, over-long input rejected; contact form privacy note; email shown on About page and footer.
 - [x] Cookie banner is a slim bottom bar that never covers content; 404 page readable in dark mode; cart divider lines visible in light mode; toast no longer shows over the photo viewer.
 - [x] Card price shows the price you can buy; sold-out finishes labelled; postcode box digits-only with feedback.
 - [x] Security: Stripe return URL fixed to the site; product descriptions escaped; webhook error responses tidied; CSP adds upgrade-insecure-requests and drops placehold.co.
 - [x] Accessibility: finish dropdown labels/Esc/focus, reduced motion, tap targets, heading order, contrast, carousel labels.
-- [x] SEO: 1200×630 sharing image on every page (temporary, until 2I), policy descriptions, JSON-LD return policy and categories, old product links, favicon.ico and apple-icon.
+- [x] SEO: 1200×630 sharing image on every page (new image chosen, waiting for the next deploy; see 2I), policy descriptions, JSON-LD return policy and categories, old product links, favicon.ico and apple-icon.
 - [x] Housekeeping: Node 22, `npm audit` clean, previews marked noindex.
 
-### Still to do
+### Added after the audit (27 October 2026, live)
 
-- [x] **#6 Enforce the content security policy:** console check came back clean (site pages, Clarity after Allow analytics, PayPal button), so the header is now enforced. Not yet deployed.
+- [x] Order emails to you and the customer (Stripe and PayPal), sent once per order.
+- [x] `?variant=` links open a product on a given finish (for Google Merchant Center), and each finish is listed separately for Google.
+- [x] Google Customer Reviews opt-in on the order confirmation page.
+- [x] Google tag with purchase tracking, loaded only after "Allow analytics"; privacy policy and banner updated.
+- [x] One product order for the home and Products pages (Nav Pod Kit, Cubby, Anderson Plug Holder, Cable Organiser).
+- [x] FAQ: hover colour visible in dark mode; links look like links.
+
+### Done
+
+- [x] **#6 Enforce the content security policy:** console check came back clean (site pages, Clarity after Allow analytics, PayPal button), so the header is now enforced. Live since 25 October 2026.
 
 ---
 
@@ -60,7 +69,7 @@ If you can't find the account, create a new Clarity project for the site and sen
 Do this after the `security-fixes` changes are on the live site.
 
 1. Open https://fozprints.com.au in Chrome in a private window.
-2. Press **Cmd+Option+I** to open DevTools, then click the **Network** tab.
+2. Press **F12** (or **Ctrl+Shift+I**) to open DevTools, then click the **Network** tab.
 3. Type `clarity` in the Network filter box.
 4. Click **Allow analytics** on the site's banner.
 5. Look at the requests:
@@ -71,12 +80,12 @@ Do this after the `security-fixes` changes are on the live site.
    - **Netlify:** project → Site configuration → **Build & deploy → Post processing → Snippet injection**. Remove any Clarity snippet.
 7. Reload, click **No thanks** in the footer's "Analytics settings", and check no Clarity requests appear.
 
-### C. Content security policy console check (#6)
+### C. Content security policy console check (#6) ✅ Done (enforced 25 October 2026)
 
 The policy currently only reports problems. This check tells us whether it's safe to enforce.
 
 1. Open https://security-fixes--fozprints.netlify.app (or the live site once merged) in Chrome.
-2. Press **Cmd+Option+I** and click the **Console** tab.
+2. Press **F12** (or **Ctrl+Shift+I**) and click the **Console** tab.
 3. Visit these pages one by one, watching for yellow or red messages that mention **Content-Security-Policy**:
    - Home, All Products, a product page, About (scroll to the FAQ and the contact form), Manuals and the install manual
    - Click **Allow analytics** on the banner
@@ -107,7 +116,7 @@ The refund, shipping and terms pages were reworded to fit the Australian Consume
    - `/policies/refund-policy`
    - `/policies/shipping-policy`
    - `/policies/terms-of-service`
-2. Save each as a PDF (Cmd+P → Save as PDF).
+2. Save each as a PDF (Ctrl+P → Save as PDF).
 3. Send them to a lawyer or adviser with this note:
    > "These are the refund, shipping and terms pages for a small online store selling made-to-order 3D printed car parts in Australia. Could you check they're consistent with the Australian Consumer Law, especially the change-of-mind wording, faulty goods, and lost or damaged parcels?"
 4. Free options if you don't have a lawyer:
@@ -166,7 +175,7 @@ Steps:
    2. Click **Edit product**, change **Name**, and save.
    3. Don't change the product's URL handle (`metadata.handle`) unless Claude adds a redirect first, or old links will break.
 
-### I. Sharing image and icons
+### I. Sharing image and icons ✅ Icons done; sharing image chosen (option A), goes live with the next deploy
 
 When someone shares the site, the preview image is the wrong size, and two standard icons are missing.
 
@@ -194,15 +203,15 @@ The audit flags some product copy as sounding template-written ("engineered spec
 3. Read through the suggestions and mark any you don't want (wrong facts, not your voice).
 4. Claude will apply the rest to the product pages, FAQ and metadata, and send you a before-and-after list to approve.
 
-### K. Firefox and Safari test pass
+### K. Firefox, Edge and Safari test pass
 
 The audit only tested in Chrome.
 
-1. **Safari** is already on your Mac. For **Firefox**, download it from https://www.mozilla.org/firefox.
+1. You're on Windows, so test **Firefox** (download from https://www.mozilla.org/firefox) and **Edge** (already installed). Safari only runs on Apple devices, so test it on an iPhone or iPad (step 3).
 2. In each browser, open the live site (or the test site) and check each item below. Note anything that looks broken, with a screenshot:
    1. **Home:** the hero image loads; the product grid shows four cards on desktop.
    2. **Narrow window (iPad width):** two product cards per row; no sideways scrolling.
-   3. **Phone width:** Safari: Develop → Enter Responsive Design Mode (turn on the Develop menu in Settings → Advanced). Firefox: Cmd+Option+M.
+   3. **Phone width:** Firefox: **Ctrl+Shift+M**. Edge: **F12**, then **Ctrl+Shift+M**.
       - The header doesn't cover the page.
       - The menu opens and closes.
       - The cart doesn't overflow.
@@ -217,9 +226,9 @@ The audit only tested in Chrome.
 
 ### L. Check the new phone carousel and photo viewer
 
-These changed how things work on phones, so give them a quick try on a real phone after the next deploy.
+These changed how things work on phones, so give them a quick try on a real phone.
 
-1. On your phone, open the test site: https://security-fixes--fozprints.netlify.app
+1. On your phone, open the live site: https://fozprints.com.au
 2. **Home page carousel:**
    1. Scroll to "Featured Products".
    2. Swipe left and right. It should move one card at a time and stop neatly on each.

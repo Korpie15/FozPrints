@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { claimOnce, releaseClaim, PayPalOrderRecord } from '@/lib/db';
-import { sendEmail, OWNER_EMAIL } from '@/lib/email';
+import { sendEmail, OWNER_EMAIL, ADMIN_FROM_EMAIL, ORDERS_FROM_EMAIL } from '@/lib/email';
 import { getProducts } from '@/lib/stripe';
 import { isNavPodProduct, NAV_POD_SHORT_NAME } from '@/lib/product-seo';
 import { BUSINESS_ABN, GST_NOTE, LEAD_TIME, SITE_URL } from '@/lib/site';
@@ -162,7 +162,7 @@ const itemName = (item: OrderSummary['items'][number]) =>
   item.variant ? `${item.title} (${item.variant})` : item.title;
 
 function itemsTableHtml(order: OrderSummary): string {
-  const cell = 'padding:6px 0;border-bottom:1px solid #e5e7eb;vertical-align:top;';
+  const cell = 'padding:8px 0;border-bottom:1px solid #e5e7eb;vertical-align:top;';
   const rows = order.items
     .map(
       (item) =>
@@ -171,15 +171,19 @@ function itemsTableHtml(order: OrderSummary): string {
         `<td style="${cell}text-align:right;width:96px;">${money(item.totalCents)}</td></tr>`
     )
     .join('');
-  const total = (label: string, value: string, bold = false) =>
-    `<tr><td colspan="2" style="padding:4px 0;${bold ? 'font-weight:700;' : ''}">${label}</td>` +
-    `<td style="padding:4px 0;text-align:right;${bold ? 'font-weight:700;' : ''}">${value}</td></tr>`;
+  const total = (label: string, value: string, bold = false) => {
+    const style = bold ? `padding:10px 0 4px;font-weight:700;font-size:16px;border-top:2px solid ${ACCENT};` : 'padding:4px 0;';
+    return (
+      `<tr><td colspan="2" style="${style}">${label}</td>` +
+      `<td style="${style}text-align:right;">${value}</td></tr>`
+    );
+  };
 
   return (
     '<table role="presentation" style="width:100%;border-collapse:collapse;font-size:14px;">' +
-    '<tr><th style="text-align:left;padding:6px 0;border-bottom:2px solid #d1d5db;">Item</th>' +
-    '<th style="padding:6px 0;border-bottom:2px solid #d1d5db;">Qty</th>' +
-    '<th style="text-align:right;padding:6px 0;border-bottom:2px solid #d1d5db;">Price</th></tr>' +
+    `<tr><th style="text-align:left;padding:6px 0;border-bottom:2px solid ${ACCENT};color:${ACCENT};">Item</th>` +
+    `<th style="padding:6px 0;border-bottom:2px solid ${ACCENT};color:${ACCENT};">Qty</th>` +
+    `<th style="text-align:right;padding:6px 0;border-bottom:2px solid ${ACCENT};color:${ACCENT};">Price</th></tr>` +
     rows +
     total('Subtotal', money(order.subtotalCents)) +
     (order.discountCents > 0 ? total('Discount', `-${money(order.discountCents)}`) : '') +
@@ -204,8 +208,46 @@ const addressHtml = (order: OrderSummary) =>
   [order.shipTo.name, ...order.shipTo.lines].map(escapeHtml).join('<br>');
 const addressText = (order: OrderSummary) => [order.shipTo.name, ...order.shipTo.lines].join('\n');
 
-const wrap = (inner: string) =>
-  `<div style="font-family:Arial,Helvetica,sans-serif;color:#111827;max-width:600px;margin:0 auto;line-height:1.5;">${inner}</div>`;
+/* Brand colours, matching the site header and buttons */
+const NAVY = '#111827';
+const SKY = '#0ea5e9';
+const PALE_SKY = '#e0f2fe';
+const ACCENT = '#0369a1';
+const MUTED = '#6b7280';
+
+const heading = (text: string, top = 24) =>
+  `<h3 style="margin:${top}px 0 6px;font-size:15px;color:${ACCENT};text-transform:uppercase;letter-spacing:0.04em;">${text}</h3>`;
+
+/** A button built from a table cell, so it shows in Outlook as well as Gmail and Apple Mail */
+const button = (href: string, label: string) =>
+  '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:12px 0 4px;"><tr>' +
+  `<td style="background:${ACCENT};border-radius:6px;">` +
+  `<a href="${href}" style="display:inline-block;padding:11px 20px;color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;">${label}</a>` +
+  '</td></tr></table>';
+
+/**
+ * Email layout: navy header with the Foz Prints wordmark, white card on a light grey
+ * background, navy footer. Tables and inline styles because email clients ignore most CSS.
+ * `preheader` is the grey preview line inbox lists show after the subject.
+ */
+function wrap(inner: string, { preheader = '', footer = '' }: { preheader?: string; footer?: string } = {}) {
+  return (
+    `<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>` +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;">' +
+    '<tr><td align="center" style="padding:24px 12px;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;line-height:1.5;color:#111827;">' +
+    `<tr><td style="background:${NAVY};border-radius:10px 10px 0 0;padding:20px 28px;">` +
+    `<a href="${SITE_URL}" style="text-decoration:none;font-size:24px;font-weight:700;">` +
+    `<span style="color:${SKY};">Foz</span><span style="color:${PALE_SKY};">Prints</span></a>` +
+    `<div style="color:#9ca3af;font-size:12px;margin-top:2px;">3D printed parts for the SG Subaru Forester</div>` +
+    '</td></tr>' +
+    `<tr><td style="background:#ffffff;padding:28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">${inner}</td></tr>` +
+    `<tr><td style="background:${NAVY};border-radius:0 0 10px 10px;padding:18px 28px;color:#9ca3af;font-size:12px;">` +
+    (footer || `<a href="${SITE_URL}" style="color:${PALE_SKY};">fozprints.com.au</a>`) +
+    '</td></tr>' +
+    '</table></td></tr></table>'
+  );
+}
 
 /** The notification to the shop, with everything needed to make and post the order */
 export function renderOwnerEmail(order: OrderSummary) {
@@ -219,19 +261,19 @@ export function renderOwnerEmail(order: OrderSummary) {
     : '';
 
   const html = wrap(
-    `<h2 style="margin:0 0 8px;">New order ${escapeHtml(order.orderNumber)}</h2>` +
+    `<h2 style="margin:0 0 4px;font-size:22px;">New order ${escapeHtml(order.orderNumber)}</h2>` +
+      `<p style="margin:0 0 16px;color:${MUTED};">${money(order.totalCents)} from ${escapeHtml(order.customer.name || 'a customer')}</p>` +
       warningsHtml +
       itemsTableHtml(order) +
-      `<h3 style="margin:20px 0 4px;">Ship to</h3><p style="margin:0;">${addressHtml(order)}</p>` +
-      `<h3 style="margin:20px 0 4px;">Customer</h3><p style="margin:0;">${escapeHtml(order.customer.name)}<br>` +
-      `<a href="mailto:${escapeHtml(order.customer.email)}">${escapeHtml(order.customer.email)}</a>` +
+      heading('Ship to') + `<p style="margin:0;">${addressHtml(order)}</p>` +
+      heading('Customer') + `<p style="margin:0;">${escapeHtml(order.customer.name)}<br>` +
+      `<a href="mailto:${escapeHtml(order.customer.email)}" style="color:${ACCENT};">${escapeHtml(order.customer.email)}</a>` +
       (order.customer.phone ? `<br>${escapeHtml(order.customer.phone)}` : '') +
       '</p>' +
-      `<h3 style="margin:20px 0 4px;">Payment</h3><p style="margin:0;">${escapeHtml(order.paymentMethod)}<br>` +
-      `Reference: ${escapeHtml(order.paymentReference)}` +
-      (order.dashboardUrl ? `<br><a href="${escapeHtml(order.dashboardUrl)}">Open in Stripe</a>` : '') +
-      '</p>' +
-      '<p style="margin:20px 0 0;color:#6b7280;font-size:12px;">Reply to this email to contact the customer.</p>'
+      heading('Payment') + `<p style="margin:0;">${escapeHtml(order.paymentMethod)}<br>` +
+      `Reference: ${escapeHtml(order.paymentReference)}</p>` +
+      (order.dashboardUrl ? button(escapeHtml(order.dashboardUrl), 'Open in Stripe') : ''),
+    { preheader: `${money(order.totalCents)} from ${order.customer.name || 'a customer'}`, footer: 'Reply to this email to contact the customer.' }
   );
 
   const text = [
@@ -259,26 +301,33 @@ export function renderCustomerEmail(order: OrderSummary) {
   const subject = `Thanks for your order, ${firstName} (${order.orderNumber})`;
 
   const navPodHtml = hasNavPod
-    ? `<h3 style="margin:24px 0 4px;">Installing your ${NAV_POD_SHORT_NAME}</h3>` +
-      `<p style="margin:0 0 8px;">Our step-by-step guide has photos for every step: ` +
-      `<a href="${manualUrl}">${NAV_POD_SHORT_NAME} installation guide</a>.</p>` +
-      '<p style="margin:0;">Before you start, please read the safety information in the guide. ' +
-      'Never fit any part in or near the path of an airbag, and make sure everything is firmly secured.</p>'
+    ? `<div style="background:#f0f9ff;border-left:4px solid ${SKY};border-radius:6px;padding:14px 16px;margin-top:24px;">` +
+      `<h3 style="margin:0 0 6px;font-size:15px;color:${ACCENT};">Installing your ${NAV_POD_SHORT_NAME}</h3>` +
+      '<p style="margin:0;">Our step-by-step guide has photos for every step.</p>' +
+      button(manualUrl, 'Open the installation guide') +
+      '<p style="margin:8px 0 0;font-size:13px;color:#4b5563;">Before you start, please read the safety information in the guide. ' +
+      'Never fit any part in or near the path of an airbag, and make sure everything is firmly secured.</p>' +
+      '</div>'
     : '';
 
   const html = wrap(
-    `<h2 style="margin:0 0 8px;">Thanks for your order, ${escapeHtml(firstName)}!</h2>` +
-      `<p style="margin:0 0 12px;">We've received your order <strong>${escapeHtml(order.orderNumber)}</strong> and your payment.</p>` +
-      `<p style="margin:0 0 16px;">${escapeHtml(LEAD_TIME)} We'll let you know if anything holds it up.</p>` +
+    `<h2 style="margin:0 0 6px;font-size:22px;">Thanks for your order, ${escapeHtml(firstName)}!</h2>` +
+      `<p style="margin:0 0 16px;">We've received your order <strong style="color:${ACCENT};">${escapeHtml(order.orderNumber)}</strong> and your payment.</p>` +
+      `<p style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px;font-size:14px;">` +
+      `<strong>What happens next:</strong> ${escapeHtml(LEAD_TIME)} We'll let you know if anything holds it up.</p>` +
       itemsTableHtml(order) +
-      `<h3 style="margin:20px 0 4px;">Delivering to</h3><p style="margin:0;">${addressHtml(order)}</p>` +
+      heading('Delivering to') + `<p style="margin:0;">${addressHtml(order)}</p>` +
       '<p style="margin:8px 0 0;font-size:13px;color:#4b5563;">If anything in this address is wrong, reply to this email straight away so we can fix it before we post.</p>' +
       navPodHtml +
-      '<h3 style="margin:24px 0 4px;">Questions?</h3>' +
-      '<p style="margin:0;">Just reply to this email, or write to <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>. ' +
-      `Our <a href="${SITE_URL}/policies/refund-policy">refund policy</a> explains what happens if anything is wrong with your order.</p>` +
-      `<p style="margin:24px 0 0;color:#6b7280;font-size:12px;">Foz Prints, ABN ${BUSINESS_ABN}. ${escapeHtml(GST_NOTE)} ` +
-      `This email is your receipt. <a href="${SITE_URL}" style="color:#6b7280;">fozprints.com.au</a></p>`
+      heading('Questions?') +
+      `<p style="margin:0;">Just reply to this email, or write to <a href="mailto:info@fozprints.com.au" style="color:${ACCENT};">info@fozprints.com.au</a>. ` +
+      `Our <a href="${SITE_URL}/policies/refund-policy" style="color:${ACCENT};">refund policy</a> explains what happens if anything is wrong with your order.</p>`,
+    {
+      preheader: `Order ${order.orderNumber} confirmed. Here's what happens next.`,
+      footer:
+        `Foz Prints, ABN ${BUSINESS_ABN}. ${escapeHtml(GST_NOTE)} This email is your receipt.<br>` +
+        `<a href="${SITE_URL}" style="color:${PALE_SKY};">fozprints.com.au</a>`,
+    }
   );
 
   const text = [
@@ -339,7 +388,13 @@ export async function sendOrderEmailsOnce(orderKey: string, build: () => Promise
 
   if (sendOwner) {
     try {
-      await sendEmail({ to: OWNER_EMAIL, replyTo: order.customer.email || undefined, fromName: 'Foz Prints Orders', ...renderOwnerEmail(order) });
+      await sendEmail({
+        to: OWNER_EMAIL,
+        replyTo: order.customer.email || undefined,
+        fromName: 'Foz Prints Orders',
+        fromAddress: ADMIN_FROM_EMAIL,
+        ...renderOwnerEmail(order),
+      });
     } catch (error) {
       await releaseClaim(ownerKey);
       failures.push(error);
@@ -348,7 +403,13 @@ export async function sendOrderEmailsOnce(orderKey: string, build: () => Promise
 
   if (sendCustomer && order.customer.email) {
     try {
-      await sendEmail({ to: order.customer.email, replyTo: OWNER_EMAIL, fromName: 'Foz Prints', ...renderCustomerEmail(order) });
+      await sendEmail({
+        to: order.customer.email,
+        replyTo: OWNER_EMAIL,
+        fromName: 'Foz Prints',
+        fromAddress: ORDERS_FROM_EMAIL,
+        ...renderCustomerEmail(order),
+      });
     } catch (error) {
       await releaseClaim(customerKey);
       failures.push(error);

@@ -97,7 +97,9 @@ async function fetchCatalogue(): Promise<Product[]> {
     let variants: ProductVariant[] = associatedPrices.map((price, priceIndex) => {
       const unitAmount = price.unit_amount || 0;
       const currency = (price.currency || 'aud').toUpperCase();
-      const variantTitle = price.nickname || price.metadata?.title || (priceIndex === 0 ? 'Smooth' : 'Textured');
+      // Products sold one way have no finish to name; the site, cart and emails hide 'Default'
+      const fallbackTitle = associatedPrices.length === 1 ? 'Default' : priceIndex === 0 ? 'Smooth' : 'Textured';
+      const variantTitle = price.nickname || price.metadata?.title || fallbackTitle;
 
       const titleLower = variantTitle.toLowerCase();
       let variantImageUrl: string | undefined;
