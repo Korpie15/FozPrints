@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getStripeServer } from '@/lib/stripe';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
-import { getInventoryMap } from '@/lib/db';
+import { findStockProblem } from '@/lib/db';
 import { CheckoutError, parsePostcode, resolveCart } from '@/lib/cart';
 import { GST_NOTE, SITE_URL } from '@/lib/site';
 import { isLaunchOfferAvailable } from '@/lib/promo-server';
@@ -36,9 +36,9 @@ export async function POST(req: Request) {
     const promoCode = typeof body.promoCode === 'string' ? body.promoCode.trim().toUpperCase() : undefined;
 
     // Verify stock availability from Neon. Fail closed: no inventory data, no sale.
-    let inventoryMap: Record<string, number>;
+    let stockProblem: string | null;
     try {
-      inventoryMap = await getInventoryMap();
+      stockProblem = await findStockProblem(items);
     } catch (error) {
       console.error('Inventory lookup failed during checkout:', error);
       return NextResponse.json(
@@ -46,22 +46,8 @@ export async function POST(req: Request) {
         { status: 503 }
       );
     }
-
-    for (const item of items) {
-      const stock = inventoryMap[item.id] ?? 0;
-      if (item.quantity > stock) {
-        const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
-          ? `${item.title} (${item.variantTitle})`
-          : item.title;
-        return NextResponse.json(
-          {
-            error: stock <= 0
-              ? `"${itemLabel}" is out of stock.`
-              : `Only ${stock} units available for "${itemLabel}". Please update your cart.`,
-          },
-          { status: 400 }
-        );
-      }
+    if (stockProblem) {
+      return NextResponse.json({ error: stockProblem }, { status: 400 });
     }
 
     const origin = returnOrigin(req);

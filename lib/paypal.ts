@@ -1,5 +1,5 @@
 import { CartItem } from '@/types/product';
-import { getInventoryMap, decrementInventoryOnce, getPayPalOrder, savePayPalOrder } from '@/lib/db';
+import { findStockProblem, decrementInventoryOnce, getPayPalOrder, savePayPalOrder } from '@/lib/db';
 import { getLiveShippingQuotes, hasFullKit } from '@/lib/shipping';
 import { CheckoutError, shippingShortfall } from '@/lib/cart';
 import { isLaunchOfferAvailable } from '@/lib/promo-server';
@@ -70,19 +70,9 @@ export async function createPayPalOrderService(params: {
   const baseUrl = getPayPalBaseUrl();
 
   // Verify stock in Neon before allowing order creation
-  const inventoryMap = await getInventoryMap();
-  for (const item of items) {
-    const stock = inventoryMap[item.id] ?? 0;
-    if (item.quantity > stock) {
-      const itemLabel = item.variantTitle && item.variantTitle !== 'Default'
-        ? `${item.title} (${item.variantTitle})`
-        : item.title;
-      throw new CheckoutError(
-        stock <= 0
-          ? `"${itemLabel}" is out of stock.`
-          : `Only ${stock} units available for "${itemLabel}". Please update your cart.`
-      );
-    }
+  const stockProblem = await findStockProblem(items);
+  if (stockProblem) {
+    throw new CheckoutError(stockProblem);
   }
 
   const quotes = await getLiveShippingQuotes(items, toPostcode);
