@@ -27,7 +27,7 @@ const STANDARD_BOX = {
   lengthCm: 27,
   widthCm: 26,
   heightCm: 15,
-  tareWeightGrams: 120,
+  tareWeightGrams: 275, // empty box weighs about 250-300 g
 };
 
 // Small satchel/mailer for accessory-only orders (brackets, plugs, cables)
@@ -41,10 +41,14 @@ const SMALL_SATCHEL = {
 // Physical dead weights for products (grams), measured on a scale.
 // Individual parts: top cover 250, front fascia 46, radio brackets (pair) 33,
 // split cubby with heat inserts 271. The Nav Pod Kit is top cover + fascia + brackets.
+// `bracket` is the roof-tent T-slot bracket, which has not been weighed.
 const ITEM_WEIGHTS = {
   pod: 329,
+  topCover: 250,
+  fascia: 46,
+  radioBrackets: 33,
   cubby: 271,
-  bracket: 33,
+  bracket: 60,
   anderson: 100,
   cable: 80,
   defaultSmall: 100,
@@ -73,9 +77,26 @@ export function estimateParcel(items: CartItem[]): {
 
   for (const item of items) {
     const handleLower = (item.handle || item.title || '').toLowerCase();
+    const variantLower = (item.variantTitle || '').toLowerCase();
     const qty = Math.max(1, item.quantity || 1);
 
-    if (handleLower.includes('pod')) {
+    // Dash Replacement Parts: one product, with each part as a variant
+    if (handleLower.includes('dash-replacement-parts')) {
+      if (variantLower.includes('top cover')) {
+        // Too big for the satchel, so it counts as a large item like the pod
+        podCount += qty;
+        itemsWeightGrams += ITEM_WEIGHTS.topCover * qty;
+      } else if (variantLower.includes('fascia')) {
+        smallItemsCount += qty;
+        itemsWeightGrams += ITEM_WEIGHTS.fascia * qty;
+      } else if (variantLower.includes('bracket')) {
+        smallItemsCount += qty;
+        itemsWeightGrams += ITEM_WEIGHTS.radioBrackets * qty;
+      } else {
+        smallItemsCount += qty;
+        itemsWeightGrams += ITEM_WEIGHTS.defaultSmall * qty;
+      }
+    } else if (handleLower.includes('pod')) {
       podCount += qty;
       itemsWeightGrams += ITEM_WEIGHTS.pod * qty;
     } else if (handleLower.includes('cubby') || handleLower.includes('storage')) {
