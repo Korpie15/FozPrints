@@ -19,6 +19,15 @@ Outstanding steps from the security and QA work (October 2026). Code changes are
 - [x] Content security policy checked and enforced (25 October 2026); Cloudflare Web Analytics added to it.
 - [ ] Optional: Cloudflare → SSL/TLS → Edge Certificates → HSTS → tick Include subdomains, only if every subdomain works over HTTPS.
 
+## Lighthouse (4 November 2026 report)
+
+Code fixes are on `claude/focused-heisenberg-43t08w`. These are the dashboard steps; re-test in an Incognito window (extensions off) after deploying, since the report picked up an ad blocker, a password manager and Grammarly.
+
+- [ ] Cloudflare → Security → Bots: turn off **JavaScript Detections** (and Bot Fight Mode if on). This stops `/cdn-cgi/challenge-platform` scripts loading on every page; they caused both "deprecated API" warnings (FencedFrame, StorageType.persistent) that cost the Best Practices score.
+- [ ] Cloudflare → Scrape Shield: turn off **Email Address Obfuscation**. It adds `email-decode.min.js`, the longest request in the critical path. The site's email links still work without it.
+- [ ] Optional: if Google Analytics and Clarity are enough, turn off Cloudflare Web Analytics (Cloudflare → Analytics & Logs → Web Analytics). Ad blockers block its beacon, which logs a console error for those visitors.
+- [ ] Optional: HSTS `includeSubDomains` (see Security headers above). Add `preload` only if you also want to submit the domain to hstspreload.org; that's hard to undo.
+
 ## Framework
 
 - [x] Upgrade Next.js from 16.0.8 to the latest 16.x (16.4.2 or later). Fixes critical advisories, including remote code execution in image optimisation when AVIF is enabled (it is).

@@ -92,7 +92,8 @@ export function AboutContent() {
                   height={600}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   style={{ objectFit: 'cover' }}
-                  priority
+                  preload
+                  fetchPriority="high"
                 />
               </div>
             </div>

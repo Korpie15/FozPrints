@@ -158,7 +158,13 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
                   <ShoppingCart size={16} />
                 </button>
               )}
-              <Link href={`/products/${product.handle}`} className="product-card-button" style={{ textDecoration: 'none' }}>
+              <Link
+                href={`/products/${product.handle}`}
+                className="product-card-button"
+                style={{ textDecoration: 'none' }}
+                // Every card has a "View" link, so name each one after its product
+                aria-label={`View ${product.title}`}
+              >
                 View
               </Link>
             </div>

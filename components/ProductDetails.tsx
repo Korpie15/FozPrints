@@ -242,7 +242,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     fill
                     sizes={MAIN_IMAGE_SIZES}
                     style={{ objectFit: 'cover' }}
-                    priority
+                    preload
+                    fetchPriority="high"
                   />
                 </button>
                 {totalImages > 1 && (

@@ -24,6 +24,9 @@ const securityHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), usb=(), interest-cohort=()' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
+  // Keeps other windows from reaching this one through window.opener. "allow-popups"
+  // keeps the PayPal checkout popup working, since it talks back to the page that opened it.
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
   // Netlify sets CONTEXT during the build: keep previews and branch deploys out of search results
   ...(process.env.CONTEXT && process.env.CONTEXT !== 'production'
     ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]
@@ -33,6 +36,11 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // The site's CSS is small (about 9 KiB over 5 files), so put it in the HTML instead of
+    // making the browser wait on separate render-blocking stylesheet requests
+    inlineCss: true,
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },

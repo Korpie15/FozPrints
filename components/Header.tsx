@@ -105,7 +105,6 @@ export function Header() {
             type="button"
             onClick={() => openInternationalWaitlist(NAV_POD_NAME)}
             className="header-intl-btn header-announcement-desktop-only"
-            aria-label="Register international shipping interest"
           >
             <Globe size={12} style={{ flexShrink: 0 }} />
             Outside Australia? Register Interest

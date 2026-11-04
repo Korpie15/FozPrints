@@ -44,7 +44,6 @@ main {
   position: relative;
   z-index: 1;
   padding-top: var(--header-offset, 6.25rem); /* Measured by Header; fallback is the usual height before it loads */
-  transition: padding-top 0.25s ease;
 }
 
 @media (max-width: 640px) {

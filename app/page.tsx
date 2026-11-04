@@ -73,7 +73,8 @@ export default async function HomePage() {
             alt="Nav Pod Kit installed in a Subaru Forester SG dash"
             fill
             sizes="100vw"
-            priority
+            preload
+            fetchPriority="high"
           />
         </div>
         <div className="home-hero-overlay"></div>
