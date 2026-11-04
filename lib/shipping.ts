@@ -21,10 +21,11 @@ export interface ShippingQuote {
   };
 }
 
-// Standard shipping box (BX4 / standard box: fits 1 Pod + 1 Cubby + accessories)
+// Standard shipping box (fits 1 Pod + 1 Cubby + accessories).
+// External size, which is what carriers price on (internal is 26.5 x 25.5 x 14.5 cm).
 const STANDARD_BOX = {
-  lengthCm: 31,
-  widthCm: 23,
+  lengthCm: 27,
+  widthCm: 26,
   heightCm: 15,
   tareWeightGrams: 120,
 };
