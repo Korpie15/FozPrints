@@ -38,11 +38,13 @@ const SMALL_SATCHEL = {
   tareWeightGrams: 50,
 };
 
-// Physical dead weights for products (grams)
+// Physical dead weights for products (grams), measured on a scale.
+// Individual parts: top cover 250, front fascia 46, radio brackets (pair) 33,
+// split cubby with heat inserts 271. The Nav Pod Kit is top cover + fascia + brackets.
 const ITEM_WEIGHTS = {
-  pod: 220,
-  cubby: 200,
-  bracket: 60,
+  pod: 329,
+  cubby: 271,
+  bracket: 33,
   anderson: 100,
   cable: 80,
   defaultSmall: 100,
