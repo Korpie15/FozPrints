@@ -69,6 +69,18 @@ export function maxUnits(recipe: Recipe, stock: MaterialStock): number {
   return Math.min(byFilament, byInserts, MAX_UNITS);
 }
 
+/** What stops you making more of this variant right now (null when nothing is the limit) */
+export function limitedBy(recipe: Recipe, stock: MaterialStock): 'packaging' | 'filament' | 'heat inserts' | null {
+  if (!packagingInStock(recipe, stock)) return 'packaging';
+
+  const perUnit = filamentPerUnit(recipe, stock.filamentWastePct);
+  const byFilament = perUnit > 0 ? Math.floor(stock.filamentG / perUnit) : Infinity;
+  const byInserts = recipe.heatInserts > 0 ? Math.floor(stock.heatInserts / recipe.heatInserts) : Infinity;
+
+  if (byFilament === Infinity && byInserts === Infinity) return null;
+  return byInserts < byFilament ? 'heat inserts' : 'filament';
+}
+
 /**
  * What a whole order uses up. Packaging is per order, not per item: any part that
  * needs a box means one box for the order; an order of only mailer parts uses one

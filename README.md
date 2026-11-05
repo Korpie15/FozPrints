@@ -32,6 +32,32 @@ npm run sync-images
 then commit `public/product-images/` and `lib/product-images.json` and deploy. Photos that haven't been
 synced still load (from Stripe) but more slowly.
 
+## Stock and the admin page
+
+Everything is made to order, so what can be sold comes from the raw materials on hand (ASA filament,
+heat inserts, boxes, bubble mailers), not from a count per product. Each product variant has a recipe
+(print weight, heat inserts, print time, packaging) in the `part_recipes` table, and `lib/materials.ts`
+works out how many can be made. `schema.sql` creates the tables and the starting figures.
+
+**`/admin`** shows and edits the stock: set a count after a stock-take, add or remove, record what is on
+order and mark a delivery as arrived. Every change is logged with who made it. It is locked behind
+Cloudflare Access (one-time email code), and the app checks the Access login itself, so going round
+Cloudflare to the Netlify address does not get in.
+
+One-time setup:
+
+1. **Cloudflare Zero Trust → Access → Applications → Add → Self-hosted.** Add two public hostnames on
+   `fozprints.com.au`: path `admin` and path `api/admin`. Add a policy that allows only your email.
+   Copy the application's **Audience (AUD) tag**.
+2. **Netlify → Site configuration → Environment variables**, then redeploy:
+   - `ACCESS_TEAM_DOMAIN`: `https://<team-name>.cloudflareaccess.com`
+   - `ACCESS_AUD`: the AUD tag from step 1
+   - `ADMIN_EMAILS`: the same allowed emails, comma-separated (a second check on top of Access)
+3. Open `https://fozprints.com.au/admin` and sign in with the emailed code.
+
+If those variables are missing or a request did not come through Access, the admin refuses it. To try it
+locally, set `DEV_ADMIN_BYPASS=true`, which skips the login on `localhost` only.
+
 ## Environment Variables
 
 Copy `.env.example` to `.env.local` and add your keys:

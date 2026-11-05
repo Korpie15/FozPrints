@@ -15,6 +15,21 @@ CREATE TABLE IF NOT EXISTS materials (
   waste_pct integer NOT NULL DEFAULT 0 CHECK (waste_pct >= 0)  -- extra used on top of the recipe (supports, purge, failed prints)
 );
 
+-- Stock on its way (shown on /admin). "Received" moves it into on_hand.
+ALTER TABLE materials ADD COLUMN IF NOT EXISTS on_order integer NOT NULL DEFAULT 0 CHECK (on_order >= 0);
+
+-- Who changed which material on /admin, and when
+CREATE TABLE IF NOT EXISTS stock_log (
+  id            bigserial PRIMARY KEY,
+  at            timestamptz NOT NULL DEFAULT now(),
+  material_id   text NOT NULL,
+  action        text NOT NULL,        -- set, adjust, setOnOrder, receive, setWaste
+  change        integer NOT NULL,     -- change to on_hand (0 for order and waste edits)
+  on_hand_after integer NOT NULL,
+  note          text NOT NULL DEFAULT '',
+  by_email      text NOT NULL
+);
+
 -- What one unit of a product variant uses, and how long it takes to print.
 -- A variant with a row here is sold from materials; any other still uses `inventory`.
 CREATE TABLE IF NOT EXISTS part_recipes (
@@ -31,6 +46,11 @@ INSERT INTO materials (id, name, unit, on_hand, waste_pct) VALUES
   ('box',                'Shipping box',          'each', 9,    0),
   ('bubble_mailer',      'Bubble mailer',         'each', 0,    0),
   ('heat_insert',        'Heat insert',           'each', 50,   0)
+ON CONFLICT (id) DO NOTHING;
+
+-- Tracked by hand on /admin: the shop does not deduct it per order
+INSERT INTO materials (id, name, unit, on_hand, waste_pct) VALUES
+  ('honeycomb_paper', 'Honeycomb packing paper', 'm', 0, 0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO part_recipes (price_id, name, filament_g, heat_inserts, print_minutes, packaging) VALUES
