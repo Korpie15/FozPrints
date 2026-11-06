@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS inventory (
   stock_count integer NOT NULL DEFAULT 0 CHECK (stock_count >= 0)
 );
 
--- Raw materials on hand. Everything is made to order, so what can be sold is
--- worked out from these, not typed in per product (see lib/materials.ts).
+-- Raw materials on hand. Everything is made to order (some parts are printed ahead), so what
+-- can be sold is worked out from printed parts plus these materials (see lib/materials.ts).
 -- To restock or correct a count:  UPDATE materials SET on_hand = 2400 WHERE id = 'filament_asa_black';
 CREATE TABLE IF NOT EXISTS materials (
   id        text PRIMARY KEY,
@@ -41,6 +41,19 @@ CREATE TABLE IF NOT EXISTS part_recipes (
   packaging     text NOT NULL CHECK (packaging IN ('box', 'mailer'))    -- 'mailer' = small enough for a bubble mailer
 );
 
+-- Parts printed ahead of time and ready to ship (heat inserts already pressed in).
+-- A sale uses these first and only prints (uses filament) for what is short.
+ALTER TABLE part_recipes ADD COLUMN IF NOT EXISTS printed_stock integer NOT NULL DEFAULT 0 CHECK (printed_stock >= 0);
+
+-- A kit has no stock or recipe of its own: it is made from parts
+CREATE TABLE IF NOT EXISTS kit_components (
+  kit_price_id  text NOT NULL,                     -- Stripe Price ID of the kit
+  kit_name      text NOT NULL DEFAULT '',          -- readable label, for humans only
+  part_price_id text NOT NULL,                     -- Stripe Price ID of a part (a row in part_recipes)
+  quantity      integer NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  PRIMARY KEY (kit_price_id, part_price_id)
+);
+
 INSERT INTO materials (id, name, unit, on_hand, waste_pct) VALUES
   ('filament_asa_black', 'ASA filament (black)', 'g',    3250, 10),
   ('box',                'Shipping box',          'each', 9,    0),
@@ -54,8 +67,6 @@ INSERT INTO materials (id, name, unit, on_hand, waste_pct) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO part_recipes (price_id, name, filament_g, heat_inserts, print_minutes, packaging) VALUES
-  ('price_1UAm8QDV66BLpkjB0jQSOvpR', 'Nav Pod Kit - Smooth',                       329, 0, 1034, 'box'),
-  ('price_1UAmDwDV66BLpkjB486XPemH', 'Nav Pod Kit - Textured',                     329, 0, 1034, 'box'),
   ('price_1UVf5yDV66BLpkjBEWqgj50R', 'Cubby - Single section, standard holes',     271, 0, 630,  'box'),
   ('price_1UVf56DV66BLpkjBT4CU3zFJ', 'Cubby - Single section, heat inserts',       271, 8, 630,  'box'),
   ('price_1UVf6fDV66BLpkjBhrDPCvKP', 'Cubby - Split section, standard holes',      271, 0, 630,  'box'),
@@ -67,6 +78,19 @@ INSERT INTO part_recipes (price_id, name, filament_g, heat_inserts, print_minute
   ('price_1UAm8NDV66BLpkjB7sP6FFM8', 'Rooftop Tent Anderson Plug Holder',           6,  0, 33,   'mailer'),
   ('price_1UAm8PDV66BLpkjBnLi3PqRO', 'Rooftop Tent Cable Organiser',                11, 0, 49,   'mailer')
 ON CONFLICT (price_id) DO NOTHING;
+
+-- Kits are made from parts now, so they no longer have a recipe row of their own
+DELETE FROM part_recipes WHERE price_id IN ('price_1UAm8QDV66BLpkjB0jQSOvpR', 'price_1UAmDwDV66BLpkjB486XPemH');
+
+-- Nav Pod Kit = top cover (same finish) + front fascia + radio mount brackets (pair)
+INSERT INTO kit_components (kit_price_id, kit_name, part_price_id, quantity) VALUES
+  ('price_1UAm8QDV66BLpkjB0jQSOvpR', 'Nav Pod Kit - Smooth',   'price_1UWQeZDV66BLpkjBzUBZV38R', 1),  -- Smooth top cover
+  ('price_1UAm8QDV66BLpkjB0jQSOvpR', 'Nav Pod Kit - Smooth',   'price_1UWQedDV66BLpkjB8RuhVImG', 1),  -- front fascia
+  ('price_1UAm8QDV66BLpkjB0jQSOvpR', 'Nav Pod Kit - Smooth',   'price_1UWQefDV66BLpkjBiJ3MEQhM', 1),  -- radio brackets
+  ('price_1UAmDwDV66BLpkjB486XPemH', 'Nav Pod Kit - Textured', 'price_1UWQebDV66BLpkjBHRkAfbs9', 1),  -- Textured top cover
+  ('price_1UAmDwDV66BLpkjB486XPemH', 'Nav Pod Kit - Textured', 'price_1UWQedDV66BLpkjB8RuhVImG', 1),  -- front fascia
+  ('price_1UAmDwDV66BLpkjB486XPemH', 'Nav Pod Kit - Textured', 'price_1UWQefDV66BLpkjBiJ3MEQhM', 1)   -- radio brackets
+ON CONFLICT (kit_price_id, part_price_id) DO NOTHING;
 
 -- Stripe webhook events already applied to inventory (makes retries idempotent)
 CREATE TABLE IF NOT EXISTS processed_stripe_events (

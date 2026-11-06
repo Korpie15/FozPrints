@@ -3,10 +3,13 @@ import { NAV_POD_NAME } from '@/lib/product-seo';
 import {
   MATERIAL_IDS,
   cannotFulfil,
+  isSellable,
   maxUnits,
   orderUsage,
+  type KitComponent,
   type MaterialStock,
   type Recipe,
+  type StockContext,
 } from '@/lib/materials';
 
 export function getDb() {
@@ -32,28 +35,25 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 400): P
   throw lastError;
 }
 
-interface MaterialState {
-  recipes: Map<string, Recipe>;
-  stock: MaterialStock;
-}
-
 /**
- * Raw materials on hand and the recipe for each product variant that is sold from them.
- * Returns null if the materials tables do not exist yet (before schema.sql was applied),
- * so those products fall back to the per-product `inventory` counts.
+ * Printed parts, kits, and the raw materials on hand: everything needed to work out
+ * what can be sold. Returns null if the tables do not exist yet (before schema.sql was
+ * applied), so every product falls back to the per-product `inventory` counts.
  */
-async function loadMaterialState(sql: NonNullable<ReturnType<typeof getDb>>): Promise<MaterialState | null> {
+export async function loadMaterialState(sql: NonNullable<ReturnType<typeof getDb>>): Promise<StockContext | null> {
   let materialRows;
   let recipeRows;
+  let kitRows;
   try {
-    [materialRows, recipeRows] = await withRetry(() =>
+    [materialRows, recipeRows, kitRows] = await withRetry(() =>
       Promise.all([
         sql`SELECT id, on_hand, waste_pct FROM materials`,
-        sql`SELECT price_id, filament_g, heat_inserts, print_minutes, packaging FROM part_recipes`,
+        sql`SELECT price_id, filament_g, heat_inserts, print_minutes, packaging, printed_stock FROM part_recipes`,
+        sql`SELECT kit_price_id, part_price_id, quantity FROM kit_components`,
       ])
     );
   } catch (err: any) {
-    if (err?.code === '42P01') return null; // undefined_table
+    if (err?.code === '42P01' || err?.code === '42703') return null; // undefined table or column
     throw err;
   }
 
@@ -74,15 +74,23 @@ async function loadMaterialState(sql: NonNullable<ReturnType<typeof getDb>>): Pr
       heatInserts: Number(row.heat_inserts) || 0,
       printMinutes: Number(row.print_minutes) || 0,
       packaging: row.packaging === 'mailer' ? 'mailer' : 'box',
+      printedStock: Number(row.printed_stock) || 0,
     });
   }
-  return { recipes, stock };
+
+  const kits = new Map<string, KitComponent[]>();
+  for (const row of kitRows) {
+    const parts = kits.get(row.kit_price_id) ?? [];
+    parts.push({ partPriceId: row.part_price_id, quantity: Number(row.quantity) || 1 });
+    kits.set(row.kit_price_id, parts);
+  }
+  return { recipes, kits, stock };
 }
 
 /**
  * How many of each variant can be sold, keyed by Stripe Price ID.
- * Variants with a recipe are worked out from the raw materials on hand (filament,
- * boxes, heat inserts); any other variant uses its count in `inventory`.
+ * Parts and kits are worked out from what is printed and ready plus what could still
+ * be printed from the materials on hand; any other variant uses its count in `inventory`.
  * Throws if the database is unavailable so callers choose how to fail
  * (checkout blocks the sale; the product listing shows items as unavailable).
  */
@@ -92,7 +100,7 @@ export async function getInventoryMap(): Promise<Record<string, number>> {
     throw new Error('DATABASE_URL is not configured.');
   }
 
-  const [rows, materials] = await Promise.all([
+  const [rows, ctx] = await Promise.all([
     withRetry(() => sql`SELECT id, stock_count FROM inventory`),
     loadMaterialState(sql),
   ]);
@@ -100,17 +108,17 @@ export async function getInventoryMap(): Promise<Record<string, number>> {
   for (const row of rows) {
     map[row.id] = Number(row.stock_count) || 0;
   }
-  if (materials) {
-    for (const [priceId, recipe] of materials.recipes) {
-      map[priceId] = maxUnits(recipe, materials.stock);
+  if (ctx) {
+    for (const priceId of [...ctx.recipes.keys(), ...ctx.kits.keys()]) {
+      map[priceId] = maxUnits(priceId, ctx);
     }
   }
   return map;
 }
 
 /**
- * Checks a whole cart can be made, not just each line on its own: items that share
- * filament (a kit and a cubby, say) have to fit in what is left together.
+ * Checks a whole cart can be supplied, not just each line on its own: items that share
+ * parts or filament (a kit and a cubby, say) have to fit in what is left together.
  * Returns a message to show the buyer, or null if the cart is fine.
  * Throws if the database is unavailable, so callers fail closed.
  */
@@ -135,10 +143,10 @@ export async function findStockProblem(
     }
   }
 
-  const materials = await loadMaterialState(sql);
-  if (materials) {
+  const ctx = await loadMaterialState(sql);
+  if (ctx) {
     const lines = items.map((item) => ({ priceId: item.id, quantity: item.quantity }));
-    if (cannotFulfil(orderUsage(lines, materials.recipes, materials.stock), materials.stock)) {
+    if (cannotFulfil(orderUsage(lines, ctx), ctx.stock)) {
       return "We can't make everything in your cart at once right now. Please reduce the quantities or remove an item.";
     }
   }
@@ -147,8 +155,9 @@ export async function findStockProblem(
 
 /**
  * Deducts a paid order from stock exactly once per Stripe/PayPal event.
- * Variants with a recipe use up raw materials (filament, heat inserts, a box or
- * mailer); any other variant is deducted from its `inventory` count as before.
+ * Parts and kits come off the printed shelf first, then use filament and heat inserts
+ * for whatever had to be printed, plus a box or mailer; any other variant is deducted
+ * from its `inventory` count as before.
  * The event claim and every stock update run in a single SQL statement, so a
  * retried or duplicate webhook delivery can never decrement twice.
  * Counts are clamped at 0 because the payment has already been taken.
@@ -163,28 +172,19 @@ export async function decrementInventoryOnce(
     throw new Error('DATABASE_URL is not configured.');
   }
 
-  const materials = await loadMaterialState(sql);
-  const isRecipe = (priceId: string) => Boolean(materials?.recipes.has(priceId));
+  const ctx = await loadMaterialState(sql);
+  const isMade = (priceId: string) => Boolean(ctx && isSellable(priceId, ctx));
 
-  // Variants without a recipe: per-product counts
+  // Variants not made from parts and materials: per-product counts
   const totals = new Map<string, number>();
-  for (const { priceId, quantity } of lines.filter((l) => !isRecipe(l.priceId))) {
+  for (const { priceId, quantity } of lines.filter((l) => !isMade(l.priceId))) {
     totals.set(priceId, (totals.get(priceId) || 0) + quantity);
   }
   const ids = [...totals.keys()];
   const qtys = [...totals.values()];
 
-  // Variants with a recipe: raw materials
-  const usage = materials
-    ? orderUsage(lines.filter((l) => isRecipe(l.priceId)), materials.recipes, materials.stock)
-    : null;
-  const materialIds = usage
-    ? [MATERIAL_IDS.filament, MATERIAL_IDS.heatInsert, MATERIAL_IDS.box, MATERIAL_IDS.mailer]
-    : [];
-  const materialAmounts = usage ? [usage.filamentG, usage.heatInserts, usage.boxes, usage.mailers] : [];
-
-  // Materials tables not created yet: only per-product counts exist
-  if (!materials) {
+  // Tables not created yet: only per-product counts exist
+  if (!ctx) {
     const legacyRows = await withRetry(() => sql`
       WITH claimed AS (
         INSERT INTO processed_stripe_events (event_id)
@@ -206,6 +206,13 @@ export async function decrementInventoryOnce(
     `);
     return Number(legacyRows[0]?.claimed) > 0;
   }
+
+  // Parts and kits: printed shelf first, then materials for what had to be printed
+  const usage = orderUsage(lines.filter((l) => isMade(l.priceId)), ctx);
+  const materialIds = [MATERIAL_IDS.filament, MATERIAL_IDS.heatInsert, MATERIAL_IDS.box, MATERIAL_IDS.mailer];
+  const materialAmounts = [usage.filamentG, usage.heatInserts, usage.boxes, usage.mailers];
+  const shelfIds = [...usage.printedUsed.keys()];
+  const shelfAmounts = [...usage.printedUsed.values()];
 
   const rows = await withRetry(() => sql`
     WITH claimed AS (
@@ -233,6 +240,16 @@ export async function decrementInventoryOnce(
       FROM used
       WHERE m.id = used.id AND used.amount > 0 AND EXISTS (SELECT 1 FROM claimed)
       RETURNING m.id
+    ),
+    shelf AS (
+      SELECT id, amount FROM unnest(${shelfIds}::text[], ${shelfAmounts}::int[]) AS t(id, amount)
+    ),
+    shelf_updated AS (
+      UPDATE part_recipes p
+      SET printed_stock = GREATEST(p.printed_stock - shelf.amount, 0)
+      FROM shelf
+      WHERE p.price_id = shelf.id AND shelf.amount > 0 AND EXISTS (SELECT 1 FROM claimed)
+      RETURNING p.price_id
     )
     SELECT (SELECT count(*) FROM claimed) AS claimed
   `);

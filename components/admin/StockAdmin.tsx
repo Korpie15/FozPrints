@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { AdminMaterial, AdminStock, StockAction } from '@/lib/admin-stock';
+import type { AdminMaterial, AdminPart, AdminStock, PartAction, StockAction } from '@/lib/admin-stock';
 
 const number = (n: number) => n.toLocaleString('en-AU');
 
@@ -28,9 +28,17 @@ const ACTION_LABELS: Record<string, string> = {
   setOnOrder: 'On order',
   receive: 'Received',
   setWaste: 'Waste %',
+  printed: 'Printed',
+  setPrinted: 'Stock-take',
+  adjustPrinted: 'Adjusted',
 };
 
-type Send = (action: StockAction, id: string, value?: number) => Promise<boolean>;
+type Send = (action: StockAction | PartAction, id: string, value?: number) => Promise<boolean>;
+
+/** Short label for a part ("Top Cover Smooth", not the full product name) */
+function shortName(name: string): string {
+  return name.replace(/^Dash Replacement Parts - /, '').replace(/ \(Pair\)$/, '');
+}
 
 function NumberForm({
   label,
@@ -131,6 +139,43 @@ function MaterialCard({ material, send, busy }: { material: AdminMaterial; send:
   );
 }
 
+function PartCard({ part, send, busy }: { part: AdminPart; send: Send; busy: boolean }) {
+  return (
+    <section className="admin-card" aria-labelledby={`p-${part.priceId}`}>
+      <div className="admin-card-head">
+        <h3 id={`p-${part.priceId}`}>{shortName(part.name)}</h3>
+      </div>
+
+      <p className="admin-big">
+        {number(part.printedStock)} <span>printed</span>
+      </p>
+      <p className="admin-sub">
+        {part.filamentG} g · {printTime(part.printMinutes)} each
+        {part.heatInserts > 0 && ` · ${part.heatInserts} inserts`} · could print {number(part.canPrint)} more
+      </p>
+
+      <div className="admin-forms">
+        <NumberForm
+          label="I printed (uses filament)"
+          buttonLabel="Printed"
+          disabled={busy}
+          onSubmit={(v) => send('printed', part.priceId, v)}
+        />
+        <NumberForm
+          label="Set exact count"
+          buttonLabel="Save"
+          disabled={busy}
+          onSubmit={(v) => send('setPrinted', part.priceId, v)}
+        />
+        <div className="admin-pair">
+          <NumberForm label="Add" buttonLabel="Add" disabled={busy} onSubmit={(v) => send('adjustPrinted', part.priceId, v)} />
+          <NumberForm label="Remove" buttonLabel="Remove" disabled={busy} onSubmit={(v) => send('adjustPrinted', part.priceId, -v)} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function StockAdmin({ initial, email }: { initial: AdminStock; email: string }) {
   const [data, setData] = useState<AdminStock>(initial);
   const [busy, setBusy] = useState(false);
@@ -189,14 +234,31 @@ export function StockAdmin({ initial, email }: { initial: AdminStock; email: str
         ))}
       </div>
 
-      <h2>What you can make right now</h2>
-      <p className="admin-sub">This is what the shop shows as in stock, one product at a time.</p>
+      <h2>Printed parts</h2>
+      <p className="admin-sub">
+        Parts printed ahead of time. A sale uses these first and only prints (uses filament) for what is short. Kits
+        have no stock of their own: they are made from these parts. <strong>Printed</strong> adds to the count and takes
+        the filament and heat inserts off your materials; <strong>Add</strong> and <strong>Remove</strong> change the
+        count without touching materials.
+      </p>
+      <div className="admin-grid">
+        {data.parts.map((p) => (
+          <PartCard key={p.priceId} part={p} send={send} busy={busy} />
+        ))}
+      </div>
+
+      <h2>What you can sell right now</h2>
+      <p className="admin-sub">
+        What the shop shows as in stock, one product at a time: printed and ready, plus what could still be printed
+        from your materials.
+      </p>
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
             <tr>
               <th>Product</th>
-              <th className="num">Can make</th>
+              <th className="num">Ready now</th>
+              <th className="num">Can sell</th>
               <th>Limited by</th>
               <th className="num">Filament</th>
               <th className="num">Print time</th>
@@ -205,9 +267,13 @@ export function StockAdmin({ initial, email }: { initial: AdminStock; email: str
             </tr>
           </thead>
           <tbody>
-            {data.recipes.map((r) => (
+            {data.sellable.map((r) => (
               <tr key={r.priceId} className={r.canMake === 0 ? 'is-out' : ''}>
-                <td>{r.name}</td>
+                <td>
+                  {r.name}
+                  {r.kind === 'kit' && <span className="admin-subtle"> (kit: {r.madeFrom})</span>}
+                </td>
+                <td className="num">{r.printed}</td>
                 <td className="num">
                   <strong>{r.canMake}</strong>
                 </td>

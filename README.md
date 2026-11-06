@@ -34,13 +34,20 @@ synced still load (from Stripe) but more slowly.
 
 ## Stock and the admin page
 
-Everything is made to order, so what can be sold comes from the raw materials on hand (ASA filament,
-heat inserts, boxes, bubble mailers), not from a count per product. Each product variant has a recipe
-(print weight, heat inserts, print time, packaging) in the `part_recipes` table, and `lib/materials.ts`
-works out how many can be made. `schema.sql` creates the tables and the starting figures.
+Everything is made to order, but some parts are printed ahead of time. What the shop can sell is the
+**printed parts on the shelf plus whatever could still be printed** from the raw materials on hand
+(ASA filament, heat inserts, boxes, bubble mailers). Each part has a recipe (print weight, heat inserts,
+print time, packaging) and a printed count in the `part_recipes` table. A **kit has no stock of its own**:
+it is made from parts (`kit_components`), so a Textured Nav Pod Kit is a Textured top cover, a front
+fascia and a pair of radio brackets. `lib/materials.ts` does the maths, and `schema.sql` creates the
+tables and the starting figures.
 
-**`/admin`** shows and edits the stock: set a count after a stock-take, add or remove, record what is on
-order and mark a delivery as arrived. Every change is logged with who made it. It is locked behind
+A sale uses printed parts first and only uses filament and heat inserts for what had to be printed. When
+you print parts ahead, log them on `/admin` ("I printed N") so the filament and inserts come off then.
+
+**`/admin`** shows and edits the stock: materials (set a count after a stock-take, add or remove, record
+what is on order, mark a delivery as arrived) and printed parts (log what you printed, or correct a count).
+It also shows what can be sold right now. Every change is logged with who made it. It is locked behind
 Cloudflare Access (one-time email code), and the app checks the Access login itself, so going round
 Cloudflare to the Netlify address does not get in.
 

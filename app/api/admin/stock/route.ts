@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
 import { adminUser } from '@/lib/admin-auth';
-import { applyStockChange, getAdminStock, StockChangeError, type StockAction } from '@/lib/admin-stock';
+import {
+  applyPartChange,
+  applyStockChange,
+  getAdminStock,
+  StockChangeError,
+  type PartAction,
+  type StockAction,
+} from '@/lib/admin-stock';
 
 export const dynamic = 'force-dynamic';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
-const ACTIONS: StockAction[] = ['set', 'adjust', 'setOnOrder', 'receive', 'setWaste'];
+const MATERIAL_ACTIONS: StockAction[] = ['set', 'adjust', 'setOnOrder', 'receive', 'setWaste'];
+const PART_ACTIONS: PartAction[] = ['printed', 'setPrinted', 'adjustPrinted'];
 
 function json(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: NO_STORE });
@@ -46,12 +54,17 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json().catch(() => null);
-  if (!body || typeof body.id !== 'string' || !ACTIONS.includes(body.action)) {
+  const isPartAction = PART_ACTIONS.includes(body?.action);
+  if (!body || typeof body.id !== 'string' || !(isPartAction || MATERIAL_ACTIONS.includes(body.action))) {
     return json({ error: 'Invalid request.' }, 400);
   }
 
   try {
-    await applyStockChange(user.email, { action: body.action, id: body.id, value: body.value });
+    if (isPartAction) {
+      await applyPartChange(user.email, { action: body.action, id: body.id, value: body.value });
+    } else {
+      await applyStockChange(user.email, { action: body.action, id: body.id, value: body.value });
+    }
     return json(await getAdminStock());
   } catch (error) {
     if (error instanceof StockChangeError) return json({ error: error.message }, 400);
