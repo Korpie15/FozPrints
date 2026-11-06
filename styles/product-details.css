@@ -386,16 +386,14 @@
   margin-bottom: 0.5em;
 }
 
-.product-description-content a,
-.product-highlight-card a {
+.product-description-content a {
   color: #0369a1;
   text-decoration: underline;
   transition: color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
-  .product-description-content a,
-  .product-highlight-card a {
+  .product-description-content a {
     color: #60a5fa;
   }
 }
@@ -739,71 +737,38 @@
   }
 }
 
-.product-highlights-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
+.product-feature-list {
+  padding-left: 1.25rem;
+  max-width: 75ch;
+  color: #374151;
+  line-height: 1.7;
 }
 
-@media (min-width: 768px) {
-  .product-highlights-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.product-feature-list li {
+  margin-bottom: 0.6rem;
 }
 
-.product-highlight-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.25rem;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-@media (prefers-color-scheme: dark) {
-  .product-highlight-card {
-    background-color: #1f2937;
-    border-color: #374151;
-  }
-}
-
-.product-highlight-icon {
-  color: #0369a1;
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .product-highlight-icon {
-    color: #38bdf8;
-  }
-}
-
-.product-highlight-card h3 {
-  font-size: 1rem;
-  font-weight: 600;
+.product-feature-list strong {
   color: #111827;
-  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.product-feature-list a {
+  color: #0369a1;
+  text-decoration: underline;
 }
 
 @media (prefers-color-scheme: dark) {
-  .product-highlight-card h3 {
+  .product-feature-list {
+    color: #d1d5db;
+  }
+
+  .product-feature-list strong {
     color: #f9fafb;
   }
-}
 
-.product-highlight-card p {
-  font-size: 0.875rem;
-  color: #4b5563;
-  line-height: 1.5;
-  margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .product-highlight-card p {
-    color: #9ca3af;
+  .product-feature-list a {
+    color: #60a5fa;
   }
 }
 

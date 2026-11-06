@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, CheckCircle2, Truck, Sparkles, Globe } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, Truck, Sparkles, Globe } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml, variantSlug } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
@@ -458,62 +458,26 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               upper storage pocket with a pod styled on the factory USDM nav pod, so your maps, reversing camera and
               Apple CarPlay or Android Auto are a quick glance away instead of down beside the gear stick.
             </p>
-            <div className="product-highlights-grid">
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>Screen Closer to Eye Level</h3>
-                  <p>
-                    Puts navigation, camera and music controls up high like a modern car, closer to your line of sight while driving.
-                  </p>
-                </div>
-              </div>
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>Designed for the SG Dash, with a Matching Texture</h3>
-                  <p>
-                    Made for the 2003 to 2008 Subaru Forester (SG). Choose a smooth satin finish, or a textured finish made to closely match the grain of the factory dash. Both can be sanded and painted.
-                  </p>
-                </div>
-              </div>
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>High-Heat Automotive ASA</h3>
-                  <p>
-                    Printed in ASA, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), not hobby-grade PLA, which softens at around 55°C. As with any plastic, use a windscreen sunshade when parked in direct sun.
-                  </p>
-                </div>
-              </div>
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>Reversible Factory Mounting</h3>
-                  <p>
-                    Attaches to the factory mounting points, with no cutting or permanent changes to your dash. Keeps your hazard button working. The factory clock is built into the storage lid you remove, so it isn&apos;t refitted.
-                  </p>
-                </div>
-              </div>
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>Four-Piece Modular Design</h3>
-                  <p>
-                    Follows the factory four-piece layout, so you can take it apart to run new wiring or swap head units. Fits standard double DIN head units; some deeper units may need minor trimming of the ducting behind the pod.
-                  </p>
-                </div>
-              </div>
-              <div className="product-highlight-card">
-                <CheckCircle2 size={20} className="product-highlight-icon" />
-                <div>
-                  <h3>Mixes with the Factory Pod (H0010SA950ML)</h3>
-                  <p>
-                    Each part is modelled on the factory USDM nav pod, so it can be mixed with original parts. Only need one piece? See <Link href="/products/dash-replacement-parts">Dash Replacement Parts</Link>.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <ul className="product-feature-list">
+              <li>
+                <strong>Screen closer to eye level.</strong> Puts navigation, camera and music controls up high like a modern car, closer to your line of sight while driving.
+              </li>
+              <li>
+                <strong>Shaped for the SG dash, with a matching texture.</strong> Designed for the 2003 to 2008 Subaru Forester (SG). Choose a smooth satin finish, or a textured finish made to closely match the grain of the factory dash. Both can be sanded and painted.
+              </li>
+              <li>
+                <strong>High-heat automotive ASA.</strong> Printed in ASA, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), not hobby-grade PLA, which softens at around 55°C. As with any plastic, use a windscreen sunshade when parked in direct sun.
+              </li>
+              <li>
+                <strong>Reversible factory mounting.</strong> Attaches to the factory mounting points, with no cutting or permanent changes to your dash. Keeps your hazard button working. The factory clock is built into the storage lid you remove, so it isn&apos;t refitted.
+              </li>
+              <li>
+                <strong>Four-piece modular design.</strong> Follows the factory four-piece layout, so you can take it apart to run new wiring or swap head units. Fits standard double DIN head units; some deeper units may need minor trimming of the ducting behind the pod.
+              </li>
+              <li>
+                <strong>Mixes with the factory pod (H0010SA950ML).</strong> Each part is modelled on the factory USDM nav pod, so it can be mixed with original parts. Only need one piece? See <Link href="/products/dash-replacement-parts">Dash Replacement Parts</Link>.
+              </li>
+            </ul>
             <div className="product-kit-contents">
               <h3>What&apos;s in the Kit</h3>
               <ul>
