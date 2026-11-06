@@ -139,9 +139,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         hasMerchantReturnPolicy: {
           '@type': 'MerchantReturnPolicy',
           applicableCountry: 'AU',
-          // Change-of-mind returns aren't offered on made-to-order parts, but faulty
-          // items always can be, so don't tell search engines returns are not permitted
-          returnPolicyCategory: 'https://schema.org/MerchantReturnUnspecified',
+          // Google only accepts FiniteReturnWindow, UnlimitedWindow or NotPermitted here.
+          // Parts are made to order, so change-of-mind returns aren't offered; faulty,
+          // damaged or incorrect items are still covered free (itemDefectReturnFees
+          // below, and the Australian Consumer Law on the refund policy page)
+          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
           merchantReturnLink: `${siteUrl}/policies/refund-policy`,
           itemDefectReturnFees: 'https://schema.org/FreeReturn',
           itemDefectReturnShippingFeesAmount: {
