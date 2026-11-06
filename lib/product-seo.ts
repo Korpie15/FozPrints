@@ -33,7 +33,7 @@ export const NAV_POD_FAQS: NavPodFaq[] = [
   {
     question: 'Which Subaru Forester models and years does the Nav Pod Kit fit?',
     answer:
-      'It is designed for the second-generation Subaru Forester (SG chassis, model years 2003 to 2008) including XT, 2.5X, and 2.5XS with the USDM-spec dashboard pocket.',
+      'It is designed for the second-generation Subaru Forester (SG chassis, model years 2003 to 2008) including all trims (XT, 2.5X, 2.5XS and others), in both right-hand drive and left-hand drive cars. "USDM spec" describes the pod\'s shape, not where your car is from. Please check your dash matches the photos before ordering.',
   },
   {
     question: 'What material is used and will it warp in summer heat?',

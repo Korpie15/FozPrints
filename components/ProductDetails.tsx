@@ -331,17 +331,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           )}
 
-          {isFullKit && (
-            <div className="product-oem-callout">
-              <strong>Fits</strong>
-              <span>
-                Subaru Forester SG, 2003 to 2008 (all trims), in both right-hand drive (Australia, UK, Japan) and
-                left-hand drive (USA, Canada, Europe) cars. &quot;USDM Spec&quot; describes the pod&apos;s shape, not where your car is from.
-                Please check your dash matches the photos before ordering. The pod suits standard double DIN head units.
-              </span>
-            </div>
-          )}
-
           {isModularComponent && (
             <div className="product-oem-callout">
               <strong>
@@ -442,14 +431,17 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </div>
           )}
 
-          <div className="product-description">
-            <div
-              className="product-description-content"
-              dangerouslySetInnerHTML={{
-                __html: formatDescriptionToHtml(product.description),
-              }}
-            />
-          </div>
+          {/* The Nav Pod's description and features are one section below the photos */}
+          {!isNavPod && (
+            <div className="product-description">
+              <div
+                className="product-description-content"
+                dangerouslySetInnerHTML={{
+                  __html: formatDescriptionToHtml(product.description),
+                }}
+              />
+            </div>
+          )}
 
           {/subaru|forester/i.test(product.title) && (
             <p className="product-non-affiliation">{NON_AFFILIATION}</p>
@@ -460,14 +452,19 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {isNavPod && (
         <div className="product-extended-details">
           <div className="product-seo-highlights">
-            <h2>{NAV_POD_SHORT_NAME} Features</h2>
+            <h2>{NAV_POD_SHORT_NAME}: Description &amp; Features</h2>
+            <p className="product-highlights-intro">
+              Move your double DIN head unit from the low centre console to the top of the dash. The kit replaces the
+              upper storage pocket with a pod styled on the factory USDM nav pod, so your maps, reversing camera and
+              Apple CarPlay or Android Auto are a quick glance away instead of down beside the gear stick.
+            </p>
             <div className="product-highlights-grid">
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
                 <div>
-                  <h3>Eye-Level Stereo Relocation</h3>
+                  <h3>Screen Closer to Eye Level</h3>
                   <p>
-                    Converts your upper dashboard storage pocket into a functional double DIN navigation pod housing. Keeps navigation maps, backup cameras, and Apple CarPlay / Android Auto in your direct field of view while driving.
+                    Puts navigation, camera and music controls up high like a modern car, closer to your line of sight while driving.
                   </p>
                 </div>
               </div>
@@ -476,16 +473,16 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>Designed for the SG Dash, with a Matching Texture</h3>
                   <p>
-                    Designed for the 2003 to 2008 Subaru Forester (SG chassis). Available in a smooth satin finish, or a textured finish made to closely match the grain of the factory dashboard.
+                    Made for the 2003 to 2008 Subaru Forester (SG). Choose a smooth satin finish, or a textured finish made to closely match the grain of the factory dash. Both can be sanded and painted.
                   </p>
                 </div>
               </div>
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
                 <div>
-                  <h3>High-Heat Automotive ASA Material</h3>
+                  <h3>High-Heat Automotive ASA</h3>
                   <p>
-                    3D printed in ASA, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), chosen for life on a sunny dashboard. Very high cabin temperatures can still affect any plastic, so use a windscreen sunshade when parked in direct sun.
+                    Printed in ASA, a UV-stable engineering plastic with a heat deflection temperature of around 95°C (manufacturer data), not hobby-grade PLA, which softens at around 55°C. As with any plastic, use a windscreen sunshade when parked in direct sun.
                   </p>
                 </div>
               </div>
@@ -494,19 +491,36 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <h3>Reversible Factory Mounting</h3>
                   <p>
-                    Securely attaches using factory mounting points. No permanent dashboard cutting or irreversible modifications needed. Keeps your hazard button working. The factory clock is built into the storage lid you remove, so it isn&apos;t refitted.
+                    Attaches to the factory mounting points, with no cutting or permanent changes to your dash. Keeps your hazard button working. The factory clock is built into the storage lid you remove, so it isn&apos;t refitted.
                   </p>
                 </div>
               </div>
               <div className="product-highlight-card">
                 <CheckCircle2 size={20} className="product-highlight-icon" />
                 <div>
-                  <h3>Compatible with the Factory Pod (Subaru part no. H0010SA950ML)</h3>
+                  <h3>Four-Piece Modular Design</h3>
                   <p>
-                    Each component is modelled on our measurements of the factory Subaru USDM navigation pod (H0010SA950ML), so parts can be mixed with an original pod. If you already own a factory pod and only need a pod shell, front fascia or bracket, you can buy just that part from our <Link href="/products/dash-replacement-parts">Dash Replacement Parts</Link>, and it fits your existing factory hardware. Questions? Email <a href="mailto:info@fozprints.com.au">info@fozprints.com.au</a>.
+                    Follows the factory four-piece layout, so you can take it apart to run new wiring or swap head units. Fits standard double DIN head units; some deeper units may need minor trimming of the ducting behind the pod.
                   </p>
                 </div>
               </div>
+              <div className="product-highlight-card">
+                <CheckCircle2 size={20} className="product-highlight-icon" />
+                <div>
+                  <h3>Mixes with the Factory Pod (H0010SA950ML)</h3>
+                  <p>
+                    Each part is modelled on the factory USDM nav pod, so it can be mixed with original parts. Only need one piece? See <Link href="/products/dash-replacement-parts">Dash Replacement Parts</Link>.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="product-kit-contents">
+              <h3>What&apos;s in the Kit</h3>
+              <ul>
+                <li>Top cover (the main hood)</li>
+                <li>Front fascia (the trim around the screen)</li>
+                <li>Left and right radio mount brackets</li>
+              </ul>
             </div>
           </div>
 
