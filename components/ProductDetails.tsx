@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image, { getImageProps } from 'next/image';
 import Link from 'next/link';
-import { Minus, Plus, ShoppingCart, BookOpen, ChevronDown, Truck, Sparkles, Globe } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, Check, BookOpen, ChevronDown, Truck, Sparkles, Globe } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, formatDescriptionToHtml, variantSlug } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
@@ -16,6 +16,7 @@ import { Toast } from './Toast';
 import { ImageLightbox } from './ImageLightbox';
 import { CompareSlider } from './CompareSlider';
 import { useSwipe } from '@/lib/use-swipe';
+import { useAddedFlash } from '@/lib/use-added-flash';
 import '../styles/product-details.css';
 
 interface ProductDetailsProps {
@@ -60,6 +61,7 @@ function findImageForVariant(product: Product, variant: ProductVariant): number 
 
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
+  const [addedPhase, playAdded] = useAddedFlash();
   // Start on a finish that's in stock, so the page doesn't open on "Out of stock"
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     () => product.variants.find((v) => v.availableForSale) ?? product.variants[0]
@@ -184,6 +186,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
     setCartMessage(message);
     setShowToast(true);
+    playAdded();
   };
 
   const selectedImage = product.images[selectedImageIndex] || product.images[0];
@@ -389,10 +392,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <button
                 onClick={handleAddToCart}
                 disabled={!isAvailable}
-                className="product-add-to-cart"
+                className={`product-add-to-cart atc atc-${addedPhase}`}
               >
-                <ShoppingCart size={20} />
-                {!isAvailable ? 'Out of Stock' : 'Add to Cart'}
+                <span className="atc-icon" aria-hidden="true">
+                  {addedPhase === 'added' ? <Check size={20} /> : <ShoppingCart size={20} />}
+                  <span className="atc-drop" />
+                </span>
+                {!isAvailable ? 'Out of Stock' : addedPhase === 'added' ? 'Added' : 'Add to Cart'}
               </button>
             </div>
 

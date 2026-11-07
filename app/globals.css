@@ -257,6 +257,134 @@ main:focus {
   }
 }
 
+/* Press feedback (components/PressFeedback.tsx): a quick squash and spring
+   back when something is tapped. Uses the separate "scale" property so it
+   combines with any transform the element already has. */
+[data-pressed] {
+  animation: press-bounce 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes press-bounce {
+  0% {
+    scale: 1;
+  }
+  30% {
+    scale: 0.94;
+  }
+  65% {
+    scale: 1.03;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+/* Add-to-cart animation (lib/use-added-flash.ts): a small box drops into the
+   cart icon, the cart dips as it lands, then a tick pops in and the button
+   turns green for a moment. */
+.atc-icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.atc-drop {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: -0.1rem;
+  border-radius: 0.1rem;
+  background-color: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.atc-dropping .atc-drop {
+  animation: atc-drop 0.45s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+.atc-dropping .atc-icon svg {
+  animation: atc-catch 0.45s ease-out;
+}
+
+.atc-added .atc-icon svg {
+  animation: atc-tick 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.atc.atc-added:not(:disabled),
+.atc.atc-added:hover:not(:disabled) {
+  background-color: #15803d;
+  border-color: #15803d;
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .atc.atc-added:not(:disabled),
+  .atc.atc-added:hover:not(:disabled) {
+    background-color: #4ade80;
+    border-color: #4ade80;
+    color: #052e16;
+  }
+}
+
+@keyframes atc-drop {
+  0% {
+    opacity: 0;
+    translate: 0 -0.7rem;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 0.35rem;
+  }
+}
+
+@keyframes atc-catch {
+  0%,
+  55% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  75% {
+    translate: 0 2px;
+    rotate: -8deg;
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+
+@keyframes atc-tick {
+  0% {
+    scale: 0.4;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+/* Header cart count pops when something is added */
+@keyframes badge-pop {
+  0% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.45;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
 /* Respect the "reduce motion" setting: no smooth scrolling, animations or transitions */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -4,9 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product, ProductVariant } from '@/types/product';
 import { formatPrice, stripHtml } from '@/lib/utils';
-import { ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react';
+import { ShoppingCart, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useCartStore } from '@/lib/store';
+import { useAddedFlash } from '@/lib/use-added-flash';
 import '../styles/product-card.css';
 
 interface ProductCardProps {
@@ -20,6 +21,7 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCartStore();
+  const [addedPhase, playAdded] = useAddedFlash();
 
   const variants = product.variants;
   const hasMultipleVariants = variants.length > 1;
@@ -92,6 +94,7 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
     });
 
     setIsDropdownOpen(false);
+    playAdded();
   };
 
   return (
@@ -142,20 +145,30 @@ export function ProductCard({ product, titleLevel: Title = 'h3' }: ProductCardPr
                       }
                     }}
                     disabled={!hasAnyAvailableVariant}
-                    className={`product-card-button product-card-button-cart ${!hasAnyAvailableVariant ? 'product-card-button-unavailable' : ''}`}
+                    className={`product-card-button product-card-button-cart atc atc-${addedPhase} ${!hasAnyAvailableVariant ? 'product-card-button-unavailable' : ''}`}
                     title={hasAnyAvailableVariant ? 'Choose options' : 'Out of stock'}
                   >
-                    {isDropdownOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    {addedPhase === 'added' ? (
+                      <span className="atc-icon"><Check size={16} /></span>
+                    ) : isDropdownOpen ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={(e) => firstVariant && handleAddToCart(e, firstVariant)}
                   disabled={!isAvailable}
-                  className={`product-card-button product-card-button-cart ${!isAvailable ? 'product-card-button-unavailable' : ''}`}
+                  className={`product-card-button product-card-button-cart atc atc-${addedPhase} ${!isAvailable ? 'product-card-button-unavailable' : ''}`}
                   title={!isAvailable ? 'Out of stock' : 'Quick add to cart'}
+                  aria-label={!isAvailable ? `${product.title} is out of stock` : `Add ${product.title} to cart`}
                 >
-                  <ShoppingCart size={16} />
+                  <span className="atc-icon" aria-hidden="true">
+                    {addedPhase === 'added' ? <Check size={16} /> : <ShoppingCart size={16} />}
+                    <span className="atc-drop" />
+                  </span>
                 </button>
               )}
               <Link

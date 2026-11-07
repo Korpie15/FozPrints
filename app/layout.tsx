@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { InternationalInterestModal } from '@/components/InternationalInterestModal';
 import { AnalyticsConsent } from '@/components/AnalyticsConsent';
+import { PressFeedback } from '@/components/PressFeedback';
 import { DEFAULT_OG_IMAGE, SITE_URL } from '@/lib/site';
 
 const siteUrl = SITE_URL;
@@ -80,6 +81,7 @@ export default function RootLayout({
         <Footer />
         <InternationalInterestModal />
         <AnalyticsConsent />
+        <PressFeedback />
       </body>
     </html>
   );
